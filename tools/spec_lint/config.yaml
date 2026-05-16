@@ -1,0 +1,8 @@
+# spec_lint configuration.
+# Per ADR-0004 §4: thresholds pinned here, reviewed quarterly via a gate-type
+# task. Change requires CHG with rationale.
+
+anti_aliasing:
+  ngram_size: 4         # int, ≥ 2
+  ngram_type: char      # char | word
+  threshold: 0.7        # float in (0, 1]; pairs at or above this are flagged
