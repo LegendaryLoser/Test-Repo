@@ -1,0 +1,35 @@
+# spec-discipline — isolates spec-lint and trace gates for clarity.
+# Job declarations only in PHASE-0; real steps land in PHASE-1 / PHASE-2.
+# See: openspec/architecture/decisions/ADR-0008-ci-gates-and-phase-exits.md
+
+name: spec-discipline
+
+on:
+  pull_request:
+    paths:
+      - 'openspec/**'
+      - 'tools/spec-lint/**'
+      - 'tools/trace/**'
+      - '.github/workflows/spec-discipline.yml'
+
+jobs:
+  paper-derived-gates:
+    name: paper-derived spec hygiene
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - run: 'echo "TODO PHASE-1: anti-aliasing, prose-xref-banned, req-id-immutable, req-append-only, compound-requirement-detector"; exit 0'
+
+  matrix-and-trailers:
+    name: traceability + commit trailers
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - run: 'echo "TODO PHASE-2: matrix-drift, commit-trailers-valid, red-before-green, req-coverage-100"; exit 0'
+
+  gate-coverage:
+    name: meta — every principle has a gate
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - run: 'echo "TODO PHASE-2: tools/ci/gate_coverage.py — fail if any principle or ADR lacks a referencing gate"; exit 0'

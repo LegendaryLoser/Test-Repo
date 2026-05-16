@@ -1,0 +1,25 @@
+# e2e — nightly + manual dispatch.
+# Runs the e2e tier per project and cost-tier=full stochastic tests.
+# See: openspec/architecture/decisions/ADR-0008-ci-gates-and-phase-exits.md §4
+
+name: e2e
+
+on:
+  schedule:
+    - cron: '0 7 * * *'    # 07:00 UTC nightly
+  workflow_dispatch:
+
+jobs:
+  e2e-projects:
+    name: e2e tier — per Apps Script project (PHASE-5+)
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - run: 'echo "TODO PHASE-5: clasp push to dev deployment + Execution API + assertions against real Sheets/Drive"; exit 0'
+
+  stochastic-full:
+    name: stochastic tier — cost-tier=full (PHASE-3+)
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - run: 'echo "TODO PHASE-3: real Anthropic API calls, statistical assertions, cost budget enforced"; exit 0'
