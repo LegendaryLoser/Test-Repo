@@ -55,7 +55,7 @@ defined in [ADR-0005](../decisions/ADR-0005-traceability-and-journaling.md) and
 ## Exit criteria
 
 - All gates in [ADR-0008 §1](../decisions/ADR-0008-ci-gates-and-phase-exits.md)
-  not owned by `tools/spec-lint` are implemented and passing on the current
+  not owned by `tools/spec_lint` are implemented and passing on the current
   repo state.
 - `gate-coverage` passes (every ADR / principle has ≥ 1 gate referencing it).
 - `audit REQ-ARCH-0001` (and similar) returns deterministic output that

@@ -16,6 +16,7 @@ testpaths = ["tools"]
 python_files = ["test_*.py"]
 python_functions = ["test_*"]
 addopts = "-ra --strict-markers"
+pythonpath = ["."]
 
 [tool.setuptools]
 packages = []

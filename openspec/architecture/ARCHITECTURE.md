@@ -79,7 +79,7 @@ lintable defect.
 │   └── traceability/
 │       └── matrix.yaml                 # derived cache; truth = journals + git + specs + tests
 ├── tools/
-│   ├── spec-lint/                      # ADR-0004 enforcement
+│   ├── spec_lint/                      # ADR-0004 enforcement (Python-importable)
 │   ├── trace/                          # ADR-0005 runtime (journal, rebuild, validate)
 │   ├── tea/                            # TEA workflow integration
 │   └── ci/                             # shared CI helpers
@@ -117,7 +117,7 @@ to a unit by prose description.
 | Story            | `STORY-<NNNN>`               | `openspec/stories/STORY-<NNNN>.md`                   |
 | Commit           | git SHA                      | git                                                  |
 
-Identifier rules (enforced by `tools/spec-lint`, defined in
+Identifier rules (enforced by `tools/spec_lint`, defined in
 [ADR-0004](decisions/ADR-0004-spec-storage-discipline.md)):
 
 - Identifiers are immutable. Renames are forbidden; supersession is the only
@@ -236,7 +236,7 @@ be `tests-green`. Phase files live under `openspec/architecture/phases/`.
 | Phase   | Scope                                                                 |
 |---------|-----------------------------------------------------------------------|
 | PHASE-0 | Foundation: this architecture artifact, CLAUDE.md, settings.json, traceability scaffolding (red tests). |
-| PHASE-1 | Spec hygiene: `tools/spec-lint` green; paper-derived rules enforced.  |
+| PHASE-1 | Spec hygiene: `tools/spec_lint` green; paper-derived rules enforced.  |
 | PHASE-2 | Traceability runtime: `tools/trace` hooks + rebuild + CI gate green.  |
 | PHASE-3 | `packages/anthropic-client` green with stochastic-tier tests.         |
 | PHASE-4 | `packages/shared-ts` and `packages/shared-py` green.                  |
