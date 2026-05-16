@@ -60,7 +60,16 @@
         "hooks": [
           {
             "type": "command",
-            "command": "true # TODO PHASE-2: tools/trace/journal_commit.py (on git commit) and tools/trace/journal_tests.py (on test runners) — append commit / tests_run events"
+            "command": "true # TODO PHASE-2: tools/trace/journal_commit.py (on git commit) — append commit event AND push HEAD to origin as FF (ADR-0005 §6 amendment 0001); tools/trace/journal_tests.py (on test runners) — append tests_run event"
+          }
+        ]
+      },
+      {
+        "matcher": "mcp__github__merge_pull_request",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "true # TODO PHASE-2: tools/trace/post_merge_sync.py — git fetch origin; fast-forward working branch to updated upstream; push FF (ADR-0005 §6 amendment 0001)"
           }
         ]
       }
@@ -71,7 +80,7 @@
         "hooks": [
           {
             "type": "command",
-            "command": "true # TODO PHASE-2: tools/trace/checkpoint.py — if working tree dirty, WIP commit + push; append session_end"
+            "command": "true # TODO PHASE-2: tools/trace/checkpoint.py — if @{u}..HEAD non-empty, push committed work (ADR-0005 §7 amendment 0001); if working tree dirty, WIP commit + push; append session_end"
           }
         ]
       }

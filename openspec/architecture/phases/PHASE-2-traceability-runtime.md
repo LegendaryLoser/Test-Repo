@@ -23,8 +23,16 @@ defined in [ADR-0005](../decisions/ADR-0005-traceability-and-journaling.md) and
 1. `tools/trace/` implementations:
    - `resume.py` (SessionStart hook)
    - `validate_commit.py` (PreToolUse:git commit + commit-msg hook)
-   - `journal_commit.py`, `journal_touch.py`, `journal_tests.py`
-   - `checkpoint.py` (Stop / SessionEnd)
+   - `journal_commit.py` — appends `commit` event **and pushes `HEAD` to
+     origin as a fast-forward** (push invariant, ADR-0005 §6 amendment 0001;
+     aborts on non-FF with a diagnostic).
+   - `journal_touch.py`, `journal_tests.py`
+   - `post_merge_sync.py` (PostToolUse:mcp__github__merge_pull_request hook;
+     ADR-0005 §6 amendment 0001) — fetches origin, fast-forwards the working
+     branch to its updated upstream, pushes the FF.
+   - `checkpoint.py` (Stop / SessionEnd) — extended to push
+     committed-but-unpushed work even when the tree is clean (ADR-0005 §7
+     amendment 0001).
    - `rebuild.py` (matrix regeneration from sources)
    - `audit.py` (CLI query interface)
 2. `tools/trace/tests/` — red-first tests for each module, including:
@@ -32,6 +40,10 @@ defined in [ADR-0005](../decisions/ADR-0005-traceability-and-journaling.md) and
    - Crash-recovery tests for the journal: a synthetic torn last-line is
      correctly discarded.
    - P4 enforcement tests: commits violating red-before-green are rejected.
+   - Push-invariant tests (ADR-0005 §6 amendment 0001) against a synthetic
+     local-and-bare-remote git repo: commit-without-push, merge-without-sync,
+     and checkpoint-with-committed-but-unpushed scenarios all resolve to a
+     pushed state; non-FF cases halt with a diagnostic instead of force-pushing.
 3. `.claude/settings.json` updated: hooks point at real implementations.
 4. CI gates promoted from PHASE-0 placeholders to real:
    - `matrix-drift`, `commit-trailers-valid`, `red-before-green`,
