@@ -80,7 +80,7 @@ lintable defect.
 │   │   ├── INDEX.yaml                  # auto-generated deterministic index
 │   │   └── <domain>/<feature>.spec.md
 │   ├── changes/                        # in-flight OpenSpec proposals (PR-scoped)
-│   ├── _bmad-output/                   # BMAD-generated planning/implementation/knowledge
+│   ├── _bmad-output/                   # STAGING — BMAD drafts; non-authoritative; see ADR-0002 §7
 │   └── traceability/
 │       └── matrix.yaml                 # derived cache; truth = journals + git + specs + tests
 ├── scripts/
