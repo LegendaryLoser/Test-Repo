@@ -1,30 +1,34 @@
-"""
-Mutation runner.
-
-PHASE-1 / CHG-0008 / TASK-0014 — RED stub. TASK-0015 implements.
-"""
+"""Mutation runner."""
 
 from __future__ import annotations
+
+from typing import Callable
 
 from ._models import Mutation
 
 
-def run_mutation(seed: str, mutation: Mutation, rule_check):
-    """Apply the mutation to the seed, run ``rule_check`` on the mutated
-    input, return (mutated_text, findings).
-
-    ``rule_check`` is a callable that accepts the mutated text and returns
-    a list[Finding]. The caller is responsible for setting up the parsing
-    and rule invocation appropriate for the rule under test.
-    """
-    raise NotImplementedError(
-        "run_mutation: TASK-0014 RED stub — implemented in TASK-0015"
-    )
+def run_mutation(
+    seed: str, mutation: Mutation, rule_check: Callable[[str], list]
+):
+    """Apply ``mutation`` to ``seed``, run ``rule_check`` on the mutated
+    text, return ``(mutated_text, findings)``."""
+    mutated = mutation.apply(seed)
+    findings = rule_check(mutated)
+    return mutated, findings
 
 
-def assert_caught(mutation: Mutation, findings) -> None:
-    """Raise AssertionError if no finding from ``mutation.expected_rule_id``
-    is present in ``findings``."""
-    raise NotImplementedError(
-        "assert_caught: TASK-0014 RED stub — implemented in TASK-0015"
+def assert_caught(mutation: Mutation, findings: list) -> None:
+    """Raise ``AssertionError`` if no finding from
+    ``mutation.expected_rule_id`` is present in ``findings``. Used to gate
+    must-catch mutations in CI."""
+    matching = [
+        f for f in findings if getattr(f, "rule_id", None) == mutation.expected_rule_id
+    ]
+    assert matching, (
+        f"Mutation {mutation.id} ({mutation.description}) was NOT caught by "
+        f"rule {mutation.expected_rule_id}. "
+        f"Findings produced: {findings!r}. "
+        f"This is a false-negative gap: either tighten the rule (preferred) "
+        f"or reclassify the mutation to known-limitation with a documented "
+        f"rationale."
     )
