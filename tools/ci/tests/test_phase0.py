@@ -38,8 +38,8 @@ REQUIRED_TOP_LEVEL_DIRS = {
 
 # Top-level entries (tracked in git) that are explicitly permitted. Additions
 # to this set require an ADR (per REQ-ARCH-0001 and ADR-0001). Working-tree-
-# only artifacts (.git, .venv, .pytest_cache, *.egg-info) are excluded by
-# using `git ls-files` rather than `iterdir`.
+# only artifacts (.git, .venv, .pytest_cache, *.egg-info, .hypothesis) are
+# excluded by using `git ls-files` rather than `iterdir`.
 ALLOWED_TOP_LEVEL_ENTRIES = {
     # files
     "README.md",
@@ -51,7 +51,8 @@ ALLOWED_TOP_LEVEL_ENTRIES = {
     ".github",
     "openspec",
     "tools",
-    "bmad",
+    "_bmad",        # BMAD v6.6.0 vendored install (ADR-0002 amendment 0001)
+    "scripts",      # pinned install/upgrade scripts (ADR-0002 §6)
     "packages",
     "projects",
 }

@@ -49,6 +49,18 @@ defined in [ADR-0005](../decisions/ADR-0005-traceability-and-journaling.md) and
    - `matrix-drift`, `commit-trailers-valid`, `red-before-green`,
      `req-coverage-100`, `tier-coverage`, `phase-exit`, `gate-coverage`,
      `cost-budget`.
+   - `matrix-drift` and the matrix builder MUST exclude
+     `openspec/_bmad-output/` per
+     [`ADR-0002` §7](../decisions/ADR-0002-bmad-integration.md).
+   - `skill-removal-acknowledged` gate per
+     [`ADR-0002` §8](../decisions/ADR-0002-bmad-integration.md): compares
+     `_bmad/_config/skill-manifest.csv` between base and head; blocks PRs
+     that remove a skill without a
+     `Skill-Removal-Acknowledged: <skill-id>` trailer.
+   - `bmad-version-pin` gate: asserts `_bmad/_config/manifest.yaml`
+     version matches the comment in `scripts/install_bmad.sh`.
+   - `bmad-smoke-test`: exercises one BMAD skill end-to-end on every
+     BMAD upgrade PR (lives in `tools/ci/smoke_bmad.py`).
 5. `openspec/specs/_meta/ci-gates.spec.md` — REQ-CI-* requirements covering
    each gate.
 

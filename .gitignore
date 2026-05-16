@@ -39,3 +39,4 @@ Thumbs.db
 
 # BMAD (installer outputs that should be regenerated)
 bmad/.install-state
+.hypothesis/

@@ -33,6 +33,17 @@ discovered here results in an ADR amendment, not a workaround.
 2. `.clasp.json` pointing at a `dev` GAS deployment owned by a CI service
    account.
 3. Real adapter wiring against shared-ts.
+4. **Per-project BMAD output isolation** per
+   [`ADR-0002` §9](../decisions/ADR-0002-bmad-integration.md):
+   - Author `projects/<name>/_bmad/custom/config.toml` overriding
+     `bmm.{planning,implementation,project_knowledge}` to point under
+     `projects/<name>/openspec/_bmad-output/{planning,implementation,knowledge}`.
+   - Document the per-project working-directory convention (sessions
+     working on a project run with CWD = `projects/<name>/`).
+   - Verify the BMAD resolver picks up the override by invoking a BMAD
+     skill from the project CWD and asserting output landed under the
+     project's staging dir, not the repo-level one. The first project
+     sets the precedent for all later projects.
 4. Test suite across all four tiers, each red-first.
 5. CI matrix entry for the project; e2e runs nightly + on PRs touching the
    project.

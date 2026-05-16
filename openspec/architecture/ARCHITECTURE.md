@@ -50,18 +50,22 @@ lintable defect.
 ├── CLAUDE.md                           # session-level guidance (added in PHASE-0)
 ├── .claude/
 │   ├── settings.json                   # permissions, env, hooks
-│   ├── agents/                         # wrappers exposing BMAD personas to Claude Code
-│   ├── commands/                       # BMAD slash commands surfaced to Claude Code
+│   ├── agents/                         # (legacy slot — empty in v6 native-skills model)
+│   ├── commands/                       # (legacy slot — empty in v6 native-skills model)
+│   ├── skills/                         # BMAD-installed Claude Code Skills (vendored, see ADR-0002)
 │   └── journal/                        # append-only per-session journals (gitignored runtime)
 ├── .github/workflows/
 │   ├── ci.yml                          # PR gate: lint + unit + integration
 │   ├── e2e.yml                         # nightly + on-demand
 │   └── spec-discipline.yml             # enforces ADR-0004 + ADR-0005 + ADR-0008
-├── bmad/                               # BMAD v6 installation (see ADR-0002)
-│   ├── config.yaml
-│   ├── bmm/                            # Method module
-│   ├── tea/                            # Test Architect expansion
-│   └── workflows/                      # local workflow overrides
+├── _bmad/                              # BMAD v6 vendored install (see ADR-0002 amendment 0001)
+│   ├── _config/                        # install manifest + skill catalog
+│   ├── bmm/                            # BMad Method Module
+│   ├── core/                           # BMAD core
+│   ├── custom/                         # per-project skill customizations
+│   ├── scripts/                        # BMAD runtime scripts
+│   ├── config.toml                     # routed paths for planning/implementation/knowledge
+│   └── config.user.toml
 ├── openspec/                           # SoT for specification, traceability, architecture
 │   ├── vision.md                       # empty template until product PR
 │   ├── briefs/
@@ -76,8 +80,11 @@ lintable defect.
 │   │   ├── INDEX.yaml                  # auto-generated deterministic index
 │   │   └── <domain>/<feature>.spec.md
 │   ├── changes/                        # in-flight OpenSpec proposals (PR-scoped)
+│   ├── _bmad-output/                   # STAGING — BMAD drafts; non-authoritative; see ADR-0002 §7
 │   └── traceability/
 │       └── matrix.yaml                 # derived cache; truth = journals + git + specs + tests
+├── scripts/
+│   └── install_bmad.sh                 # pinned BMAD install command (see ADR-0002)
 ├── tools/
 │   ├── spec_lint/                      # ADR-0004 enforcement (Python-importable)
 │   ├── trace/                          # ADR-0005 runtime (journal, rebuild, validate)
