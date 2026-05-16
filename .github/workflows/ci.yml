@@ -16,7 +16,7 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
-      - run: 'echo "TODO PHASE-1: install + run tools/spec-lint; gates: openspec-validate, top-level-allowlist, bmad-direct-reference, gas-global-outside-adapter, req-id-format, req-id-immutable, prose-xref-banned, xref-resolves, compound-requirement-detector, anti-aliasing, spec-frontmatter-valid, index-up-to-date, req-append-only, mock-in-repo-banned, direct-anthropic-import-banned, stochastic-tier-bans"; exit 0'
+      - run: 'echo "TODO PHASE-1: install + run tools/spec_lint; gates: openspec-validate, top-level-allowlist, bmad-direct-reference, gas-global-outside-adapter, req-id-format, req-id-immutable, prose-xref-banned, xref-resolves, compound-requirement-detector, anti-aliasing, spec-frontmatter-valid, index-up-to-date, req-append-only, mock-in-repo-banned, direct-anthropic-import-banned, stochastic-tier-bans"; exit 0'
 
   trace-gates:
     name: trace-gates (PHASE-2)

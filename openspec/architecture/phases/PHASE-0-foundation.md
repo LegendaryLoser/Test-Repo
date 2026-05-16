@@ -41,7 +41,7 @@ depends. No executable code in this phase except hook **declarations**
 11. `.gitignore` covering `.claude/journal/`, `.claude/settings.local.json`,
     Node and Python artifacts
 12. `bmad/` is **not** installed in PHASE-0; it lands in PHASE-1 alongside
-    `tools/spec-lint`
+    `tools/spec_lint`
 
 ## Exit criteria
 

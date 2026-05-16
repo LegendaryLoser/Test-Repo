@@ -22,28 +22,28 @@ and itself fails the build.
 
 | Gate                              | Enforces           | Trigger             | Owner          |
 |-----------------------------------|--------------------|---------------------|----------------|
-| `openspec-validate`               | OpenSpec format    | every PR            | tools/spec-lint|
-| `top-level-allowlist`             | ADR-0001           | every PR            | tools/spec-lint|
-| `bmad-direct-reference`           | ADR-0002           | every PR            | tools/spec-lint|
-| `gas-global-outside-adapter`      | ADR-0003           | every PR            | tools/spec-lint|
-| `req-id-format`                   | ADR-0004 §1        | every PR            | tools/spec-lint|
-| `req-id-immutable`                | ADR-0004 §1        | every PR            | tools/spec-lint|
-| `prose-xref-banned`               | ADR-0004 §2        | every PR            | tools/spec-lint|
-| `xref-resolves`                   | ADR-0004 §2        | every PR            | tools/spec-lint|
-| `compound-requirement-detector`   | ADR-0004 §3        | every PR            | tools/spec-lint|
-| `anti-aliasing`                   | ADR-0004 §4        | every PR            | tools/spec-lint|
-| `spec-frontmatter-valid`          | ADR-0004 §5        | every PR            | tools/spec-lint|
-| `index-up-to-date`                | ADR-0004 §6        | pre-commit + PR     | tools/spec-lint|
-| `req-append-only`                 | ADR-0004 §7        | every PR            | tools/spec-lint|
-| `semantic-recall-recall-at-k`     | ADR-0004 §8        | every PR (if used)  | tools/spec-lint|
+| `openspec-validate`               | OpenSpec format    | every PR            | tools/spec_lint|
+| `top-level-allowlist`             | ADR-0001           | every PR            | tools/spec_lint|
+| `bmad-direct-reference`           | ADR-0002           | every PR            | tools/spec_lint|
+| `gas-global-outside-adapter`      | ADR-0003           | every PR            | tools/spec_lint|
+| `req-id-format`                   | ADR-0004 §1        | every PR            | tools/spec_lint|
+| `req-id-immutable`                | ADR-0004 §1        | every PR            | tools/spec_lint|
+| `prose-xref-banned`               | ADR-0004 §2        | every PR            | tools/spec_lint|
+| `xref-resolves`                   | ADR-0004 §2        | every PR            | tools/spec_lint|
+| `compound-requirement-detector`   | ADR-0004 §3        | every PR            | tools/spec_lint|
+| `anti-aliasing`                   | ADR-0004 §4        | every PR            | tools/spec_lint|
+| `spec-frontmatter-valid`          | ADR-0004 §5        | every PR            | tools/spec_lint|
+| `index-up-to-date`                | ADR-0004 §6        | pre-commit + PR     | tools/spec_lint|
+| `req-append-only`                 | ADR-0004 §7        | every PR            | tools/spec_lint|
+| `semantic-recall-recall-at-k`     | ADR-0004 §8        | every PR (if used)  | tools/spec_lint|
 | `matrix-drift`                    | ADR-0005 §2        | pre-commit + PR     | tools/trace    |
 | `commit-trailers-valid`           | ADR-0005 §3        | pre-receive hook    | tools/trace    |
 | `red-before-green`                | ADR-0005 §4, P4    | every PR            | tools/trace    |
-| `mock-in-repo-banned`             | ADR-0006 §2        | every PR            | tools/spec-lint|
+| `mock-in-repo-banned`             | ADR-0006 §2        | every PR            | tools/spec_lint|
 | `req-coverage-100`                | ADR-0006 §5, P3    | every PR            | tools/trace    |
 | `tier-coverage`                   | ADR-0006 §5        | every PR            | tools/trace    |
-| `direct-anthropic-import-banned`  | ADR-0007 §6        | every PR            | tools/spec-lint|
-| `stochastic-tier-bans`            | ADR-0007 §2        | every PR            | tools/spec-lint|
+| `direct-anthropic-import-banned`  | ADR-0007 §6        | every PR            | tools/spec_lint|
+| `stochastic-tier-bans`            | ADR-0007 §2        | every PR            | tools/spec_lint|
 | `cost-budget`                     | ADR-0007 §4        | every PR + nightly  | tools/ci       |
 | `cache-hit-regression`            | ADR-0007 §5        | every PR (PHASE-3+) | tools/ci       |
 | `phase-exit`                      | this ADR §3        | merge to main       | tools/trace    |

@@ -8,7 +8,7 @@ on:
   pull_request:
     paths:
       - 'openspec/**'
-      - 'tools/spec-lint/**'
+      - 'tools/spec_lint/**'
       - 'tools/trace/**'
       - '.github/workflows/spec-discipline.yml'
 

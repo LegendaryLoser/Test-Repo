@@ -1,6 +1,6 @@
 ---
 id: PHASE-1
-title: Spec hygiene — tools/spec-lint green, BMAD installed
+title: Spec hygiene — tools/spec_lint green, BMAD installed
 status: pending
 entry: PHASE-0 exit criteria all tests-green
 ---
@@ -25,9 +25,9 @@ Install BMAD v6 so PHASE-2+ can invoke its workflows.
 
 ## Scope
 
-1. `tools/spec-lint/` — implementation of every gate owned by `tools/spec-lint`
+1. `tools/spec_lint/` — implementation of every gate owned by `tools/spec_lint`
    in [ADR-0008 §1](../decisions/ADR-0008-ci-gates-and-phase-exits.md).
-2. `tools/spec-lint/tests/` — red-first tests for each rule.
+2. `tools/spec_lint/tests/` — red-first tests for each rule.
 3. `bmad/` installation per [ADR-0002](../decisions/ADR-0002-bmad-integration.md),
    pinned in `bmad/config.yaml`.
 4. `.claude/agents/` and `.claude/commands/` wrappers for BMAD personas
@@ -40,7 +40,7 @@ Install BMAD v6 so PHASE-2+ can invoke its workflows.
 ## Exit criteria
 
 - Every gate in [ADR-0008 §1](../decisions/ADR-0008-ci-gates-and-phase-exits.md)
-  owned by `tools/spec-lint` is implemented and has ≥ 1 passing test that
+  owned by `tools/spec_lint` is implemented and has ≥ 1 passing test that
   was red in a prior commit.
 - `REQ-SPEC-*` requirements covering each lint rule are `tests-green`.
 - `bmad/config.yaml` pins v6 minor version; `bmad-direct-reference` gate
