@@ -53,17 +53,19 @@ def test_validate_surfaces_planted_ill_formed_req(tmp_path: pathlib.Path) -> Non
     """
     @test-id TEST-SPEC-0083
     @covers REQ-SPEC-0001
+
+    Plants a REQ block with no frontmatter at all — guaranteed to fire
+    ``spec-frontmatter-valid`` (every required key absent), so the CLI
+    must surface findings and exit 1.
     """
     spec_dir = tmp_path / "openspec" / "specs" / "demo"
     spec_dir.mkdir(parents=True)
     (spec_dir / "broken.spec.md").write_text(textwrap.dedent("""\
-        ---
-        id: REQ-NOPE-0001
-        ---
+        # Demo
 
-        ## req-broken-id-lowercase
+        ## REQ-DEMO-0001
 
-        Body.
+        Body without any frontmatter at all — every required key is absent.
         """))
 
     result = _run("validate", str(tmp_path / "openspec"), cwd=REPO_ROOT)

@@ -14,14 +14,14 @@ Failure modes surfaced:
 
 Source of truth for both sets:
 ``tools/spec_lint/_top_level_allowlist.py``.
-
-Skeleton — TASK-0022 RED. Real implementation lands in TASK-0023.
 """
 
 from __future__ import annotations
 
 import pathlib
+import subprocess
 
+from .._top_level_allowlist import ALLOWED_TOP_LEVEL_ENTRIES, REQUIRED_TOP_LEVEL_DIRS
 from ..models import Finding
 
 
@@ -32,8 +32,44 @@ class TopLevelAllowlist:
     )
 
     def check_repo(self, repo_root: pathlib.Path) -> list[Finding]:
-        # TASK-0022 skeleton — returns no findings unconditionally so that
-        # TASK-0022 tests assertion-fail (red), not import-fail. Real
-        # implementation in TASK-0023.
-        del repo_root
-        return []
+        result = subprocess.run(
+            ["git", "ls-files"],
+            cwd=repo_root,
+            check=True,
+            capture_output=True,
+            text=True,
+        )
+        tracked_top_level = {
+            line.split("/", 1)[0] for line in result.stdout.splitlines() if line
+        }
+
+        findings: list[Finding] = []
+        repo_str = str(repo_root)
+
+        for name in sorted(REQUIRED_TOP_LEVEL_DIRS - tracked_top_level):
+            findings.append(
+                Finding(
+                    rule_id=self.id,
+                    severity="error",
+                    file=repo_str,
+                    message=(
+                        f"Required top-level entry missing from tracked tree: {name!r} "
+                        f"(see ARCHITECTURE.md §3 + REQ-ARCH-0001)"
+                    ),
+                )
+            )
+
+        for name in sorted(tracked_top_level - ALLOWED_TOP_LEVEL_ENTRIES):
+            findings.append(
+                Finding(
+                    rule_id=self.id,
+                    severity="error",
+                    file=repo_str,
+                    message=(
+                        f"Unexpected top-level entry not in allowlist: {name!r} "
+                        f"(adding one requires an ADR amendment per ADR-0001)"
+                    ),
+                )
+            )
+
+        return findings
