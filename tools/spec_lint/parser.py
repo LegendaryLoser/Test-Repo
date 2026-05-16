@@ -18,11 +18,14 @@ import yaml
 
 from .models import Finding, ReqBlock, SpecFile
 
-# Maximally permissive: any `## REQ-<non-whitespace>` is treated as an
-# intended REQ block. Strict format judgment (uppercase, length, digit count)
-# belongs to rules.req_id_format, not here. This is deliberate — the parser
-# must surface even malformed REQ headings so format rules can flag them.
-_HEADING_RE = re.compile(r"^## (REQ-\S+)\s*$")
+# Maximally permissive: any `## REQ-...` heading is treated as an intended
+# REQ block, including IDs with embedded whitespace or other unusual chars.
+# Strict format judgment (uppercase, length, digit count, charset) belongs
+# to rules.req_id_format, not here. The parser surfaces the heading text so
+# the format rule can flag it. Trailing whitespace before EOL is tolerated.
+# (Tightened in CHG-0008 TASK-0016 from `\S+` after the REQID-FMT-036
+# mutation showed that `\S+` silently dropped headings like `## REQ-A B-0001`.)
+_HEADING_RE = re.compile(r"^## (REQ-[^\n]+?)\s*$")
 
 
 def parse_spec_file(path: pathlib.Path | str) -> SpecFile:

@@ -90,7 +90,10 @@ for k in _REQUIRED_KEYS:
     )
 
 # --- status enum ---
-for bad_status in ("WIBBLE", "in-progress", "Done", "draft "):
+# "draft " (trailing space) was removed in CHG-0008 TASK-0016 — YAML
+# normalizes scalar trailing whitespace, so the mutation cannot test the
+# rule. Replaced with "pending" which is genuinely outside the enum.
+for bad_status in ("WIBBLE", "in-progress", "Done", "pending"):
     MUTATIONS.append(
         Mutation(
             id=f"FM-STATUS-{bad_status.strip().upper().replace(' ', '_').replace('-', '_')}",
