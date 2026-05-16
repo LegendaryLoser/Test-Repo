@@ -27,9 +27,16 @@ _HEADING_RE = re.compile(r"^## (REQ-\S+)\s*$")
 
 def parse_spec_file(path: pathlib.Path | str) -> SpecFile:
     path = pathlib.Path(path)
-    text = path.read_text()
+    return parse_spec_file_text(path.read_text(), str(path))
+
+
+def parse_spec_file_text(text: str, path_str: str) -> SpecFile:
+    """Parse spec markdown from raw text rather than a path.
+
+    Used by ``git_history.historical_versions`` to parse content obtained
+    from ``git show`` without writing it to disk first.
+    """
     lines = text.splitlines()
-    path_str = str(path)
 
     # Locate every REQ heading: 1-based line numbers.
     heading_positions: list[tuple[int, str]] = []
