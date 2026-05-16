@@ -1,0 +1,91 @@
+{
+  "$schema": "https://json.schemastore.org/claude-code-settings.json",
+  "_comment": "Hook implementations are TODO placeholders in PHASE-0. PHASE-2 replaces the placeholder commands with real implementations under tools/trace/. Declarations here satisfy REQ-ARCH-0008 and ADR-0005 §6.",
+  "permissions": {
+    "allow": [
+      "Read",
+      "Edit",
+      "Write",
+      "Bash(git status:*)",
+      "Bash(git diff:*)",
+      "Bash(git log:*)",
+      "Bash(git branch:*)",
+      "Bash(ls:*)",
+      "Bash(find:*)",
+      "Bash(grep:*)"
+    ],
+    "deny": [
+      "Bash(git commit:* --no-verify*)",
+      "Bash(git commit:* --no-gpg-sign*)",
+      "Bash(git push:* --force*)",
+      "Bash(git push:* -f*)",
+      "Bash(git reset:* --hard*)"
+    ]
+  },
+  "hooks": {
+    "SessionStart": [
+      {
+        "matcher": "*",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "true # TODO PHASE-2: tools/trace/resume.py — print active phase, in-flight task, last commit, next action"
+          }
+        ]
+      }
+    ],
+    "PreToolUse": [
+      {
+        "matcher": "Bash",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "true # TODO PHASE-2: tools/trace/validate_commit.py — reject malformed commit messages, enforce P4 red-before-green"
+          }
+        ]
+      }
+    ],
+    "PostToolUse": [
+      {
+        "matcher": "Edit|Write",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "true # TODO PHASE-2: tools/trace/journal_touch.py — append file_touch event"
+          }
+        ]
+      },
+      {
+        "matcher": "Bash",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "true # TODO PHASE-2: tools/trace/journal_commit.py (on git commit) and tools/trace/journal_tests.py (on test runners) — append commit / tests_run events"
+          }
+        ]
+      }
+    ],
+    "Stop": [
+      {
+        "matcher": "*",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "true # TODO PHASE-2: tools/trace/checkpoint.py — if working tree dirty, WIP commit + push; append session_end"
+          }
+        ]
+      }
+    ],
+    "SessionEnd": [
+      {
+        "matcher": "*",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "true # TODO PHASE-2: tools/trace/checkpoint.py (idempotent) — final session_end event"
+          }
+        ]
+      }
+    ]
+  }
+}

@@ -1,0 +1,40 @@
+# Claude Code per-machine settings — never committed.
+.claude/settings.local.json
+
+# Session journals — runtime, regenerable. Truth flows into git via commits.
+.claude/journal/
+
+# Node
+node_modules/
+dist/
+build/
+*.tsbuildinfo
+.npm/
+.pnpm-store/
+
+# Python
+__pycache__/
+*.py[cod]
+*$py.class
+.venv/
+venv/
+.pytest_cache/
+.ruff_cache/
+.mypy_cache/
+htmlcov/
+.coverage
+.coverage.*
+
+# clasp (Apps Script)
+.clasprc.json
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Editor
+.vscode/
+.idea/
+
+# BMAD (installer outputs that should be regenerated)
+bmad/.install-state
