@@ -94,13 +94,22 @@ from a crash are discarded by the parser (the line is malformed and ignored).
 |--------------------------------|---------------------------------------|----------------------------------------------------------|
 | `SessionStart`                 | `tools/trace/resume.py`               | Print active phase, in-flight task, last commit, next action |
 | `PreToolUse(Bash:git commit)`  | `tools/trace/validate_commit.py`      | Reject invalid commit messages; enforce P4               |
-| `PostToolUse(Bash:git commit)` | `tools/trace/journal_commit.py`       | Append `commit` event                                    |
+| `PostToolUse(Bash:git commit)` | `tools/trace/journal_commit.py`       | Append `commit` event; push `HEAD` to origin as a fast-forward. Non-FF aborts the hook with a diagnostic (no force-push). |
+| `PostToolUse(mcp__github__merge_pull_request)` | `tools/trace/post_merge_sync.py` | `git fetch origin`; fast-forward the working branch to its updated upstream; push the FF. Closes post-merge divergence so the working branch never lags origin after a merge. |
 | `PostToolUse(Edit\|Write)`     | `tools/trace/journal_touch.py`        | Append `file_touch` event                                |
 | `PostToolUse(Bash:*test*)`     | `tools/trace/journal_tests.py`        | Parse test results; append `tests_run` event             |
-| `Stop` / `SessionEnd`          | `tools/trace/checkpoint.py`           | If working tree dirty: WIP commit + push; append `session_end` |
+| `Stop` / `SessionEnd`          | `tools/trace/checkpoint.py`           | If `@{u}..HEAD` is non-empty, push committed work first. If working tree dirty: WIP commit + push. Append `session_end`. |
 
 Hook implementations land in PHASE-2. PHASE-0 commits the `.claude/settings.json`
 declarations as placeholders (commands that exit 0 with a TODO comment).
+
+**Push invariant** (introduced by amendment, see §10): every operation that
+mutates the commit graph or moves a branch pointer must result in origin
+tracking the post-state within the same hook firing. The three hooks marked
+above are the enforcement surface; the invariant is otherwise unenforceable
+and silently rots (the failure mode is "committed but unpushed when the
+container is reclaimed" — recoverable via merge history only if the commits
+also reached master through a PR merge, otherwise lost).
 
 ### 7. Checkpoint commits
 
@@ -121,6 +130,13 @@ next non-checkpoint commit on the branch responsible for restoring P4
 compliance (either by squash or by ensuring the red/green sequence is
 recoverable from the full history).
 
+The `Stop` / `SessionEnd` checkpoint hook also enforces the push invariant
+introduced in §6: even when the working tree is clean, if
+`git rev-list @{u}..HEAD` is non-empty, the hook pushes those commits before
+appending `session_end`. This protects against the specific failure mode
+where a session ends with committed-but-unpushed work (e.g. after a rebase
+that was not followed by a push) and the container is later reclaimed.
+
 ### 8. Failure modes and worst case
 
 | Failure                                    | Loss                                                              |
@@ -129,6 +145,7 @@ recoverable from the full history).
 | Crash mid-commit                           | Zero (git commit is atomic; rebuild fills missing journal entry). |
 | Container reclaim, push succeeded          | Zero.                                                             |
 | Container reclaim, uncommitted             | Mitigated by checkpoint hook; otherwise WIP files lost.           |
+| Container reclaim, committed but unpushed  | Mitigated by per-commit push hook (§6) and by extended checkpoint hook (§7); residual loss only if both hooks fail to fire (e.g. abrupt container reclaim mid-`PostToolUse`). |
 | Crash mid-tool-call before checkpoint hook | At most the in-flight tool call's effect.                         |
 
 Claude's reasoning context between tool calls is not persisted. Recovery is by
@@ -158,6 +175,17 @@ needs zero human re-briefing.
 ## Compliance
 
 - `REQ-ARCH-0008` confirms hooks are declared from PHASE-0.
-- PHASE-2 delivers `tools/trace/*` implementations with red-first tests.
+- PHASE-2 delivers `tools/trace/*` implementations with red-first tests,
+  including the push-invariant enforcement described in §6 and §7.
 - CI gate `matrix-drift` (PHASE-2) blocks PRs whose committed matrix differs
   from rebuild.
+
+## 10. Amendment log
+
+| Amendment | CHG     | Sections | Summary                                                                                                         |
+|-----------|---------|----------|-----------------------------------------------------------------------------------------------------------------|
+| 0001      | CHG-0002 | §6, §7, §8 | Introduce the per-commit and per-merge push invariant. Adds `PostToolUse(mcp__github__merge_pull_request)` hook; extends `PostToolUse(Bash:git commit)` to push the commit; extends `Stop`/`SessionEnd` checkpoint to push committed work even when the tree is clean. Implementations land in PHASE-2 alongside `tools/trace/`. Motivated by a real divergence observed on `claude/general-session-KXgas` after PR #2 merged, where a post-merge rebase left committed-but-unpushed state that only an external Stop hook caught. |
+
+Amendments are append-only. A subsequent material change to behavior
+introduced by a prior amendment requires a new amendment row, never an edit
+to a prior row.
