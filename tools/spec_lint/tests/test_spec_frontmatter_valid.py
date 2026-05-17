@@ -23,7 +23,7 @@ def _check(path: pathlib.Path):
 def test_valid_fixtures_produce_no_findings(valid_fixtures: list[pathlib.Path]) -> None:
     """
     @test-id TEST-SPEC-0009
-    @covers (rule: spec-frontmatter-valid)
+    @covers REQ-SPEC-0005
     """
     for fx in valid_fixtures:
         findings = _check(fx)
@@ -33,6 +33,7 @@ def test_valid_fixtures_produce_no_findings(valid_fixtures: list[pathlib.Path]) 
 def test_each_invalid_frontmatter_fixture_produces_a_finding(fixtures_dir: pathlib.Path) -> None:
     """
     @test-id TEST-SPEC-0010
+    @covers REQ-SPEC-0005
     """
     fixtures = invalid_fixtures_for(fixtures_dir, "frontmatter")
     assert fixtures, "no invalid/frontmatter fixtures present"
@@ -47,10 +48,11 @@ def test_each_invalid_frontmatter_fixture_produces_a_finding(fixtures_dir: pathl
 def test_id_mismatch_finding_is_specific(fixtures_dir: pathlib.Path) -> None:
     """
     @test-id TEST-SPEC-0011
+    @covers REQ-SPEC-0005
 
-    The id-mismatch fixture should produce a finding whose message clearly
-    names the conflict between heading and frontmatter id. Acts as a regression
-    guard against a future implementation that silently flags missing-id.
+        The id-mismatch fixture should produce a finding whose message clearly
+        names the conflict between heading and frontmatter id. Acts as a regression
+        guard against a future implementation that silently flags missing-id.
     """
     findings = _check(fixtures_dir / "invalid" / "frontmatter" / "id_mismatch.spec.md")
     rule_findings = [f for f in findings if f.rule_id == "spec-frontmatter-valid"]
@@ -62,6 +64,7 @@ def test_id_mismatch_finding_is_specific(fixtures_dir: pathlib.Path) -> None:
 def test_rule_id_and_description_are_stable() -> None:
     """
     @test-id TEST-SPEC-0012
+    @covers REQ-SPEC-0005
     """
     r = SpecFrontmatterValid()
     assert r.id == "spec-frontmatter-valid"

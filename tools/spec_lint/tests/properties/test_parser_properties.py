@@ -22,6 +22,7 @@ _REQ_ID = st.from_regex(r"\AREQ-[A-Z0-9]{1,12}-\d{4}\Z", fullmatch=True)
 def test_parser_extracts_every_well_formed_req_heading(req_ids: list[str]) -> None:
     """
     @test-id TEST-SPEC-0058
+    @covers REQ-SPEC-0012
     """
     text = spec_file_text(*(req_block(rid) for rid in req_ids))
     spec = parse_spec_file_text(text, FAKE_PATH)
@@ -33,6 +34,7 @@ def test_parser_extracts_every_well_formed_req_heading(req_ids: list[str]) -> No
 def test_parser_round_trip_preserves_heading_ids(req_ids: list[str]) -> None:
     """
     @test-id TEST-SPEC-0059
+    @covers REQ-SPEC-0012
     """
     text1 = spec_file_text(*(req_block(rid) for rid in req_ids))
     ids1 = [r.heading_id for r in parse_spec_file_text(text1, FAKE_PATH).requirements]
@@ -46,6 +48,7 @@ def test_parser_round_trip_preserves_heading_ids(req_ids: list[str]) -> None:
 def test_parser_is_deterministic(req_ids: list[str]) -> None:
     """
     @test-id TEST-SPEC-0060
+    @covers REQ-SPEC-0012
     """
     text = spec_file_text(*(req_block(rid) for rid in req_ids)) if req_ids else "# empty\n"
     a = parse_spec_file_text(text, FAKE_PATH)

@@ -41,3 +41,376 @@ cross-references.
 ### Notes
 - The CLI lives in [`tools/spec_lint/__main__.py`](../../../tools/spec_lint/__main__.py).
 - Exclusions are codified in `_EXCLUDED_REL_PREFIXES` in that module.
+
+## REQ-SPEC-0002
+---
+id: REQ-SPEC-0002
+revision: 1
+status: tests-green
+introduced: CHG-0012
+supersedes: null
+phase: PHASE-1
+tier: unit
+references:
+  epic: null
+  story: null
+  adrs: [ADR-0002, ADR-0008]
+---
+
+### Description
+No file under `tools/`, `packages/`, or `projects/` imports from or
+executes `_bmad/` paths, except files under `tools/tea/` (the
+authorized integration point per ADR-0002 §6). Detection is narrow:
+import statements (`import _bmad`, `from _bmad`), dynamic imports
+(`__import__`, `importlib.import_module`), subprocess execution paths
+(`subprocess.run(["_bmad/..."])`), TS/JS imports / requires, and any
+`_bmad/` path component in shell scripts.
+
+### Acceptance
+- Given the current source tree, when `python -m tools.spec_lint
+  validate openspec` is invoked from the repository root, then the
+  `bmad-direct-reference` rule contributes zero findings to the
+  combined output, and the command exits with status `0`.
+
+### Non-acceptance
+- Docstrings, comments, and string constants that mention `_bmad/`
+  for documentation purposes are not flagged — only import-like and
+  executable-path forms count.
+- The rule itself (`bmad_direct_reference.py`) and its test file
+  (`test_bmad_direct_reference.py`) are structurally exempt.
+
+### Notes
+- Implementation: [`tools/spec_lint/rules/bmad_direct_reference.py`](../../../tools/spec_lint/rules/bmad_direct_reference.py).
+- Inline override: `<!-- spec-lint: allow bmad-direct-reference -->` on
+  the same line as the would-be finding.
+
+## REQ-SPEC-0003
+---
+id: REQ-SPEC-0003
+revision: 1
+status: tests-green
+introduced: CHG-0012
+supersedes: null
+phase: PHASE-1
+tier: unit
+references:
+  epic: null
+  story: null
+  adrs: [ADR-0006, ADR-0008]
+---
+
+### Description
+No file under `tools/`, `packages/`, or `projects/` uses banned mock
+APIs — `unittest.mock.patch`, `MagicMock`, `Mock`, `monkeypatch.setattr`,
+`mocker.patch`, `jest.mock`, `vi.mock`, `sinon.stub`, `sinon.fake` —
+to substitute modules within this repository. Target resolution:
+string-target patches whose target starts with an external prefix
+(e.g. `requests.`, `anthropic.`) are permitted per ADR-0006 §2
+network-transport carve-out; everything else (in-repo prefix,
+identifier target, no target) is flagged.
+
+### Acceptance
+- Given the current source tree, when `python -m tools.spec_lint
+  validate openspec` is invoked from the repository root, then the
+  `mock-in-repo-banned` rule contributes zero findings to the combined
+  output, and the command exits with status `0`.
+
+### Non-acceptance
+- Real adapter implementations under
+  `packages/shared-{ts,py}/adapters/` are not affected — they are
+  production code, not mocks (ADR-0006 §3).
+- The rule itself and its test file are structurally exempt.
+
+### Notes
+- Implementation: [`tools/spec_lint/rules/mock_in_repo_banned.py`](../../../tools/spec_lint/rules/mock_in_repo_banned.py).
+- Inline override: `# spec-lint: allow mock-in-repo-banned` (Python)
+  or `// spec-lint: allow mock-in-repo-banned` (TS/JS) on the same line.
+
+## REQ-SPEC-0004
+---
+id: REQ-SPEC-0004
+revision: 1
+status: tests-green
+introduced: CHG-0030
+supersedes: null
+phase: PHASE-1
+tier: unit
+references:
+  epic: null
+  story: null
+  adrs: [ADR-0004, ADR-0008]
+---
+
+### Description
+The `req-id-format` rule correctly classifies REQ-ID strings as valid
+(matching `REQ-<DOMAIN>-<NNNN>`) or invalid, per ADR-0004 §1.
+
+### Acceptance
+- The `req-id-format` rule's unit tests, mutation tests, and property-
+  based tests all pass; the rule reports zero false negatives on the
+  documented must-catch corpus.
+
+### Notes
+- Implementation: [`tools/spec_lint/rules/req_id_format.py`](../../../tools/spec_lint/rules/req_id_format.py).
+
+## REQ-SPEC-0005
+---
+id: REQ-SPEC-0005
+revision: 1
+status: tests-green
+introduced: CHG-0030
+supersedes: null
+phase: PHASE-1
+tier: unit
+references:
+  epic: null
+  story: null
+  adrs: [ADR-0004, ADR-0008]
+---
+
+### Description
+The `spec-frontmatter-valid` rule enforces ADR-0004 §5: every REQ block
+carries required keys (id, revision, status, introduced, supersedes,
+phase, tier, references) with valid values.
+
+### Acceptance
+- The `spec-frontmatter-valid` rule's unit tests, mutation tests, and
+  property-based tests all pass.
+
+### Notes
+- Implementation: [`tools/spec_lint/rules/spec_frontmatter_valid.py`](../../../tools/spec_lint/rules/spec_frontmatter_valid.py).
+
+## REQ-SPEC-0006
+---
+id: REQ-SPEC-0006
+revision: 1
+status: tests-green
+introduced: CHG-0030
+supersedes: null
+phase: PHASE-1
+tier: unit
+references:
+  epic: null
+  story: null
+  adrs: [ADR-0004, ADR-0008]
+---
+
+### Description
+The `compound-requirement-detector` rule enforces ADR-0004 §3: each REQ
+block contains exactly one assertion; compound bullets are a defect.
+
+### Acceptance
+- The `compound-requirement-detector` rule's unit tests, mutation tests,
+  and property-based tests all pass.
+
+### Notes
+- Implementation: [`tools/spec_lint/rules/compound_requirement_detector.py`](../../../tools/spec_lint/rules/compound_requirement_detector.py).
+
+## REQ-SPEC-0007
+---
+id: REQ-SPEC-0007
+revision: 1
+status: tests-green
+introduced: CHG-0030
+supersedes: null
+phase: PHASE-1
+tier: unit
+references:
+  epic: null
+  story: null
+  adrs: [ADR-0004, ADR-0008]
+---
+
+### Description
+The `prose-xref-banned` rule enforces ADR-0004 §2: prose references to
+artifacts are forbidden; every reference uses ID + path. Pattern
+categories such as the following fire the rule:
+
+```text
+the X spec
+the X requirement
+the X ADR
+```
+
+### Acceptance
+- The `prose-xref-banned` rule's unit tests and mutation tests pass.
+
+### Notes
+- Implementation: [`tools/spec_lint/rules/prose_xref_banned.py`](../../../tools/spec_lint/rules/prose_xref_banned.py).
+- Inline override: `<!-- spec-lint: allow prose-xref-banned -->`.
+- Fenced code blocks (triple backtick) are exempt.
+
+## REQ-SPEC-0008
+---
+id: REQ-SPEC-0008
+revision: 1
+status: tests-green
+introduced: CHG-0030
+supersedes: null
+phase: PHASE-1
+tier: unit
+references:
+  epic: null
+  story: null
+  adrs: [ADR-0004, ADR-0008]
+---
+
+### Description
+The `xref-resolves` rule enforces ADR-0004 §2: every markdown link and
+every `REQ-X-NNNN @ path` reference resolves to an existing target.
+
+### Acceptance
+- The `xref-resolves` rule's unit tests, mutation tests, and property-
+  based tests all pass.
+
+### Notes
+- Implementation: [`tools/spec_lint/rules/xref_resolves.py`](../../../tools/spec_lint/rules/xref_resolves.py).
+- Known limitations (documented; queued for CHG-0016): does not respect
+  inline backticks; line-by-line scan misses multi-line REQ@path
+  references wrapped across lines.
+
+## REQ-SPEC-0009
+---
+id: REQ-SPEC-0009
+revision: 1
+status: tests-green
+introduced: CHG-0030
+supersedes: null
+phase: PHASE-1
+tier: unit
+references:
+  epic: null
+  story: null
+  adrs: [ADR-0004, ADR-0008]
+---
+
+### Description
+The `anti-aliasing` rule enforces ADR-0004 §4: REQs across the spec
+corpus must not be near-duplicates by Jaccard similarity on body
+n-grams.
+
+### Acceptance
+- The `anti-aliasing` rule's unit tests, mutation tests, and property-
+  based tests all pass.
+
+### Notes
+- Implementation: [`tools/spec_lint/rules/anti_aliasing.py`](../../../tools/spec_lint/rules/anti_aliasing.py).
+
+## REQ-SPEC-0010
+---
+id: REQ-SPEC-0010
+revision: 1
+status: tests-green
+introduced: CHG-0030
+supersedes: null
+phase: PHASE-1
+tier: unit
+references:
+  epic: null
+  story: null
+  adrs: [ADR-0004, ADR-0008]
+---
+
+### Description
+The `req-id-immutable` rule enforces ADR-0004 §1: REQ IDs once
+allocated never change. The rule reads git history per spec file and
+flags renames as removals.
+
+### Acceptance
+- The `req-id-immutable` rule's unit tests pass.
+
+### Notes
+- Implementation: [`tools/spec_lint/rules/req_id_immutable.py`](../../../tools/spec_lint/rules/req_id_immutable.py).
+- Runs at commit-time / pre-receive; excluded from the `validate`
+  snapshot runner per REQ-SPEC-0001 non-acceptance.
+
+## REQ-SPEC-0011
+---
+id: REQ-SPEC-0011
+revision: 1
+status: tests-green
+introduced: CHG-0030
+supersedes: null
+phase: PHASE-1
+tier: unit
+references:
+  epic: null
+  story: null
+  adrs: [ADR-0004, ADR-0008]
+---
+
+### Description
+The `req-append-only` rule enforces ADR-0004 §7: REQ blocks may only be
+appended or deprecated in place — never removed or renamed silently. The
+rule reads git history per spec file.
+
+### Acceptance
+- The `req-append-only` rule's unit tests pass.
+
+### Notes
+- Implementation: [`tools/spec_lint/rules/req_append_only.py`](../../../tools/spec_lint/rules/req_append_only.py).
+- Runs at commit-time / pre-receive; excluded from the `validate`
+  snapshot runner per REQ-SPEC-0001 non-acceptance.
+
+## REQ-SPEC-0012
+---
+id: REQ-SPEC-0012
+revision: 1
+status: tests-green
+introduced: CHG-0030
+supersedes: null
+phase: PHASE-1
+tier: unit
+references:
+  epic: null
+  story: null
+  adrs: [ADR-0004, ADR-0008]
+---
+
+### Description
+The spec_lint infrastructure modules — parser, git history loader, and
+benchmark / dry-run harness — are correct and stable. Each correctly
+parses, loads, or measures what its consumers expect.
+
+### Acceptance
+- Unit tests in `test_parser.py`, `test_git_history.py`,
+  `test_benchmark.py`, and parser property tests all pass.
+
+### Notes
+- Implementations under [`tools/spec_lint/`](../../../tools/spec_lint/).
+- Bundles parser + history + benchmark for one REQ; if independent
+  accountability is later required, split via supersession per ADR-0004 §1.
+
+## REQ-SPEC-0013
+---
+id: REQ-SPEC-0013
+revision: 1
+status: tests-green
+introduced: CHG-0030
+supersedes: null
+phase: PHASE-1
+tier: unit
+references:
+  epic: null
+  story: null
+  adrs: [ADR-0004, ADR-0005, ADR-0008]
+---
+
+### Description
+Every Python test function under `tools/` carries both an
+`@test-id TEST-<DOMAIN>-<NNNN>` annotation and a
+`@covers REQ-<X>-<NNNN>` annotation in REQ-form (not legacy
+`@covers (rule: <name>)` form). Enforced by the
+`test_annotation_discipline` meta-test.
+
+### Acceptance
+- `pytest tools/ci/tests/test_annotation_discipline.py` exits with
+  status `0` and reports zero annotation violations.
+
+### Non-acceptance
+- REQ-existence cross-check (whether the referenced REQ-ID is actually
+  defined in a spec file) is `gate-coverage`'s job (PHASE-2), not this
+  rule's.
+
+### Notes
+- Implementation: [`tools/ci/tests/test_annotation_discipline.py`](../../../tools/ci/tests/test_annotation_discipline.py).

@@ -35,6 +35,7 @@ CORPORA_ROOT = (
 def test_openspec_loader_returns_all_md_files() -> None:
     """
     @test-id TEST-SPEC-BENCH-0001
+    @covers REQ-SPEC-0012
     """
     docs_dir = CORPORA_ROOT / "openspec_docs"
     pairs = load_openspec_docs(docs_dir)
@@ -51,8 +52,9 @@ def test_openspec_loader_returns_all_md_files() -> None:
 def test_promise_loader_extracts_all_requirements() -> None:
     """
     @test-id TEST-SPEC-BENCH-0002
+    @covers REQ-SPEC-0012
 
-    PROMISE_exp has 969 requirements (444 FR + 525 NFR).
+        PROMISE_exp has 969 requirements (444 FR + 525 NFR).
     """
     arff = CORPORA_ROOT / "promise_nfr" / "PROMISE_exp.arff"
     specs = load_promise_arff(arff)
@@ -68,6 +70,7 @@ def test_promise_loader_extracts_all_requirements() -> None:
 def test_run_dry_run_returns_results_for_both_corpora() -> None:
     """
     @test-id TEST-SPEC-BENCH-0003
+    @covers REQ-SPEC-0012
     """
     result = run_dry_run(CORPORA_ROOT)
     assert isinstance(result, DryRunResult)
@@ -83,6 +86,7 @@ def test_run_dry_run_returns_results_for_both_corpora() -> None:
 def test_render_report_produces_nonempty_markdown() -> None:
     """
     @test-id TEST-SPEC-BENCH-0004
+    @covers REQ-SPEC-0012
     """
     result = run_dry_run(CORPORA_ROOT)
     md = render_report(result, head_sha="abc1234")

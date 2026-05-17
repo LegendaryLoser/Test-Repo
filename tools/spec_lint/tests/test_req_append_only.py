@@ -30,8 +30,9 @@ def _check(repo: pathlib.Path, file_rel: str = SPEC_REL):
 def test_never_green_allows_body_changes(tmp_path: pathlib.Path) -> None:
     """
     @test-id TEST-SPEC-0022
+    @covers REQ-SPEC-0011
 
-    REQ never reached tests-green. Editing the body is allowed freely.
+        REQ never reached tests-green. Editing the body is allowed freely.
     """
     v1 = spec_file_text(req_block("REQ-AUTH-0001", status="draft", description="First."))
     v2 = spec_file_text(
@@ -44,8 +45,9 @@ def test_never_green_allows_body_changes(tmp_path: pathlib.Path) -> None:
 def test_frozen_after_green_produces_no_findings(tmp_path: pathlib.Path) -> None:
     """
     @test-id TEST-SPEC-0023
+    @covers REQ-SPEC-0011
 
-    REQ went green and no subsequent edits to body. Compliant.
+        REQ went green and no subsequent edits to body. Compliant.
     """
     body = "Frozen description."
     v1 = spec_file_text(req_block("REQ-AUTH-0001", status="draft", description=body))
@@ -58,9 +60,10 @@ def test_frozen_after_green_produces_no_findings(tmp_path: pathlib.Path) -> None
 def test_revision_bump_allows_body_change(tmp_path: pathlib.Path) -> None:
     """
     @test-id TEST-SPEC-0024
+    @covers REQ-SPEC-0011
 
-    Once green, a body change is permitted IF revision bumps. PHASE-1
-    simplification: any bump is accepted regardless of magnitude.
+        Once green, a body change is permitted IF revision bumps. PHASE-1
+        simplification: any bump is accepted regardless of magnitude.
     """
     v1 = spec_file_text(
         req_block("REQ-AUTH-0001", status="tests-green", revision=1, description="First.")
@@ -75,9 +78,10 @@ def test_revision_bump_allows_body_change(tmp_path: pathlib.Path) -> None:
 def test_silent_body_edit_after_green_produces_finding(tmp_path: pathlib.Path) -> None:
     """
     @test-id TEST-SPEC-0025
+    @covers REQ-SPEC-0011
 
-    REQ went green at revision 1; subsequent commit changed body without
-    bumping revision. The failure mode this rule exists to catch.
+        REQ went green at revision 1; subsequent commit changed body without
+        bumping revision. The failure mode this rule exists to catch.
     """
     v1 = spec_file_text(
         req_block("REQ-AUTH-0001", status="tests-green", revision=1, description="First.")
@@ -96,9 +100,10 @@ def test_silent_body_edit_after_green_produces_finding(tmp_path: pathlib.Path) -
 def test_acceptance_edit_after_green_also_flagged(tmp_path: pathlib.Path) -> None:
     """
     @test-id TEST-SPEC-0026
+    @covers REQ-SPEC-0011
 
-    ADR-0004 §7 freezes both Description and Acceptance. Body change in
-    Acceptance counts.
+        ADR-0004 §7 freezes both Description and Acceptance. Body change in
+        Acceptance counts.
     """
     v1 = spec_file_text(
         req_block("REQ-AUTH-0001", status="tests-green", revision=1, acceptance="Given A.")
@@ -115,6 +120,7 @@ def test_acceptance_edit_after_green_also_flagged(tmp_path: pathlib.Path) -> Non
 def test_rule_id_and_description_are_stable() -> None:
     """
     @test-id TEST-SPEC-0027
+    @covers REQ-SPEC-0011
     """
     r = ReqAppendOnly()
     assert r.id == "req-append-only"

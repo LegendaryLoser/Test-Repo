@@ -26,6 +26,7 @@ SPEC_REL = "openspec/specs/auth/login.spec.md"
 def test_single_commit_yields_one_version(tmp_path: pathlib.Path) -> None:
     """
     @test-id TEST-SPEC-0013
+    @covers REQ-SPEC-0012
     """
     content = spec_file_text(req_block("REQ-AUTH-0001"))
     repo = make_repo_with_history(tmp_path, SPEC_REL, [content])
@@ -39,6 +40,7 @@ def test_single_commit_yields_one_version(tmp_path: pathlib.Path) -> None:
 def test_multiple_commits_oldest_first(tmp_path: pathlib.Path) -> None:
     """
     @test-id TEST-SPEC-0014
+    @covers REQ-SPEC-0012
     """
     v1 = spec_file_text(req_block("REQ-AUTH-0001", status="draft"))
     v2 = spec_file_text(req_block("REQ-AUTH-0001", status="tests-red"))
@@ -58,6 +60,7 @@ def test_multiple_commits_oldest_first(tmp_path: pathlib.Path) -> None:
 def test_versions_have_distinct_shas_and_timestamps(tmp_path: pathlib.Path) -> None:
     """
     @test-id TEST-SPEC-0015
+    @covers REQ-SPEC-0012
     """
     v1 = spec_file_text(req_block("REQ-AUTH-0001"))
     v2 = spec_file_text(req_block("REQ-AUTH-0001", description="Edited."))
@@ -72,9 +75,10 @@ def test_versions_have_distinct_shas_and_timestamps(tmp_path: pathlib.Path) -> N
 def test_parsed_spec_file_matches_content(tmp_path: pathlib.Path) -> None:
     """
     @test-id TEST-SPEC-0016
+    @covers REQ-SPEC-0012
 
-    The parsed SpecFile attached to each HistoricalVersion must equal what
-    parse_spec_file would produce on the same text.
+        The parsed SpecFile attached to each HistoricalVersion must equal what
+        parse_spec_file would produce on the same text.
     """
     from tools.spec_lint.parser import parse_spec_file
 

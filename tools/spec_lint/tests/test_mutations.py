@@ -89,6 +89,7 @@ def _by_id(corpus: list[Mutation], mid: str) -> Mutation:
 def test_req_id_format_must_catch(mid: str) -> None:
     """
     @test-id TEST-SPEC-MUT-REQID-NNN
+    @covers REQ-SPEC-0004
     """
     mutation = _by_id(req_id_format_mutations.MUTATIONS, mid)
     seed = single_req_seed()
@@ -100,6 +101,10 @@ def test_req_id_format_must_catch(mid: str) -> None:
     "mid", _ids(spec_frontmatter_valid_mutations.MUTATIONS, "must-catch")
 )
 def test_spec_frontmatter_valid_must_catch(mid: str) -> None:
+    """
+    @test-id TEST-SPEC-MUT-FRONTMATTER-NNN
+    @covers REQ-SPEC-0005
+    """
     mutation = _by_id(spec_frontmatter_valid_mutations.MUTATIONS, mid)
     seed = single_req_seed()
     _, findings = run_mutation(seed, mutation, _check_spec_frontmatter_valid)
@@ -108,6 +113,10 @@ def test_spec_frontmatter_valid_must_catch(mid: str) -> None:
 
 @pytest.mark.parametrize("mid", _ids(compound_mutations.MUTATIONS, "must-catch"))
 def test_compound_must_catch(mid: str) -> None:
+    """
+    @test-id TEST-SPEC-MUT-COMPOUND-NNN
+    @covers REQ-SPEC-0006
+    """
     mutation = _by_id(compound_mutations.MUTATIONS, mid)
     seed = single_req_seed()
     _, findings = run_mutation(seed, mutation, _check_compound)
@@ -116,6 +125,10 @@ def test_compound_must_catch(mid: str) -> None:
 
 @pytest.mark.parametrize("mid", _ids(anti_aliasing_mutations.MUTATIONS, "must-catch"))
 def test_anti_aliasing_must_catch(mid: str) -> None:
+    """
+    @test-id TEST-SPEC-MUT-ALIAS-NNN
+    @covers REQ-SPEC-0009
+    """
     mutation = _by_id(anti_aliasing_mutations.MUTATIONS, mid)
     seed = single_req_seed("REQ-AUTH-0001")
     _, findings = run_mutation(seed, mutation, _check_anti_aliasing)
@@ -129,6 +142,10 @@ def test_anti_aliasing_must_catch(mid: str) -> None:
 
 @pytest.mark.parametrize("mid", _ids(prose_xref_banned_mutations.MUTATIONS, "must-catch"))
 def test_prose_xref_banned_must_catch(mid: str, tmp_path: pathlib.Path) -> None:
+    """
+    @test-id TEST-SPEC-MUT-PROSE-NNN
+    @covers REQ-SPEC-0007
+    """
     mutation = _by_id(prose_xref_banned_mutations.MUTATIONS, mid)
     src = write_doc(tmp_path, "doc.md", "clean text REQ-AUTH-0001\n")
     mutated_text = mutation.apply(src.read_text())
@@ -139,6 +156,10 @@ def test_prose_xref_banned_must_catch(mid: str, tmp_path: pathlib.Path) -> None:
 
 @pytest.mark.parametrize("mid", _ids(xref_resolves_mutations.MUTATIONS, "must-catch"))
 def test_xref_resolves_must_catch(mid: str, tmp_path: pathlib.Path) -> None:
+    """
+    @test-id TEST-SPEC-MUT-XREF-NNN
+    @covers REQ-SPEC-0008
+    """
     mutation = _by_id(xref_resolves_mutations.MUTATIONS, mid)
     # Materialize a real spec file at the path that XREF-REQ-WRONG-ID
     # references, so resolution gets past the existence check.
@@ -169,11 +190,12 @@ def _kl_runners():
 def test_known_limitations_remain_uncaught() -> None:
     """
     @test-id TEST-SPEC-MUT-KL-0001
+    @covers REQ-SPEC-0006, REQ-SPEC-0009
 
-    Each known-limitation mutation documents the current deterministic
-    boundary. If one of these starts being CAUGHT, that's a real signal:
-    either the rule improved (great — promote to must-catch) or the
-    mutation was mislabeled. Either way, manual review needed.
+        Each known-limitation mutation documents the current deterministic
+        boundary. If one of these starts being CAUGHT, that's a real signal:
+        either the rule improved (great — promote to must-catch) or the
+        mutation was mislabeled. Either way, manual review needed.
     """
     uncaught_count = 0
     surprises: list[str] = []

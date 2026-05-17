@@ -23,7 +23,7 @@ def _check(path: pathlib.Path):
 def test_valid_fixtures_produce_no_findings(valid_fixtures: list[pathlib.Path]) -> None:
     """
     @test-id TEST-SPEC-0006
-    @covers (rule: req-id-format)
+    @covers REQ-SPEC-0004
     """
     for fx in valid_fixtures:
         findings = _check(fx)
@@ -33,10 +33,10 @@ def test_valid_fixtures_produce_no_findings(valid_fixtures: list[pathlib.Path]) 
 def test_invalid_req_id_fixtures_each_produce_a_finding(fixtures_dir: pathlib.Path) -> None:
     """
     @test-id TEST-SPEC-0007
-    @covers (rule: req-id-format)
+    @covers REQ-SPEC-0004
 
-    Every fixture in invalid/req_id/ should yield at least one req-id-format
-    finding whose rule_id matches and severity is "error".
+        Every fixture in invalid/req_id/ should yield at least one req-id-format
+        finding whose rule_id matches and severity is "error".
     """
     fixtures = invalid_fixtures_for(fixtures_dir, "req_id")
     assert fixtures, "no invalid/req_id fixtures present"
@@ -55,6 +55,7 @@ def test_invalid_req_id_fixtures_each_produce_a_finding(fixtures_dir: pathlib.Pa
 def test_rule_id_and_description_are_stable() -> None:
     """
     @test-id TEST-SPEC-0008
+    @covers REQ-SPEC-0004
     """
     r = ReqIdFormat()
     assert r.id == "req-id-format"

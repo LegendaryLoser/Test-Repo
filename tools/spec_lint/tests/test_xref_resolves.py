@@ -26,6 +26,7 @@ def _check(files: list[tuple[pathlib.Path, str]]):
 def test_valid_relative_markdown_link_passes(tmp_path: pathlib.Path) -> None:
     """
     @test-id TEST-SPEC-0037
+    @covers REQ-SPEC-0008
     """
     write_doc(tmp_path, "target.md", "# Target\n")
     src = write_doc(tmp_path, "openspec/changes/CHG-XXXX/proposal.md", "See [target](../../../target.md).\n")
@@ -35,6 +36,7 @@ def test_valid_relative_markdown_link_passes(tmp_path: pathlib.Path) -> None:
 def test_broken_relative_link_is_flagged(tmp_path: pathlib.Path) -> None:
     """
     @test-id TEST-SPEC-0038
+    @covers REQ-SPEC-0008
     """
     src = write_doc(tmp_path, "openspec/changes/CHG-XXXX/proposal.md", "See [missing](nope.md).\n")
     findings = _check([(src, src.read_text())])
@@ -46,6 +48,7 @@ def test_broken_relative_link_is_flagged(tmp_path: pathlib.Path) -> None:
 def test_http_links_are_skipped(tmp_path: pathlib.Path) -> None:
     """
     @test-id TEST-SPEC-0039
+    @covers REQ-SPEC-0008
     """
     src = write_doc(
         tmp_path,
@@ -58,6 +61,7 @@ def test_http_links_are_skipped(tmp_path: pathlib.Path) -> None:
 def test_pure_fragment_links_are_skipped(tmp_path: pathlib.Path) -> None:
     """
     @test-id TEST-SPEC-0040
+    @covers REQ-SPEC-0008
     """
     src = write_doc(tmp_path, "doc.md", "Jump to [section](#section).\n")
     assert _check([(src, src.read_text())]) == []
@@ -66,6 +70,7 @@ def test_pure_fragment_links_are_skipped(tmp_path: pathlib.Path) -> None:
 def test_req_id_at_path_resolves(tmp_path: pathlib.Path) -> None:
     """
     @test-id TEST-SPEC-0041
+    @covers REQ-SPEC-0008
     """
     spec_text = spec_file_text(req_block("REQ-AUTH-0007"))
     write_doc(tmp_path, "openspec/specs/auth/login.spec.md", spec_text)
@@ -83,6 +88,7 @@ def test_req_id_at_path_resolves(tmp_path: pathlib.Path) -> None:
 def test_req_id_at_path_missing_path_is_flagged(tmp_path: pathlib.Path) -> None:
     """
     @test-id TEST-SPEC-0042
+    @covers REQ-SPEC-0008
     """
     src = write_doc(
         tmp_path,
@@ -98,9 +104,10 @@ def test_req_id_at_path_missing_path_is_flagged(tmp_path: pathlib.Path) -> None:
 def test_req_id_at_path_wrong_id_is_flagged(tmp_path: pathlib.Path) -> None:
     """
     @test-id TEST-SPEC-0043
+    @covers REQ-SPEC-0008
 
-    The cited path exists, but the referenced REQ-ID is not in it. This is
-    the dangerous case — the link looks valid until you open the file.
+        The cited path exists, but the referenced REQ-ID is not in it. This is
+        the dangerous case — the link looks valid until you open the file.
     """
     spec_text = spec_file_text(req_block("REQ-AUTH-0001"))
     write_doc(tmp_path, "openspec/specs/auth/login.spec.md", spec_text)
@@ -118,6 +125,7 @@ def test_req_id_at_path_wrong_id_is_flagged(tmp_path: pathlib.Path) -> None:
 def test_rule_id_and_description_are_stable() -> None:
     """
     @test-id TEST-SPEC-0044
+    @covers REQ-SPEC-0008
     """
     r = XrefResolves()
     assert r.id == "xref-resolves"

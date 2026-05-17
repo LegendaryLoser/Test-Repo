@@ -27,6 +27,7 @@ def _check(spec_text: str):
 def test_valid_req_ids_produce_no_findings(req_id: str) -> None:
     """
     @test-id TEST-SPEC-0061
+    @covers REQ-SPEC-0004
     """
     text = spec_file_text(req_block(req_id))
     findings = [f for f in _check(text) if f.rule_id == "req-id-format"]
@@ -44,11 +45,12 @@ def test_lowercase_domain_always_flagged(
 ) -> None:
     """
     @test-id TEST-SPEC-0062
+    @covers REQ-SPEC-0004
 
-    Take a valid uppercase DOMAIN, lowercase one alphabetic position. The
-    resulting REQ heading must be flagged. Numeric-only DOMAIN values
-    (no alphabetic chars to lowercase) are skipped by the hypothesis
-    assume(...).
+        Take a valid uppercase DOMAIN, lowercase one alphabetic position. The
+        resulting REQ heading must be flagged. Numeric-only DOMAIN values
+        (no alphabetic chars to lowercase) are skipped by the hypothesis
+        assume(...).
     """
     # Find at least one alphabetic char to lowercase
     alpha_positions = [i for i, c in enumerate(domain_upper) if c.isalpha()]
@@ -70,6 +72,7 @@ def test_lowercase_domain_always_flagged(
 def test_wrong_number_width_always_flagged(domain: str, width: int) -> None:
     """
     @test-id TEST-SPEC-0063
+    @covers REQ-SPEC-0004
     """
     number = "1" * width
     req_id = f"REQ-{domain}-{number}"
@@ -86,6 +89,7 @@ def test_wrong_number_width_always_flagged(domain: str, width: int) -> None:
 def test_domain_over_12_chars_always_flagged(extra_chars: str, number: int) -> None:
     """
     @test-id TEST-SPEC-0064
+    @covers REQ-SPEC-0004
     """
     domain = "ABCDEFGHIJKLM" + extra_chars  # 13+ chars guaranteed
     req_id = f"REQ-{domain}-{number:04d}"

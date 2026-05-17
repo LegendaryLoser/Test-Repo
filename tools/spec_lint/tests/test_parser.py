@@ -34,6 +34,7 @@ def test_parser_extracts_single_req_block(fixtures_dir: pathlib.Path) -> None:
 def test_parser_extracts_multi_req_blocks(fixtures_dir: pathlib.Path) -> None:
     """
     @test-id TEST-SPEC-0002
+    @covers REQ-SPEC-0012
     """
     spec = parse_spec_file(fixtures_dir / "valid" / "multi_req.spec.md")
     assert len(spec.requirements) == 2
@@ -48,9 +49,10 @@ def test_parser_extracts_multi_req_blocks(fixtures_dir: pathlib.Path) -> None:
 def test_parser_handles_missing_frontmatter(fixtures_dir: pathlib.Path) -> None:
     """
     @test-id TEST-SPEC-0003
+    @covers REQ-SPEC-0012
 
-    A REQ heading with no `---` block parses; ``frontmatter`` is None.
-    The frontmatter-valid rule (not the parser) flags this as a defect.
+        A REQ heading with no `---` block parses; ``frontmatter`` is None.
+        The frontmatter-valid rule (not the parser) flags this as a defect.
     """
     spec = parse_spec_file(fixtures_dir / "invalid" / "frontmatter" / "missing_block.spec.md")
     assert len(spec.requirements) == 1
@@ -63,6 +65,7 @@ def test_parser_handles_missing_frontmatter(fixtures_dir: pathlib.Path) -> None:
 def test_parser_heading_line_is_1_based(fixtures_dir: pathlib.Path) -> None:
     """
     @test-id TEST-SPEC-0004
+    @covers REQ-SPEC-0012
     """
     spec = parse_spec_file(fixtures_dir / "valid" / "simple.spec.md")
     text = (fixtures_dir / "valid" / "simple.spec.md").read_text().splitlines()
@@ -73,6 +76,7 @@ def test_parser_heading_line_is_1_based(fixtures_dir: pathlib.Path) -> None:
 def test_parser_path_is_recorded(fixtures_dir: pathlib.Path) -> None:
     """
     @test-id TEST-SPEC-0005
+    @covers REQ-SPEC-0012
     """
     p = fixtures_dir / "valid" / "simple.spec.md"
     spec = parse_spec_file(p)

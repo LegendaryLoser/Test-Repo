@@ -61,6 +61,7 @@ def _drop_key(block: str, key: str) -> str:
 def test_dropping_any_required_key_yields_a_named_finding(key: str) -> None:
     """
     @test-id TEST-SPEC-0065
+    @covers REQ-SPEC-0005
     """
     block = req_block("REQ-AUTH-0001")
     mutated_block = _drop_key(block, key)
@@ -77,6 +78,7 @@ def test_dropping_any_required_key_yields_a_named_finding(key: str) -> None:
 def test_invalid_status_enum_always_flagged(bad_status: str) -> None:
     """
     @test-id TEST-SPEC-0066
+    @covers REQ-SPEC-0005
     """
     block = req_block("REQ-AUTH-0001", status=bad_status)
     text = spec_file_text(block)
@@ -89,6 +91,7 @@ def test_invalid_status_enum_always_flagged(bad_status: str) -> None:
 def test_invalid_tier_enum_always_flagged(bad_tier: str) -> None:
     """
     @test-id TEST-SPEC-0067
+    @covers REQ-SPEC-0005
     """
     block = req_block("REQ-AUTH-0001", tier=bad_tier)
     text = spec_file_text(block)
@@ -101,6 +104,7 @@ def test_invalid_tier_enum_always_flagged(bad_tier: str) -> None:
 def test_non_positive_revision_always_flagged(bad_revision: int) -> None:
     """
     @test-id TEST-SPEC-0068
+    @covers REQ-SPEC-0005
     """
     block = req_block("REQ-AUTH-0001", revision=bad_revision)
     text = spec_file_text(block)
