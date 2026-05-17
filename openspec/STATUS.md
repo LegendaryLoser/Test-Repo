@@ -14,7 +14,7 @@ then proceed.
 **Last updated:** 2026-05-17 (architecture audit session, branch `claude/bmad-architecture-review-sV42w`)
 **Active phase:** PHASE-1 (paused — BMAD audit track in progress)
 **Last master commit:** `455ba06` (PR #15 merged: CHG-0014 + CHG-0031)
-**Last branch commit** (`claude/bmad-architecture-review-sV42w`): this commit (CHG-0032 architecture audit Wave 1+2 in flight)
+**Last branch commit** (`claude/bmad-architecture-review-sV42w`): this commit (CHG-0032 QD triage of all 36 audit streams; methodology ADR draft clauses)
 **Open PRs:** none
 **Test count:** 184 passing on master (audit commits do not change test count)
 
@@ -68,6 +68,7 @@ P = process, NEW = surfaced after the original audit.
 | NEW-2 | SERIOUS  | Tests not derived from REQ Acceptance clauses        | OPEN        | queued ADR-0009 (new ADR)  |
 | NEW-3 | PROCESS  | BMAD review skills not in CHG workflow               | IN-PROGRESS | CHG-0032 (this audit is the response; methodology ADR queued) |
 | AUDIT-2026-05-17 | INFO | Architecture audit Wave 1 (12) + Wave 2 (8) + Wave 3 (8) + Wave 4 (8) complete = 36 streams; ~700 raw findings → ~70 themes; COMPOSITE-V2 6/7 gates met; Gate 6 marginal novelty trajectory: Wave 2 ~50%, Wave 3 ~30-37%, Wave 4 ~46% (spiked from STAKE+COUNTER new methods). EMPIRICAL FINDING: marginal novelty is methodology-variance-driven, not model-variance-driven. Tight-method permutations converge ~15-30%; new methods spike 60-70%. Implication for methodology ADR: Gate 6 must be defined relative to fixed methodology catalog. Artifact at `openspec/_bmad-output/knowledge/audit/2026-05-17-architecture/` | IN-PROGRESS | CHG-0032 |
+| QD-TRIAGE-2026-05-17 | INFO | Quality-Diversity triage of all 36 streams complete. Adopted research-grounded QD framework (MAP-Elites + Mixture-of-Complementary-Agents + ambiguity decomposition): four behavioural axes (Lens × Temporal × Decomposition × Severity), σ × κ Pareto admission per cell, ACGR (Archive Coverage Growth Rate) replacing raw marginal novelty as Gate 6. Per-method tier assignment: 16 Tier A, ~10 Tier B, 1 Tier C, 4 Tier D candidates (COURSE, CHECK, EDIT, VALID2). 5 high-importance empty cells identified as Wave 5 admission targets. ACGR re-measurement: Wave 4 ~45% (vs marginal-novelty 46%); Wave 3 ~22%. Wave 5 expected ACGR 10-15%, Wave 6 <5% (convergence). Methodology ADR draft sections (§§1-11) at `openspec/_bmad-output/knowledge/audit/2026-05-17-architecture/qd-triage.md` | IN-PROGRESS | CHG-0032 |
 
 ## Open architectural questions
 
@@ -159,6 +160,8 @@ Sequenced from current state. `[x]` merged, `[~]` in flight, `[ ]` queued.
 | 2026-05-17 | Codify audit methodology in ADR after BOTH architecture + implementation audits complete | User choice (defer codification until both audits validated)  |
 | 2026-05-17 | Run implementation audit after architecture audit convergence; consolidate jointly | User decision; findings may re-sequence resolution            |
 | 2026-05-17 | Re-sequence: do not start any Tier 1+ resolution CHG until both audits converge   | User direction ("resolve thoroughly before going ahead with anything") |
+| 2026-05-17 | Adopt Quality-Diversity framework (σ × κ Pareto admission, ACGR convergence) replacing COMPOSITE-V2 Gate 6 marginal-novelty rule; codify in methodology ADR | User decision after research synthesis (MAP-Elites, Mixture-of-Complementary-Agents, ambiguity decomposition); satisfies "new methods that provide signal must be admitted" constraint while still producing a defensible stopping rule |
+| 2026-05-17 | Full QD triage of all 36 audit streams complete (qd-triage.md); 4 Tier-D deprecation candidates surfaced (COURSE, CHECK, EDIT, VALID2); 5 high-importance empty cells identified as Wave 5 admission targets | Triage produced empirical per-method σ × κ scores from existing audit corpus without re-running streams |
 
 ## Next session: start here
 
@@ -194,5 +197,8 @@ both audits converge and the joint resolution sequence is approved.
 
 **Persistent audit artifact:**
 - `openspec/_bmad-output/knowledge/audit/2026-05-17-architecture/README.md`
-- `openspec/_bmad-output/knowledge/audit/2026-05-17-architecture/consolidated.md` (26 themes, 270 raw findings, proposed 17-tier resolution sequence)
+- `openspec/_bmad-output/knowledge/audit/2026-05-17-architecture/consolidated.md` (~70 themes across 36 streams, ~700 raw findings, proposed 17-tier resolution sequence)
 - `openspec/_bmad-output/knowledge/audit/2026-05-17-architecture/findings-index.md` (per-stream provenance)
+- `openspec/_bmad-output/knowledge/audit/2026-05-17-architecture/qd-triage.md` (Quality-Diversity triage; per-method σ × κ scoring; Tier A/B/C/D catalog; empty-cell Wave-5 targets; methodology ADR draft clauses §§1-11)
+
+**Status update for next session re: convergence:** under the new ACGR metric (qd-triage.md §7), Wave 4 = ~45%; Wave 5 (Tier-1 empty-cell targets + meta-review = 4 streams) projected ACGR ~10-15%; Wave 6 (remaining empty cells + confirmation pairs) projected ACGR <5% (convergence met). Per Tier-A coverage check (qd-triage.md §7.4), 5 high-importance Axis-D cells are empty AND (compression × *) has only a Tier-B occupant — these constitute the Wave 5 admission targets.
