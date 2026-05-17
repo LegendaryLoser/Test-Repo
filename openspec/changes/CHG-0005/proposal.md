@@ -19,7 +19,14 @@ references:
 Third slice of PHASE-1 spec_lint. Both rules in this CHG enforce
 [`ADR-0004` §2](../../architecture/decisions/ADR-0004-spec-storage-discipline.md):
 
-- **`prose-xref-banned`** — phrases like "the auth spec" or "the login requirement" are forbidden inside artifact-bearing files. <!-- spec-lint: allow prose-xref-banned -->
+- **`prose-xref-banned`** — certain prose patterns are forbidden inside
+  artifact-bearing files. Examples (each fires the rule):
+
+  ```text
+  the auth spec
+  the login requirement
+  ```
+
   Every reference must be by stable ID + file path. This is the paper-derived
   discipline — prose references are the channel through which semantic-recall
   failure modes (false recall, near-neighbor collapse) enter the system.
@@ -36,7 +43,15 @@ fixtures; for the eventual CLI / CI gate, the set of files in `openspec/`.
 
 ### Rules
 
-- `tools/spec_lint/rules/prose_xref_banned.py` — denylist of prose patterns (`the X spec`, `the X requirement`, `the X ADR`, …). <!-- spec-lint: allow prose-xref-banned -->
+- `tools/spec_lint/rules/prose_xref_banned.py` — denylist of prose patterns
+  (see `_PATTERNS` in that module for the authoritative list). Categories:
+
+  ```text
+  the X spec
+  the X requirement
+  the X ADR
+  ```
+
   Excludes code blocks and lines marked with the inline allow marker
   `spec-lint: allow prose-xref-banned`. A pattern that is followed (within
   the same line) by a stable ID is allowed (the prose is parenthetical to

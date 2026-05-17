@@ -133,8 +133,14 @@ Identifier rules (enforced by `tools/spec_lint`, defined in
   permitted change.
 - IDs are allocated by monotonic next-free scan against `openspec/specs/INDEX.yaml`.
 - Cross-references use the ID *and* the file path (e.g. `REQ-SPEC-0001 @
-  openspec/specs/_meta/spec-storage.spec.md`). Prose references like "the
-  auth spec" are a lintable defect. <!-- spec-lint: allow prose-xref-banned -->
+  openspec/specs/_meta/spec-storage.spec.md`). Prose references are a
+  lintable defect; `prose-xref-banned` fires on patterns such as:
+
+  ```text
+  the auth spec
+  the login requirement
+  the original ADR
+  ```
 
 ## 5. Spec sourcing — bidirectional, reconciled at the Epic boundary
 
