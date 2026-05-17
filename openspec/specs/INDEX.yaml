@@ -8,7 +8,7 @@
 # (CHG-0014 implementation; CI gate lands separately as `index-up-to-date`).
 
 version: 1
-generated_at: '2026-05-17T06:15:12Z'
+generated_at: '2026-05-17T06:34:04Z'
 requirements:
 - id: REQ-SPEC-0001
   file: openspec/specs/_meta/spec-storage.spec.md
@@ -123,6 +123,14 @@ requirements:
   supersedes: null
   superseded_by: null
 - id: REQ-SPEC-0015
+  file: openspec/specs/_meta/spec-storage.spec.md
+  revision: 1
+  status: tests-green
+  tier: unit
+  phase: PHASE-1
+  supersedes: null
+  superseded_by: null
+- id: REQ-SPEC-0016
   file: openspec/specs/_meta/spec-storage.spec.md
   revision: 1
   status: tests-green

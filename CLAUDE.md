@@ -24,12 +24,17 @@ A principle without a CI gate is a build failure. See
 
 ## How to start any session
 
-1. Read `openspec/architecture/ARCHITECTURE.md` §11 — identify the active phase.
-2. Read the active phase file in `openspec/architecture/phases/`.
-3. Run the SessionStart resume hook output (printed automatically once
+1. **Read [`openspec/STATUS.md`](openspec/STATUS.md) first.** Single
+   authoritative session-resume document: current CHG, open PRs, audit
+   findings ledger, open architectural questions, sequenced roadmap,
+   recent decisions, and "next session: start here" pointer. Hand-
+   maintained until PHASE-2's `SessionStart` resume hook mechanizes it.
+2. Read `openspec/architecture/ARCHITECTURE.md` §11 — identify the active phase.
+3. Read the active phase file in `openspec/architecture/phases/`.
+4. Run the SessionStart resume hook output (printed automatically once
    PHASE-2 lands): it tells you the in-flight task, last commit, and next
    action.
-4. Work only inside the active phase scope. Anything outside scope is an ADR
+5. Work only inside the active phase scope. Anything outside scope is an ADR
    amendment or a deferred task.
 
 ## How to identify any artifact

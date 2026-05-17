@@ -501,3 +501,47 @@ current spec corpus (ignoring the `generated_at` timestamp).
   `python -m tools.spec_lint index --check` verifies.
 - The CI `index-up-to-date` gate per ADR-0008 §1 is a separate CHG
   (queued); when wired, CI will fail on stale INDEX in any PR.
+
+## REQ-SPEC-0016
+---
+id: REQ-SPEC-0016
+revision: 1
+status: tests-green
+introduced: CHG-0031
+supersedes: null
+phase: PHASE-1
+tier: unit
+references:
+  epic: null
+  story: null
+  adrs: [ADR-0005, ADR-0008]
+---
+
+### Description
+`openspec/STATUS.md` is the authoritative human-readable session-resume
+document, hand-maintained until PHASE-2's `SessionStart` resume hook +
+`tools/trace/rebuild.py` mechanize it. It contains the sections a
+cold session needs to resume work without re-reading chat history:
+CHG status, audit findings ledger, open architectural questions,
+sequenced roadmap, and an explicit "next session: start here" pointer.
+
+### Acceptance
+- Given the current source tree, when
+  `pytest tools/ci/tests/test_status_resume.py` is invoked, then it
+  exits with status `0` (STATUS.md exists with all required `##`
+  section headers).
+
+### Non-acceptance
+- Content freshness (whether listed CHGs / findings / roadmap items
+  match reality) is a discipline check, not mechanical — the meta-
+  test asserts structure, not currency. PHASE-2's mechanized
+  generation will enforce currency.
+- `openspec/traceability/matrix.yaml` is the future authoritative
+  cache (PHASE-2 deliverable); STATUS.md is the human-readable
+  bridge until then.
+
+### Notes
+- Implementation: [`openspec/STATUS.md`](../../STATUS.md).
+- Meta-test: [`tools/ci/tests/test_status_resume.py`](../../../tools/ci/tests/test_status_resume.py).
+- CLAUDE.md "How to start any session" §1 instructs new sessions to
+  read STATUS.md before any other artifact.
