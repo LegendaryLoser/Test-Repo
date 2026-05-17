@@ -32,6 +32,7 @@ _BODY = st.text(
 def test_identical_bodies_yield_jaccard_one(body: str) -> None:
     """
     @test-id TEST-SPEC-0071
+    @covers REQ-SPEC-0009
     """
     s1 = _spec("REQ-A-0001", body, "/fake/a.spec.md")
     s2 = _spec("REQ-A-0002", body, "/fake/b.spec.md")
@@ -48,9 +49,10 @@ def test_identical_bodies_yield_jaccard_one(body: str) -> None:
 def test_disjoint_ngram_sets_yield_no_findings(a: str, b: str) -> None:
     """
     @test-id TEST-SPEC-0072
+    @covers REQ-SPEC-0009
 
-    Bodies drawn from disjoint character alphabets cannot share any
-    character 4-grams; Jaccard = 0; never above threshold.
+        Bodies drawn from disjoint character alphabets cannot share any
+        character 4-grams; Jaccard = 0; never above threshold.
     """
     s1 = _spec("REQ-A-0001", a, "/fake/a.spec.md")
     s2 = _spec("REQ-A-0002", b, "/fake/b.spec.md")
@@ -74,9 +76,10 @@ def test_disjoint_ngram_sets_yield_no_findings(a: str, b: str) -> None:
 def test_check_corpus_is_order_insensitive(a: str, b: str) -> None:
     """
     @test-id TEST-SPEC-0073
+    @covers REQ-SPEC-0009
 
-    Feeding [s1, s2] vs [s2, s1] to check_corpus yields the same finding
-    count (the pairwise algorithm doesn't care about input order).
+        Feeding [s1, s2] vs [s2, s1] to check_corpus yields the same finding
+        count (the pairwise algorithm doesn't care about input order).
     """
     s1 = _spec("REQ-A-0001", a, "/fake/a.spec.md")
     s2 = _spec("REQ-A-0002", b, "/fake/b.spec.md")
@@ -91,9 +94,10 @@ def test_check_corpus_is_order_insensitive(a: str, b: str) -> None:
 def test_self_pairs_never_produce_findings(body: str) -> None:
     """
     @test-id TEST-SPEC-0074
+    @covers REQ-SPEC-0009
 
-    A corpus of a single SpecFile with a single REQ has no pairs; even at
-    threshold 0.0 there is nothing to flag.
+        A corpus of a single SpecFile with a single REQ has no pairs; even at
+        threshold 0.0 there is nothing to flag.
     """
     s = _spec("REQ-A-0001", body)
     findings = [

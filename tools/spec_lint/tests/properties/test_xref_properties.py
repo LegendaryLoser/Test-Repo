@@ -22,6 +22,7 @@ _FNAME = st.from_regex(r"\A[a-z][a-z0-9_]{0,15}\Z", fullmatch=True)
 def test_links_to_existing_files_never_flagged(tmp_path: pathlib.Path, name: str) -> None:
     """
     @test-id TEST-SPEC-0075
+    @covers REQ-SPEC-0008
     """
     target_name = f"{name}.md"
     write_doc(tmp_path, target_name, "# target\n")
@@ -39,9 +40,10 @@ def test_links_to_existing_files_never_flagged(tmp_path: pathlib.Path, name: str
 def test_links_to_missing_files_always_flagged(tmp_path: pathlib.Path, name: str) -> None:
     """
     @test-id TEST-SPEC-0076
+    @covers REQ-SPEC-0008
 
-    We pick a guaranteed-missing target by using a unique prefix that
-    cannot collide with anything created by the helper.
+        We pick a guaranteed-missing target by using a unique prefix that
+        cannot collide with anything created by the helper.
     """
     target = f"NONEXISTENT_{name}.md"
     src = write_doc(tmp_path, "doc.md", f"See [missing]({target}).\n")
@@ -65,6 +67,7 @@ def test_http_links_are_always_skipped(
 ) -> None:
     """
     @test-id TEST-SPEC-0077
+    @covers REQ-SPEC-0008
     """
     url = f"{scheme}://{host}/{path}"
     src = write_doc(tmp_path, "doc.md", f"[external]({url})\n")

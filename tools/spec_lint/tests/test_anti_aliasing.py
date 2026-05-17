@@ -22,6 +22,7 @@ def _parse(text: str, path: str = "/fake/a.spec.md"):
 def test_distinct_bodies_pass() -> None:
     """
     @test-id TEST-SPEC-0050
+    @covers REQ-SPEC-0009
     """
     s1 = _parse(
         spec_file_text(
@@ -50,9 +51,10 @@ def test_distinct_bodies_pass() -> None:
 def test_identical_bodies_flagged() -> None:
     """
     @test-id TEST-SPEC-0051
+    @covers REQ-SPEC-0009
 
-    Two REQs with byte-equal Description+Acceptance → similarity 1.0,
-    definitely above any reasonable threshold.
+        Two REQs with byte-equal Description+Acceptance → similarity 1.0,
+        definitely above any reasonable threshold.
     """
     body_kwargs = dict(
         description="Login with email and password.",
@@ -70,9 +72,10 @@ def test_identical_bodies_flagged() -> None:
 def test_near_duplicate_bodies_flagged_at_default_threshold() -> None:
     """
     @test-id TEST-SPEC-0052
+    @covers REQ-SPEC-0009
 
-    Same body modulo a one-word change — Jaccard over char 4-grams should
-    still be well above the default 0.7 threshold.
+        Same body modulo a one-word change — Jaccard over char 4-grams should
+        still be well above the default 0.7 threshold.
     """
     s1 = _parse(
         spec_file_text(
@@ -101,6 +104,7 @@ def test_near_duplicate_bodies_flagged_at_default_threshold() -> None:
 def test_single_req_produces_no_findings() -> None:
     """
     @test-id TEST-SPEC-0053
+    @covers REQ-SPEC-0009
     """
     s = _parse(spec_file_text(req_block("REQ-AUTH-0001")))
     findings = AntiAliasing().check_corpus([s])
@@ -110,9 +114,10 @@ def test_single_req_produces_no_findings() -> None:
 def test_custom_threshold_is_respected() -> None:
     """
     @test-id TEST-SPEC-0054
+    @covers REQ-SPEC-0009
 
-    Override the threshold to 0.99; two distinct bodies should not be
-    flagged. Same input as test_distinct_bodies_pass.
+        Override the threshold to 0.99; two distinct bodies should not be
+        flagged. Same input as test_distinct_bodies_pass.
     """
     s1 = _parse(spec_file_text(req_block("REQ-A-0001", description="Wholly different content one.")))
     s2 = _parse(spec_file_text(req_block("REQ-A-0002", description="Wholly different content two.")))
@@ -133,6 +138,7 @@ def test_custom_threshold_is_respected() -> None:
 def test_word_ngram_mode_works() -> None:
     """
     @test-id TEST-SPEC-0055
+    @covers REQ-SPEC-0009
     """
     s1 = _parse(spec_file_text(req_block("REQ-A-0001", description="A B C D E F G H I J K L")))
     s2 = _parse(spec_file_text(req_block("REQ-A-0002", description="A B C D E F G H I J K L")))
@@ -145,10 +151,11 @@ def test_word_ngram_mode_works() -> None:
 def test_self_pairs_are_skipped() -> None:
     """
     @test-id TEST-SPEC-0056
+    @covers REQ-SPEC-0009
 
-    A single SpecFile with multiple REQs: the rule must not pair a REQ with
-    itself. With one REQ in the corpus there are zero pairs; with one REQ
-    plus a distinct second, zero findings.
+        A single SpecFile with multiple REQs: the rule must not pair a REQ with
+        itself. With one REQ in the corpus there are zero pairs; with one REQ
+        plus a distinct second, zero findings.
     """
     body = req_block("REQ-A-0001", description="Unique content here.")
     s = _parse(spec_file_text(body))
@@ -158,6 +165,7 @@ def test_self_pairs_are_skipped() -> None:
 def test_rule_id_and_description_are_stable() -> None:
     """
     @test-id TEST-SPEC-0057
+    @covers REQ-SPEC-0009
     """
     r = AntiAliasing()
     assert r.id == "anti-aliasing"

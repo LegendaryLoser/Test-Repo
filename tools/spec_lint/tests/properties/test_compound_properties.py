@@ -49,6 +49,7 @@ def _check(spec_text: str):
 def test_N_given_bullets_flag_iff_N_gt_1(n: int) -> None:
     """
     @test-id TEST-SPEC-0069
+    @covers REQ-SPEC-0006
     """
     text = spec_file_text(_block_with_n_givens(n))
     findings = [f for f in _check(text) if f.rule_id == "compound-requirement-detector"]
@@ -69,6 +70,7 @@ def test_N_given_bullets_flag_iff_N_gt_1(n: int) -> None:
 def test_case_does_not_affect_count(given_word: str, n: int) -> None:
     """
     @test-id TEST-SPEC-0070
+    @covers REQ-SPEC-0006
     """
     text = spec_file_text(_block_with_n_givens(n, given_word=given_word))
     findings = [f for f in _check(text) if f.rule_id == "compound-requirement-detector"]

@@ -27,13 +27,6 @@ TOOLS_ROOT = pathlib.Path(__file__).resolve().parents[2]
 _TEST_ID_RE = re.compile(r"@test-id\s+TEST-[A-Z][A-Z0-9_-]*-(?:\d+|NNN)")
 _COVERS_REQ_RE = re.compile(r"@covers\s+REQ-[A-Z][A-Z0-9_]*-\d+")
 
-# Self-exemption: this file is allowed to lack annotations until
-# TASK-0028 backfills it. Removed at GREEN time.
-_SELF_EXEMPT = {
-    "ci/tests/test_annotation_discipline.py",
-}
-
-
 def _discover_test_files() -> list[pathlib.Path]:
     out = []
     for p in sorted(TOOLS_ROOT.rglob("test_*.py")):
@@ -59,8 +52,6 @@ def _violations() -> list[str]:
     out: list[str] = []
     for path in _discover_test_files():
         rel = str(path.relative_to(TOOLS_ROOT)).replace("\\", "/")
-        if rel in _SELF_EXEMPT:
-            continue
         for lineno, name, doc in _enumerate_tests(path):
             missing = []
             if not _TEST_ID_RE.search(doc):

@@ -30,9 +30,10 @@ def _check(repo: pathlib.Path, file_rel: str = SPEC_REL):
 def test_unchanged_history_produces_no_findings(tmp_path: pathlib.Path) -> None:
     """
     @test-id TEST-SPEC-0017
+    @covers REQ-SPEC-0010
 
-    Three commits, same REQ-ID throughout. Even with body/status changes,
-    nothing disappeared.
+        Three commits, same REQ-ID throughout. Even with body/status changes,
+        nothing disappeared.
     """
     v1 = spec_file_text(req_block("REQ-AUTH-0001", status="draft"))
     v2 = spec_file_text(req_block("REQ-AUTH-0001", status="tests-red"))
@@ -44,8 +45,9 @@ def test_unchanged_history_produces_no_findings(tmp_path: pathlib.Path) -> None:
 def test_deprecation_in_place_produces_no_findings(tmp_path: pathlib.Path) -> None:
     """
     @test-id TEST-SPEC-0018
+    @covers REQ-SPEC-0010
 
-    REQ remains in the file with status: deprecated — the legal lifecycle.
+        REQ remains in the file with status: deprecated — the legal lifecycle.
     """
     v1 = spec_file_text(req_block("REQ-AUTH-0001", status="tests-green"))
     v2 = spec_file_text(
@@ -59,9 +61,10 @@ def test_deprecation_in_place_produces_no_findings(tmp_path: pathlib.Path) -> No
 def test_removal_produces_a_finding(tmp_path: pathlib.Path) -> None:
     """
     @test-id TEST-SPEC-0019
+    @covers REQ-SPEC-0010
 
-    REQ disappears entirely between two commits — the failure mode this rule
-    exists to catch.
+        REQ disappears entirely between two commits — the failure mode this rule
+        exists to catch.
     """
     v1 = spec_file_text(req_block("REQ-AUTH-0001"))
     v2 = spec_file_text(req_block("REQ-AUTH-0002"))  # 0001 vanished
@@ -77,10 +80,11 @@ def test_removal_produces_a_finding(tmp_path: pathlib.Path) -> None:
 def test_rename_appears_as_removal(tmp_path: pathlib.Path) -> None:
     """
     @test-id TEST-SPEC-0020
+    @covers REQ-SPEC-0010
 
-    "Rename" is just `add new ID + remove old ID` from this rule's point
-    of view. ADR-0004 §1 forbids it; supersession (which keeps the old REQ
-    in the file as deprecated) is the only path.
+        "Rename" is just `add new ID + remove old ID` from this rule's point
+        of view. ADR-0004 §1 forbids it; supersession (which keeps the old REQ
+        in the file as deprecated) is the only path.
     """
     body = "Same content in both commits."
     v1 = spec_file_text(req_block("REQ-AUTH-0001", description=body))
@@ -95,6 +99,7 @@ def test_rename_appears_as_removal(tmp_path: pathlib.Path) -> None:
 def test_rule_id_and_description_are_stable() -> None:
     """
     @test-id TEST-SPEC-0021
+    @covers REQ-SPEC-0010
     """
     r = ReqIdImmutable()
     assert r.id == "req-id-immutable"

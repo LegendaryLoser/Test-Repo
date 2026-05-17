@@ -55,6 +55,7 @@ def _block_with_acceptance_lines(req_id: str, *acceptance_lines: str) -> str:
 def test_single_given_when_then_is_clean() -> None:
     """
     @test-id TEST-SPEC-0045
+    @covers REQ-SPEC-0006
     """
     text = spec_file_text(req_block("REQ-AUTH-0001"))
     findings = CompoundRequirementDetector().check(_parse(text))
@@ -64,10 +65,11 @@ def test_single_given_when_then_is_clean() -> None:
 def test_two_given_when_then_bullets_is_flagged() -> None:
     """
     @test-id TEST-SPEC-0046
+    @covers REQ-SPEC-0006
 
-    The exact failure mode this rule exists to catch: a single REQ whose
-    Acceptance has two distinct Given/When/Then assertions. Should be split
-    into two REQs.
+        The exact failure mode this rule exists to catch: a single REQ whose
+        Acceptance has two distinct Given/When/Then assertions. Should be split
+        into two REQs.
     """
     block = _block_with_acceptance_lines(
         "REQ-AUTH-0001",
@@ -85,6 +87,7 @@ def test_two_given_when_then_bullets_is_flagged() -> None:
 def test_three_given_when_then_bullets_is_flagged() -> None:
     """
     @test-id TEST-SPEC-0047
+    @covers REQ-SPEC-0006
     """
     block = _block_with_acceptance_lines(
         "REQ-AUTH-0001",
@@ -100,10 +103,11 @@ def test_three_given_when_then_bullets_is_flagged() -> None:
 def test_no_acceptance_section_does_not_crash() -> None:
     """
     @test-id TEST-SPEC-0048
+    @covers REQ-SPEC-0006
 
-    A REQ missing its Acceptance section is a frontmatter/structural defect
-    (caught by spec-frontmatter-valid). compound-requirement-detector must
-    return no findings for this case — it is not the right rule to flag it.
+        A REQ missing its Acceptance section is a frontmatter/structural defect
+        (caught by spec-frontmatter-valid). compound-requirement-detector must
+        return no findings for this case — it is not the right rule to flag it.
     """
     text = (
         "## REQ-AUTH-0001\n"
@@ -131,6 +135,7 @@ def test_no_acceptance_section_does_not_crash() -> None:
 def test_rule_id_and_description_are_stable() -> None:
     """
     @test-id TEST-SPEC-0049
+    @covers REQ-SPEC-0006
     """
     r = CompoundRequirementDetector()
     assert r.id == "compound-requirement-detector"
