@@ -414,3 +414,48 @@ Every Python test function under `tools/` carries both an
 
 ### Notes
 - Implementation: [`tools/ci/tests/test_annotation_discipline.py`](../../../tools/ci/tests/test_annotation_discipline.py).
+
+## REQ-SPEC-0014
+---
+id: REQ-SPEC-0014
+revision: 1
+status: tests-green
+introduced: CHG-0013
+supersedes: null
+phase: PHASE-1
+tier: integration
+references:
+  epic: null
+  story: null
+  adrs: [ADR-0008]
+---
+
+### Description
+The `spec-lint` job in `.github/workflows/ci.yml` runs the spec_lint
+CLI gates and the full pytest suite on every pull request and every
+push to master/main. The job exits non-zero if any gate reports
+findings or any test fails. Steps include: checkout (with full
+history), Python 3.11 setup, dev-dependency install, `validate`,
+`check-layout`, and `pytest tools/`.
+
+### Acceptance
+- Given the current `.github/workflows/ci.yml`, when
+  `pytest tools/ci/tests/test_workflow_wiring.py` is invoked, then it
+  exits with status `0` (the spec-lint job contains the required
+  structural steps with no PHASE-0 placeholder remaining).
+
+### Non-acceptance
+- `trace-gates`, `unit-integration`, and `phase-exit` jobs remain
+  PHASE-0 placeholders pending PHASE-2 / PHASE-3+ work; they are not
+  in scope for this REQ.
+- The e2e workflow (`e2e.yml`) is not in scope.
+- The consequence — "a violating PR is blocked from merge" — is the
+  outcome the contract enables but is only observable via live CI
+  runs; out of scope as a unit-testable assertion.
+
+### Notes
+- Implementation: [`.github/workflows/ci.yml`](../../../.github/workflows/ci.yml).
+- Meta-test: [`tools/ci/tests/test_workflow_wiring.py`](../../../tools/ci/tests/test_workflow_wiring.py).
+- Tier `integration` because the test exercises a YAML configuration
+  file in conjunction with the CLI commands it invokes; the actual
+  end-to-end behavior is observable only via a live CI run.
