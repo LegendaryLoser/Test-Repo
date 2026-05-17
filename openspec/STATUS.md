@@ -38,7 +38,7 @@ then proceed.
 | 0014 | INDEX subcommand + populate INDEX.yaml                         | merged      | #15 |
 | 0030 | Test annotation discipline + 87-test backfill                  | merged      | #13 (stacked) |
 | 0031 | Session continuity scaffold                                    | merged      | (in #15) |
-| 0032 | Architecture audit (BMAD multi-pass, COMPOSITE-V2)             | in-progress | TBD |
+| 0032 | Architecture audit (BMAD multi-pass) + QD triage + corpus      | in-progress | TBD |
 
 ## Audit findings
 
@@ -164,6 +164,7 @@ Sequenced from current state. `[x]` merged, `[~]` in flight, `[ ]` queued.
 | 2026-05-17 | Adopt Quality-Diversity framework (σ × κ Pareto admission, ACGR convergence) replacing COMPOSITE-V2 Gate 6 marginal-novelty rule; codify in methodology ADR | User decision after research synthesis (MAP-Elites, Mixture-of-Complementary-Agents, ambiguity decomposition); satisfies "new methods that provide signal must be admitted" constraint while still producing a defensible stopping rule |
 | 2026-05-17 | Full QD triage of all 36 audit streams complete (qd-triage.md); 4 Tier-D deprecation candidates surfaced (COURSE, CHECK, EDIT, VALID2); 5 high-importance empty cells identified as Wave 5 admission targets | Triage produced empirical per-method σ × κ scores from existing audit corpus without re-running streams |
 | 2026-05-17 | Rescue-persist the 35 sub-agent raw transcripts + per-stream findings into the repo (raw-transcripts/ + findings/) | Original audit README mistakenly relied on ephemeral container `/tmp/` storage for raw outputs; container reclaim would have lost the corpus. Future audits must persist inline. |
+| 2026-05-17 | Author CHG-0032 envelope retroactively (proposal.md + 7 TASK files + REQ-AUDIT-0001 at `openspec/specs/audit/methodology.spec.md`) | Audit work had been carrying dangling `Task: TASK-NNNN` and `Requirements: REQ-AUDIT-0001` trailers that referenced files which did not exist. Retroactive authoring resolves the dangling references and gives the fresh session a canonical scope declaration. P4 violation acknowledged (envelope is descriptive not prescriptive); methodology codification ADR queued to address audit-CHG lifecycle question. |
 
 ## Next session: start here
 
@@ -197,7 +198,12 @@ User's standing direction (Recent decisions, 2026-05-17 "Run implementation audi
 
 **Fourth action:** plan resolution CHG sequence against the joint ledger. Per user direction, do NOT start any Tier 1+ resolution CHG (CHG-0014b drop `generated_at`, CHG-0015 REQ-ARCH migration, etc.) until both audits converge and the joint resolution sequence is approved.
 
-**Persistent audit artifact:**
+**CHG-0032 envelope (authoritative):**
+- `openspec/changes/CHG-0032/proposal.md` — scope declaration, what changes, out of scope, tasks table, rollout, risks
+- `openspec/changes/CHG-0032/tasks/TASK-0035.md` through `TASK-0041.md` — per-task summary, definition of done (post-hoc checklist), commit SHA, notes
+- `openspec/specs/audit/methodology.spec.md` — REQ-AUDIT-0001 (corpus-persistence requirement); status: draft
+
+**Persistent audit artifact (staging, per ADR-0002 §7):**
 - `openspec/_bmad-output/knowledge/audit/2026-05-17-architecture/README.md` — session metadata + method
 - `openspec/_bmad-output/knowledge/audit/2026-05-17-architecture/consolidated.md` — ~70 themes across 36 streams; proposed 17-tier resolution sequence (Tier 0 = doc-only sync, Tier 16 = artifact rebaseline)
 - `openspec/_bmad-output/knowledge/audit/2026-05-17-architecture/findings-index.md` — per-stream provenance ledger; theme → constituent finding IDs
@@ -205,7 +211,7 @@ User's standing direction (Recent decisions, 2026-05-17 "Run implementation audi
 - `openspec/_bmad-output/knowledge/audit/2026-05-17-architecture/raw-transcripts/` — 35 sub-agent `.jsonl` transcripts (full conversation logs incl. tool calls); MANIFEST.md maps stream prefix → file; persist-corpus.py is the one-shot extraction tool
 - `openspec/_bmad-output/knowledge/audit/2026-05-17-architecture/findings/` — 35 per-stream extracted findings markdown files (sub-agent's initial prompt + final deliverable text); the human-readable evidence base for the audit; use this for re-clustering, implementation-audit calibration, or resolution-CHG drafting
 
-**Convergence projection (under ACGR metric, qd-triage.md §7):** Wave 4 = ~45%; Wave 5 (Tier-1 empty-cell targets + meta-review = 4 streams) projected ~10-15%; Wave 6 (remaining empty cells + confirmation pairs) projected <5% (convergence). Compression × * lens has no Tier-A occupant (DISTILL is Tier B only); flag this as a known gap in the methodology ADR.
+**Convergence projection (under ACGR metric, qd-triage.md §7):** Wave 4 = ~45%; Wave 5 (Tier-1 empty-cell targets + meta-review = 4 streams) projected ~10-15%; Wave 6 (remaining empty cells + confirmation pairs) projected <5% (convergence). Compression × * lens has no Tier-A occupant (DISTILL is Tier B only); flag this as a known gap in the methodology codification ADR. <!-- spec-lint: allow prose-xref-banned -->  <!-- the methodology codification ADR has no allocated ID yet; queued per user direction post-implementation-audit -->
 
 **Commit trailers (per CLAUDE.md, mandatory):**
 
@@ -216,4 +222,4 @@ Tests-Status: <none|red|red→green|green|deprecated>
 Phase: PHASE-1
 ```
 
-Last TASK number used: TASK-0039 (STATUS.md staleness sweep). Next available: TASK-0040. No `--no-verify`, no hook bypass.
+Last TASK number used: TASK-0041 (CHG-0032 envelope authoring). Next available: TASK-0042. No `--no-verify`, no hook bypass.

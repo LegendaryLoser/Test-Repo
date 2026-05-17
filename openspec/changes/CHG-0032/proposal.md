@@ -1,0 +1,188 @@
+---
+id: CHG-0032
+title: Architecture audit (BMAD multi-pass) + QD triage + corpus persistence
+status: in-progress
+date: 2026-05-17
+phase: PHASE-1
+references:
+  story: null
+  epic: null
+  adrs:
+    - ADR-0002
+    - ADR-0005
+    - ADR-0008
+---
+
+# CHG-0032 — Architecture audit (BMAD multi-pass) + QD triage + corpus persistence
+
+## Why
+
+Two drivers:
+
+1. **User direction:** maximum-rigor multi-perspective adversarial review
+   of the 15-document architecture artifact (ARCHITECTURE.md + 8 ADRs +
+   6 PHASE files) before resuming any queued implementation roadmap.
+   Closes the open audit finding NEW-3 (BMAD review skills not in CHG
+   workflow) per STATUS.md.
+2. **Methodology question:** the project's previously declared
+   convergence metric (COMPOSITE-V2 Gate 6 — "<10% marginal novelty")
+   turned out to be structurally unachievable. The Wave 4 supplement
+   surfaced an empirical finding that marginal novelty is dominated by
+   methodology variance, not model variance, so any genuinely new method
+   spikes novelty back to ~60-70%. A research-grounded replacement
+   metric was needed.
+
+## What changes
+
+This CHG bundles audit execution + measurement-framework adoption +
+evidence persistence. **It does not author the methodology codification
+ADR** (per user direction, that ADR is queued for after both
+architecture and implementation audits converge). It also does not
+start any Tier 1+ resolution CHGs.
+
+### Architecture audit corpus
+
+Four waves of multi-perspective adversarial review:
+
+- **Wave 1:** 12 streams across diverse methods (adversarial-general,
+  edge-case-hunter, implementation-readiness, editorial-structure,
+  editorial-prose, pre-mortem, party-mode, inheritor framing) and
+  diverse models (opus, sonnet, haiku).
+- **Wave 2:** 8 streams adding socratic, red-team, retrospective,
+  validate-prd, Winston persona, distillator, first-principles, Amelia
+  persona.
+- **Wave 3:** 8 streams adding John PM, Mary analyst, Sally UX, Paige
+  tech writer, edit-PRD, correct-course, checkpoint-preview, devil's
+  advocate.
+- **Wave 4:** 8 streams: 6 sonnet model-permutations of prior methods
+  (red-team, retrospective, edge-case-hunter, inheritor, validate-prd,
+  pre-mortem) and 2 new methods (stakeholder-simulation,
+  counter-factual).
+
+Total: 36 streams, ~700 raw findings, ~70 distinct themes.
+
+### Consolidation and triage
+
+Artifacts at `openspec/_bmad-output/knowledge/audit/2026-05-17-architecture/`:
+
+- `README.md` — session metadata.
+- `consolidated.md` — thematic clustering (~70 themes) with 17-tier
+  proposed resolution sequence.
+- `findings-index.md` — per-stream provenance ledger and theme →
+  constituent finding ID mapping.
+- `qd-triage.md` — Quality-Diversity triage of all 36 streams; per-
+  method σ × κ scoring; Tier A/B/C/D catalog; QD matrix occupancy;
+  empty-cell Wave-5 admission targets; ACGR convergence metric
+  diagnostic; 8 draft clauses (§§1-11) for the methodology
+  codification ADR.
+
+### Quality-Diversity framework adoption
+
+Replaces COMPOSITE-V2 Gate 6 with σ × κ Pareto admission per cell + ACGR
+(Archive Coverage Growth Rate) convergence metric. Grounded in published
+research: MAP-Elites (Mouret & Clune 2015; Stock 2025), Multi-Objective
+MAP-Elites (Pierrot et al. 2022), ambiguity decomposition (Krogh &
+Vedelsby 1994), Mixture of Complementary Agents (NeurIPS 2025),
+Self-MoA negative result (Wang et al. 2025), Multi-Agent Debate
+stability research (ICLR 2025). See `qd-triage.md` §1 for citations
+and §2 for definitions.
+
+### Corpus persistence
+
+35 sub-agent raw transcripts (~5.7 MB) plus 35 per-stream extracted
+findings markdown (~776 KB) persisted into `raw-transcripts/` and
+`findings/` subdirectories. Manifest at `raw-transcripts/MANIFEST.md`;
+extraction tool at `raw-transcripts/persist-corpus.py`. The 36th stream
+(`ARCH-`, in-context) has no separate transcript.
+
+### REQ-AUDIT-0001
+
+New requirement at `openspec/specs/audit/methodology.spec.md`. Captures
+the corpus-persistence obligation. Status: `draft`; full enforcement
+deferred to the methodology codification ADR.
+
+### Session-resume infrastructure
+
+`openspec/STATUS.md` updated across multiple sweeps to reflect audit
+progress, decisions made, and the "Next session: start here" pointer.
+
+## Out of scope
+
+- **Methodology codification ADR.** Draft clauses are in
+  `qd-triage.md` §9; full authoring is queued for after the
+  implementation audit converges and the joint resolution sequence is
+  approved. Per user direction (STATUS.md Recent decisions
+  2026-05-17 row "Codify audit methodology in ADR after BOTH
+  architecture + implementation audits complete").
+- **Implementation audit.** Queued as a separate CHG; uses the QD
+  catalog from `qd-triage.md` §5 dogfood-style against `tools/spec_lint/`,
+  `tools/ci/`, `_bmad/`, and `.github/workflows/`.
+- **Wave 5 architecture audit.** Identified as a potential next step
+  in `qd-triage.md` §8 (4 streams targeting Tier-1 empty cells). Whether
+  to run Wave 5 before or in lieu of the implementation audit is the
+  first decision the next session must make.
+- **Resolution CHGs.** The 17-tier resolution sequence in
+  `consolidated.md` (CHG-A through CHG-CC) is a *proposal*. No
+  resolution CHG starts until both audits converge per user direction
+  (STATUS.md Recent decisions 2026-05-17 row "Re-sequence: do not start
+  any Tier 1+ resolution CHG until both audits converge").
+- **σ × κ measurement automation.** The triage estimated σ and κ from
+  theme membership counts. The methodology ADR's red-test phase will
+  add tools at `tools/ci/tests/audit_meta/` to mechanise both measures.
+
+## Tasks
+
+| Task | Type | Status | Summary | Commit |
+|------|------|--------|---------|--------|
+| TASK-0035 | docs | done | Wave 1 audit (12 streams) consolidated | `cc7ce61` |
+| TASK-0036 | docs | done | Wave 2+3 supplement (16 streams) | `dc3e4fa` |
+| TASK-0037 | docs | done | Wave 4 supplement (8 streams); methodology-variance finding | `8a9f7ee` |
+| TASK-0038 | docs | done | Quality-Diversity triage of all 36 streams | `28a06b8` |
+| TASK-0039 | docs | done | STATUS.md staleness sweep | `50b21f8` |
+| TASK-0040 | docs | done | Corpus rescue: 35 transcripts + findings + manifest | `04be686` |
+| TASK-0041 | docs | done | Author CHG-0032 envelope retroactively (this proposal + 7 TASK files + REQ-AUDIT-0001) | (this commit) |
+
+See `tasks/` for per-task detail.
+
+## Rollout
+
+The audit's deliverables are STAGING-only per ADR-0002 §7. Nothing in
+this CHG modifies authoritative artifacts (specs, INDEX.yaml entries
+other than REQ-AUDIT-0001, source code, or CI gates). No CI gate or
+test count is changed.
+
+Next-session actions are documented in STATUS.md "Next session: start
+here" section. The first action is a user decision: run Wave 5
+architecture audit, or start the implementation audit, or both.
+
+## Risk
+
+- **Retroactive envelope authoring (THEME-MM).** The proposal and TASK
+  files were authored *after* the work they describe, violating
+  red-first discipline (P4). The next session inheriting this work
+  must treat the envelope as descriptive (a faithful record of what
+  was done) rather than prescriptive (an upfront contract). The
+  methodology codification ADR is expected to address whether audit
+  CHGs need a different lifecycle than implementation CHGs.
+- **REQ-AUDIT-0001 status = draft.** The corpus-persistence assertion
+  has no mechanical enforcement gate yet. A future audit could fail
+  to persist and `spec_lint validate` would not catch it. Enforcement
+  is deferred to the methodology codification ADR.
+- **`Requirements: REQ-AUDIT-0001` in trailers TASK-0036 and TASK-0037
+  pre-dated the REQ's existence.** This commit retroactively makes the
+  references valid. Future commits should not allocate REQ-IDs in
+  trailers before authoring the matching spec block. <!-- spec-lint: allow prose-xref-banned -->
+- **QD framework adoption ahead of formal ADR.** STATUS.md Recent
+  decisions records the QD framework adoption, but the codification
+  ADR has not landed. If the implementation audit invalidates parts of
+  the framework, those changes must propagate to `qd-triage.md` and
+  the queued methodology codification ADR. <!-- spec-lint: allow prose-xref-banned --> The triage's §11
+  limitations section flags the unmeasured σ / κ values and the
+  post-hoc behavioural-axis choice as the most exposed assumptions.
+- **Audit findings remain unresolved.** ~70 themes, including 12 Tier-A
+  CRITICAL themes (BMAD strategy drift, trailer schema fragmentation,
+  gate-coverage syntactic-not-semantic, hook implementation, red-before-
+  green checkpoint, push invariant, phase ordering, etc.). The
+  resolution program is a multi-month effort if pursued in full;
+  scope decisions are listed in `consolidated.md` "Decision points
+  before kicking off the resolution program."
