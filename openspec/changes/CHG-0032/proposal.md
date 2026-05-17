@@ -42,7 +42,7 @@ start any Tier 1+ resolution CHGs.
 
 ### Architecture audit corpus
 
-Four waves of multi-perspective adversarial review:
+Five waves of multi-perspective adversarial review:
 
 - **Wave 1:** 12 streams across diverse methods (adversarial-general,
   edge-case-hunter, implementation-readiness, editorial-structure,
@@ -58,8 +58,16 @@ Four waves of multi-perspective adversarial review:
   (red-team, retrospective, edge-case-hunter, inheritor, validate-prd,
   pre-mortem) and 2 new methods (stakeholder-simulation,
   counter-factual).
+- **Wave 5:** 4 streams targeting Tier-1 empty cells per
+  `qd-triage.md` §8: governance-focused validation (`GOV-`),
+  security-engineer persona (`SEC-`), governance devil's-advocate
+  (`GOVDEV-`), and reasoning-tree meta-auditor (`META-`). First wave
+  admitted under the QD admission rule (cell-fill, not raw novelty);
+  first wave to invoke a candidate 5th axis (meta).
 
-Total: 36 streams, ~700 raw findings, ~70 distinct themes.
+Total: 40 streams, ~700 raw findings + Wave 5 supplement (consolidation
+pending), ~70 distinct themes from Waves 1-4 (Wave-5 thematic
+consolidation deferred to a follow-on task).
 
 ### Consolidation and triage
 
@@ -89,11 +97,14 @@ and §2 for definitions.
 
 ### Corpus persistence
 
-35 sub-agent raw transcripts (~5.7 MB) plus 35 per-stream extracted
-findings markdown (~776 KB) persisted into `raw-transcripts/` and
-`findings/` subdirectories. Manifest at `raw-transcripts/MANIFEST.md`;
-extraction tool at `raw-transcripts/persist-corpus.py`. The 36th stream
-(`ARCH-`, in-context) has no separate transcript.
+39 sub-agent raw transcripts (35 from Waves 1-4 + 4 from Wave 5) plus
+per-stream extracted findings markdown persisted into `raw-transcripts/`
+and `findings/` subdirectories. Manifest at `raw-transcripts/MANIFEST.md`;
+extraction tool at `raw-transcripts/persist-corpus.py`. The 40th stream
+(`ARCH-`, in-context) has no separate transcript. The extraction tool is
+incremental: each re-run ingests new cache-resident transcripts whose
+description is in `DESC_TO_STREAM` and preserves rows for transcripts
+already on disk from prior sessions.
 
 ### REQ-AUDIT-0001
 
@@ -117,10 +128,15 @@ progress, decisions made, and the "Next session: start here" pointer.
 - **Implementation audit.** Queued as a separate CHG; uses the QD
   catalog from `qd-triage.md` §5 dogfood-style against `tools/spec_lint/`,
   `tools/ci/`, `_bmad/`, and `.github/workflows/`.
-- **Wave 5 architecture audit.** Identified as a potential next step
-  in `qd-triage.md` §8 (4 streams targeting Tier-1 empty cells). Whether
-  to run Wave 5 before or in lieu of the implementation audit is the
-  first decision the next session must make.
+- **Wave 5 thematic consolidation.** Wave 5 raw findings are persisted
+  per TASK-0042 but their integration into `consolidated.md`
+  (new-theme identification, sole-source attribution), `qd-triage.md`
+  §3.5 (per-stream σ × κ), and ACGR re-measurement are deferred to a
+  follow-on consolidation task. Predicted ACGR per `qd-triage.md` §7:
+  10-15%; this prediction is testable only after the consolidation pass.
+- **Wave 6.** Conditional on the Wave-5 ACGR re-measurement. Per
+  `qd-triage.md` §2.6 the architecture audit terminates when ACGR < 5%
+  for two consecutive waves.
 - **Resolution CHGs.** The 17-tier resolution sequence in
   `consolidated.md` (CHG-A through CHG-CC) is a *proposal*. No
   resolution CHG starts until both audits converge per user direction
@@ -140,7 +156,8 @@ progress, decisions made, and the "Next session: start here" pointer.
 | TASK-0038 | docs | done | Quality-Diversity triage of all 36 streams | `28a06b8` |
 | TASK-0039 | docs | done | STATUS.md staleness sweep | `50b21f8` |
 | TASK-0040 | docs | done | Corpus rescue: 35 transcripts + findings + manifest | `04be686` |
-| TASK-0041 | docs | done | Author CHG-0032 envelope retroactively (this proposal + 7 TASK files + REQ-AUDIT-0001) | (this commit) |
+| TASK-0041 | docs | done | Author CHG-0032 envelope retroactively (this proposal + 7 TASK files + REQ-AUDIT-0001) | `5df73fb` |
+| TASK-0042 | docs | done | Architecture audit Wave 5 (4 streams: governance, security, governance-devil's-advocate, meta-auditor) | (this commit) |
 
 See `tasks/` for per-task detail.
 

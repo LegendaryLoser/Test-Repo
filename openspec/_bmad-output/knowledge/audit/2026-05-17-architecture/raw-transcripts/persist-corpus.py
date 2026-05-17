@@ -8,15 +8,25 @@ raw transcript into raw-transcripts/ under a stream-named filename, extracts the
 final assistant text message into findings/ as a readable markdown deliverable,
 and emits a manifest.
 
+**Incremental.** Re-running this script across multiple sessions is safe:
+- New cache-resident transcripts (whose description is in DESC_TO_STREAM) are
+  copied + their findings extracted + added to the manifest.
+- Already-persisted transcripts in raw-transcripts/ from prior sessions are
+  preserved (not re-copied, not re-extracted — their findings.md files may
+  have been hand-edited since) and re-included in the regenerated manifest by
+  scanning raw-transcripts/*-agent-*.jsonl and reverse-lookup via PREFIX_TO_INFO.
+
 This script is the only mechanical record of how the audit corpus was extracted;
-it is checked in alongside its outputs so a future session can re-run it (if the
-source cache happens to survive) or audit how the extraction was done.
+it is checked in alongside its outputs so a future session can re-run it and
+extend the corpus with a new wave's transcripts.
 
 Not a CI gate; not authoritative. Lives under _bmad-output/ (staging) per
 ADR-0002 §7.
 
 Usage: python3 persist-corpus.py
-       (no args; paths are hardcoded since this is a one-shot)
+       (no args; paths are hardcoded)
+
+To add a new wave: append entries to DESC_TO_STREAM, then re-run.
 """
 
 import json
@@ -72,6 +82,16 @@ DESC_TO_STREAM = {
     "Pre-mortem sonnet": ("PREM2", 4, "advanced-elicitation-pre-mortem", "sonnet"),
     "Stakeholder simulation": ("STAKE", 4, "stakeholder-simulation", "opus"),
     "Counter-factual analysis": ("COUNTER", 4, "counter-factual", "opus"),
+    # Wave 5 — 4 streams targeting Tier-1 empty cells per qd-triage.md §8
+    "Governance-focused validation review": ("GOV", 5, "validate-prd-governance-focused", "opus"),
+    "Security engineer holistic persona review": ("SEC", 5, "persona-security-engineer-holistic", "opus"),
+    "Devil's advocate governance focus": ("GOVDEV", 5, "advanced-elicitation-devils-advocate-governance-focused", "opus"),
+    "Reasoning tree meta-auditor": ("META", 5, "reasoning-tree-meta-audit", "opus"),
+}
+
+PREFIX_TO_INFO = {
+    prefix: (wave, method, model)
+    for (prefix, wave, method, model) in DESC_TO_STREAM.values()
 }
 
 
@@ -138,8 +158,12 @@ def main():
     manifest_rows = []
     seen_streams = set()
     unmapped = []
+    pre_persisted_count = 0
 
+    # Pass 1: ingest any new transcripts from container-local cache.
     for src_root in SOURCE_ROOTS:
+        if not src_root.exists():
+            continue
         for meta_path in sorted(src_root.glob("*/subagents/*.meta.json")):
             session_id = meta_path.parts[-3]
             agent_id = meta_path.stem.removeprefix("agent-").removesuffix(".meta")
@@ -193,16 +217,51 @@ def main():
                 "description": desc,
             })
 
+    # Pass 2: scan already-persisted transcripts in raw-transcripts/ (from
+    # prior sessions whose cache is no longer reachable). Don't re-copy or
+    # re-extract — their findings/<PREFIX>-findings.md may have been hand-
+    # curated since. Just include them in the regenerated manifest.
+    for raw_file in sorted(RAW_DIR.glob("*-agent-*.jsonl")):
+        name = raw_file.name
+        if "-agent-" not in name:
+            continue
+        prefix, _, rest = name.partition("-agent-")
+        agent_id = rest.removesuffix(".jsonl")
+        if prefix in seen_streams:
+            continue
+        info = PREFIX_TO_INFO.get(prefix)
+        if info is None:
+            unmapped.append((agent_id, f"(pre-persisted, prefix {prefix} not in PREFIX_TO_INFO)"))
+            continue
+        wave, method, model = info
+        seen_streams.add(prefix)
+        pre_persisted_count += 1
+        manifest_rows.append({
+            "wave": wave,
+            "prefix": prefix,
+            "method": method,
+            "model": model,
+            "agent_id": agent_id,
+            "session_id": "(prior session; cache reclaimed)",
+            "raw_size_bytes": raw_file.stat().st_size,
+            "raw_path": f"raw-transcripts/{name}",
+            "findings_path": f"findings/{prefix}-findings.md",
+            "description": "(from prior session)",
+        })
+
     manifest_rows.sort(key=lambda r: (r["wave"], r["prefix"]))
 
     manifest_md = ["# Raw audit corpus — manifest\n\n"]
     manifest_md.append(
-        "Mechanically generated from the sub-agent task transcripts that were "
-        "preserved in the container-local cache at "
-        "`/root/.claude/projects/-home-user-Test-Repo/<session>/subagents/`. "
-        "Each row maps a stream prefix (as cited in `findings-index.md` and "
+        "Mechanically generated from the sub-agent task transcripts. Each row "
+        "maps a stream prefix (as cited in `findings-index.md` and "
         "`consolidated.md`) to the raw `.jsonl` transcript and the extracted "
-        "per-stream findings markdown.\n\n"
+        "per-stream findings markdown. Generator is incremental — see "
+        "[`persist-corpus.py`](persist-corpus.py): pass 1 ingests new "
+        "transcripts from the container-local cache "
+        "`/root/.claude/projects/-home-user-Test-Repo/<session>/subagents/`; "
+        "pass 2 preserves rows for transcripts already on disk in "
+        "`raw-transcripts/` from prior sessions.\n\n"
     )
     manifest_md.append(
         "**Note:** the `ARCH-` stream is not in this manifest. It was the "
@@ -210,9 +269,11 @@ def main():
         "no separate transcript — its findings live in the main-session "
         "transcript which is not part of this corpus.\n\n"
     )
+    n_total = len(manifest_rows)
+    n_waves = sorted({r["wave"] for r in manifest_rows})
     manifest_md.append(
-        f"**Total streams:** {len(manifest_rows)} (matches 35 sub-agent streams; "
-        f"the 36th is `ARCH-` in-context).\n\n"
+        f"**Total streams:** {n_total} sub-agent streams across waves "
+        f"{', '.join(str(w) for w in n_waves)} (+ the in-context `ARCH-` stream).\n\n"
     )
     total_bytes = sum(r["raw_size_bytes"] for r in manifest_rows)
     manifest_md.append(f"**Total raw transcript size:** {total_bytes:,} bytes "
@@ -251,41 +312,50 @@ def main():
     )
     manifest_md.append("## Extraction tool\n\n")
     manifest_md.append(
-        "The extraction was performed by [`persist-corpus.py`](persist-corpus.py) "
-        "checked in alongside this manifest. The tool is one-shot and idempotent "
-        "(re-running overwrites). It is **not** wired into CI — it is a "
-        "container-side rescue tool used once at 2026-05-17 to persist the "
-        "audit corpus before the session container was reclaimed. Future "
-        "audits should persist their corpus inline rather than relying on "
-        "post-hoc rescue.\n\n"
+        "The extraction is performed by [`persist-corpus.py`](persist-corpus.py) "
+        "checked in alongside this manifest. The tool is incremental and "
+        "idempotent: each re-run ingests any new cache-resident transcripts "
+        "whose description is in `DESC_TO_STREAM`, and preserves rows for "
+        "transcripts already on disk in `raw-transcripts/` from prior "
+        "sessions. The tool is **not** wired into CI. To extend the corpus "
+        "with a new wave: append entries to `DESC_TO_STREAM`, ensure the "
+        "wave's sub-agent transcripts are still in the local cache, and "
+        "re-run.\n\n"
     )
     manifest_md.append("## Provenance\n\n")
     manifest_md.append(
-        "- Extracted on: 2026-05-17\n"
+        "- Initial extraction: 2026-05-17 (Waves 1-4, 35 streams; corpus "
+        "rescue from container-local cache before reclaim).\n"
+        "- Subsequent extractions append new waves' transcripts; pre-"
+        "existing rows are preserved.\n"
         "- Source: container-local cache `/root/.claude/projects/"
-        "-home-user-Test-Repo/<session-id>/subagents/`\n"
-        "- Source preservation: extracted post-hoc; the original audit "
-        "README.md had stated raw outputs would not be persisted (mistake; "
-        "corrected by this artifact).\n"
-        "- All transcripts cross-checked against `findings-index.md` "
-        "per-stream tally; per-stream finding counts in the transcript "
-        "match the index within ±1 (counting variation due to how "
-        "compound findings are enumerated in some streams).\n"
+        "-home-user-Test-Repo/<session-id>/subagents/`.\n"
+        "- Initial-extraction transcripts cross-checked against "
+        "`findings-index.md` per-stream tally; per-stream finding counts "
+        "in the transcript match the index within ±1 (counting variation "
+        "due to how compound findings are enumerated in some streams). "
+        "New-wave additions are cross-checked at the wave's TASK file.\n"
     )
     if unmapped:
         manifest_md.append("\n## Unmapped transcripts\n\n")
         manifest_md.append(
-            "These transcripts were found in the source cache but did not "
-            "match any known stream description. They are still copied "
-            "into `raw-transcripts/` with their raw agent ID for future "
-            "investigation.\n\n"
+            "These transcripts were found in the source cache but their "
+            "description is not in `DESC_TO_STREAM`. They are **not** "
+            "ingested into the audit corpus (no raw copy, no findings "
+            "extraction, no manifest row above). They are listed here for "
+            "future investigation in case an audit-relevant transcript was "
+            "spawned with an off-catalog description and needs to be "
+            "recovered before the cache is reclaimed. To ingest one: add "
+            "its description to `DESC_TO_STREAM` and re-run.\n\n"
         )
         for agent_id, desc in unmapped:
             manifest_md.append(f"- `agent-{agent_id}` — description: `{desc}`\n")
 
     (DEST / "raw-transcripts" / "MANIFEST.md").write_text("".join(manifest_md))
 
-    print(f"Persisted {len(manifest_rows)} streams.")
+    new_ingested = len(manifest_rows) - pre_persisted_count
+    print(f"Persisted {len(manifest_rows)} streams "
+          f"({new_ingested} new from cache, {pre_persisted_count} pre-existing on disk).")
     print(f"  Raw transcripts: {RAW_DIR}")
     print(f"  Per-stream findings: {FIND_DIR}")
     print(f"  Manifest: {RAW_DIR / 'MANIFEST.md'}")

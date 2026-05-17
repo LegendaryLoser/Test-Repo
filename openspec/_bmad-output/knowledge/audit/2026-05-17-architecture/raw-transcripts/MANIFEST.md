@@ -1,12 +1,12 @@
 # Raw audit corpus — manifest
 
-Mechanically generated from the sub-agent task transcripts that were preserved in the container-local cache at `/root/.claude/projects/-home-user-Test-Repo/<session>/subagents/`. Each row maps a stream prefix (as cited in `findings-index.md` and `consolidated.md`) to the raw `.jsonl` transcript and the extracted per-stream findings markdown.
+Mechanically generated from the sub-agent task transcripts. Each row maps a stream prefix (as cited in `findings-index.md` and `consolidated.md`) to the raw `.jsonl` transcript and the extracted per-stream findings markdown. Generator is incremental — see [`persist-corpus.py`](persist-corpus.py): pass 1 ingests new transcripts from the container-local cache `/root/.claude/projects/-home-user-Test-Repo/<session>/subagents/`; pass 2 preserves rows for transcripts already on disk in `raw-transcripts/` from prior sessions.
 
 **Note:** the `ARCH-` stream is not in this manifest. It was the in-context pass run by the main session (not a sub-agent), so it has no separate transcript — its findings live in the main-session transcript which is not part of this corpus.
 
-**Total streams:** 35 (matches 35 sub-agent streams; the 36th is `ARCH-` in-context).
+**Total streams:** 39 sub-agent streams across waves 1, 2, 3, 4, 5 (+ the in-context `ARCH-` stream).
 
-**Total raw transcript size:** 5,978,716 bytes (~5.7 MB).
+**Total raw transcript size:** 6,896,517 bytes (~6.6 MB).
 
 ## Stream → transcript mapping
 
@@ -47,6 +47,10 @@ Mechanically generated from the sub-agent task transcripts that were preserved i
 | 4 | `RETRO2` | retrospective | sonnet | `a3608f6b3b6e5586e` | [`raw-transcripts/RETRO2-agent-a3608f6b3b6e5586e.jsonl`](raw-transcripts/RETRO2-agent-a3608f6b3b6e5586e.jsonl) | [`findings/RETRO2-findings.md`](findings/RETRO2-findings.md) | 222 |
 | 4 | `STAKE` | stakeholder-simulation | opus | `ac2916602be951172` | [`raw-transcripts/STAKE-agent-ac2916602be951172.jsonl`](raw-transcripts/STAKE-agent-ac2916602be951172.jsonl) | [`findings/STAKE-findings.md`](findings/STAKE-findings.md) | 154 |
 | 4 | `VALID2` | validate-prd | sonnet | `aa3cd57497916d4b8` | [`raw-transcripts/VALID2-agent-aa3cd57497916d4b8.jsonl`](raw-transcripts/VALID2-agent-aa3cd57497916d4b8.jsonl) | [`findings/VALID2-findings.md`](findings/VALID2-findings.md) | 180 |
+| 5 | `GOV` | validate-prd-governance-focused | opus | `a285fe15ec2c6863e` | [`raw-transcripts/GOV-agent-a285fe15ec2c6863e.jsonl`](raw-transcripts/GOV-agent-a285fe15ec2c6863e.jsonl) | [`findings/GOV-findings.md`](findings/GOV-findings.md) | 156 |
+| 5 | `GOVDEV` | advanced-elicitation-devils-advocate-governance-focused | opus | `a359e11aa2d88c000` | [`raw-transcripts/GOVDEV-agent-a359e11aa2d88c000.jsonl`](raw-transcripts/GOVDEV-agent-a359e11aa2d88c000.jsonl) | [`findings/GOVDEV-findings.md`](findings/GOVDEV-findings.md) | 161 |
+| 5 | `META` | reasoning-tree-meta-audit | opus | `a092d80da9871922c` | [`raw-transcripts/META-agent-a092d80da9871922c.jsonl`](raw-transcripts/META-agent-a092d80da9871922c.jsonl) | [`findings/META-findings.md`](findings/META-findings.md) | 426 |
+| 5 | `SEC` | persona-security-engineer-holistic | opus | `a594ed19164462bb9` | [`raw-transcripts/SEC-agent-a594ed19164462bb9.jsonl`](raw-transcripts/SEC-agent-a594ed19164462bb9.jsonl) | [`findings/SEC-findings.md`](findings/SEC-findings.md) | 152 |
 
 ## How to use this corpus
 
@@ -57,11 +61,21 @@ Mechanically generated from the sub-agent task transcripts that were preserved i
 
 ## Extraction tool
 
-The extraction was performed by [`persist-corpus.py`](persist-corpus.py) checked in alongside this manifest. The tool is one-shot and idempotent (re-running overwrites). It is **not** wired into CI — it is a container-side rescue tool used once at 2026-05-17 to persist the audit corpus before the session container was reclaimed. Future audits should persist their corpus inline rather than relying on post-hoc rescue.
+The extraction is performed by [`persist-corpus.py`](persist-corpus.py) checked in alongside this manifest. The tool is incremental and idempotent: each re-run ingests any new cache-resident transcripts whose description is in `DESC_TO_STREAM`, and preserves rows for transcripts already on disk in `raw-transcripts/` from prior sessions. The tool is **not** wired into CI. To extend the corpus with a new wave: append entries to `DESC_TO_STREAM`, ensure the wave's sub-agent transcripts are still in the local cache, and re-run.
 
 ## Provenance
 
-- Extracted on: 2026-05-17
-- Source: container-local cache `/root/.claude/projects/-home-user-Test-Repo/<session-id>/subagents/`
-- Source preservation: extracted post-hoc; the original audit README.md had stated raw outputs would not be persisted (mistake; corrected by this artifact).
-- All transcripts cross-checked against `findings-index.md` per-stream tally; per-stream finding counts in the transcript match the index within ±1 (counting variation due to how compound findings are enumerated in some streams).
+- Initial extraction: 2026-05-17 (Waves 1-4, 35 streams; corpus rescue from container-local cache before reclaim).
+- Subsequent extractions append new waves' transcripts; pre-existing rows are preserved.
+- Source: container-local cache `/root/.claude/projects/-home-user-Test-Repo/<session-id>/subagents/`.
+- Initial-extraction transcripts cross-checked against `findings-index.md` per-stream tally; per-stream finding counts in the transcript match the index within ±1 (counting variation due to how compound findings are enumerated in some streams). New-wave additions are cross-checked at the wave's TASK file.
+
+## Unmapped transcripts
+
+These transcripts were found in the source cache but their description is not in `DESC_TO_STREAM`. They are **not** ingested into the audit corpus (no raw copy, no findings extraction, no manifest row above). They are listed here for future investigation in case an audit-relevant transcript was spawned with an off-catalog description and needs to be recovered before the cache is reclaimed. To ingest one: add its description to `DESC_TO_STREAM` and re-run.
+
+- `agent-a0feaa6b98527b7af` — description: `Re-read STATUS.md after sweep`
+- `agent-a13539ac839e9255c` — description: `Sample findings + raw-transcripts format`
+- `agent-a841871f48d0f5fd7` — description: `Audit qd-triage §8 + consolidated tail`
+- `agent-ac90c4628f8088b2c` — description: `Read methodology.spec.md + INDEX`
+- `agent-acaf8e5b7029de64f` — description: `Read CHG-0032 envelope thoroughly`
