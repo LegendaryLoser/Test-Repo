@@ -14,9 +14,9 @@ then proceed.
 **Last updated:** 2026-05-17 (architecture audit session, branch `claude/bmad-architecture-review-sV42w`)
 **Active phase:** PHASE-1 (paused — BMAD audit track in progress)
 **Last master commit:** `455ba06` (PR #15 merged: CHG-0014 + CHG-0031)
-**Last branch commit** (`claude/bmad-architecture-review-sV42w`): this commit (CHG-0032 QD triage of all 36 audit streams; methodology ADR draft clauses)
+**Last branch commit** (`claude/bmad-architecture-review-sV42w`): see `git log -1` — most recent work is CHG-0032 QD triage of all 36 audit streams + this STATUS.md staleness sweep
 **Open PRs:** none
-**Test count:** 184 passing on master (audit commits do not change test count)
+**Test count:** 184 passing on master (audit + STATUS.md commits do not change test count)
 
 ## CHG status
 
@@ -35,7 +35,7 @@ then proceed.
 | 0011 | top-level-allowlist + openspec-validate                        | merged      | #12 |
 | 0012 | bmad-direct-reference + mock-in-repo-banned                    | merged      | #13 (stacked w/ 0030) |
 | 0013 | CI wiring (spec-lint job real invocations)                     | merged      | #14 |
-| 0014 | INDEX subcommand + populate INDEX.yaml                         | OPEN        | #15 |
+| 0014 | INDEX subcommand + populate INDEX.yaml                         | merged      | #15 |
 | 0030 | Test annotation discipline + 87-test backfill                  | merged      | #13 (stacked) |
 | 0031 | Session continuity scaffold                                    | merged      | (in #15) |
 | 0032 | Architecture audit (BMAD multi-pass, COMPOSITE-V2)             | in-progress | TBD |
@@ -106,12 +106,12 @@ Sequenced from current state. `[x]` merged, `[~]` in flight, `[ ]` queued.
 ### Tier 0 — discipline foundations (urgent)
 
 - [x] CHG-0030 — annotation discipline + REQ backfill (closed P6, S4)
-- [~] CHG-0031 — session continuity scaffold (this CHG)
+- [x] CHG-0031 — session continuity scaffold (merged in PR #15)
 
 ### Tier 1 — close critical enforcement gaps
 
 - [x] CHG-0013 — CI wiring (closed C4)
-- [~] CHG-0014 — INDEX subcommand + populate (closes C1)
+- [x] CHG-0014 — INDEX subcommand + populate (closed C1; merged in PR #15)
 - [ ] CHG-0014b — drop `generated_at` (closes NEW-1)
 - [ ] CHG-0015 — REQ-ARCH canonical home migration (closes C2; expands INDEX to 23)
 
@@ -140,8 +140,9 @@ Sequenced from current state. `[x]` merged, `[~]` in flight, `[ ]` queued.
 
 ### Tier 5 — PHASE-1 exit + BMAD workflow
 
-- [ ] BMAD adversarial review of architecture (per user request — NEW-3)
-- [ ] BMAD adversarial review of implementation
+- [~] BMAD adversarial review of architecture (per user request — NEW-3): Waves 1-4 complete (36 streams, ~700 findings, ~70 themes); QD triage complete (qd-triage.md); Wave 5 pending (4 streams targeting Tier-1 empty cells per qd-triage.md §8)
+- [ ] BMAD adversarial review of implementation (queued; runs after architecture audit converges per Recent decisions)
+- [ ] Methodology codification ADR (draft clauses in qd-triage.md §9; authored after BOTH audits converge per Recent decisions)
 - [ ] CHG-NN — formal PHASE-1 exit gate run
 
 ## Recent decisions
@@ -165,40 +166,51 @@ Sequenced from current state. `[x]` merged, `[~]` in flight, `[ ]` queued.
 
 ## Next session: start here
 
-**Status as of this commit:** CHG-0032 architecture audit Wave 1 (12
-streams) complete and consolidated to
-`openspec/_bmad-output/knowledge/audit/2026-05-17-architecture/`. Wave 2
-(8 sub-agents) running in background as of commit time; results will
-land in a follow-up commit. COMPOSITE-V2 convergence metric locked
-(see Recent decisions table); Gate 6 (marginal novelty <10%) is the
-gating check.
+**Current state of the architecture audit (CHG-0032):**
 
-**First action on resume:** check whether Wave 2 completed (sub-agent
-output files in `/tmp/claude-0/-home-user-Test-Repo/.../tasks/`). If yes,
-re-measure marginal novelty against COMPOSITE-V2 Gate 6. If <10%,
-architecture audit converges; proceed to second action. If ≥10%, plan
-Wave 3 with further orthogonal methods.
+- Waves 1, 2, 3, 4 all complete — 36 streams total, ~700 raw findings, ~70 themes (de-duplicated).
+- All findings consolidated and triaged. Per-stream provenance preserved.
+- Quality-Diversity (QD) framework adopted (see Recent decisions row "Adopt Quality-Diversity framework"). Replaces COMPOSITE-V2 Gate 6 marginal-novelty rule with σ × κ Pareto admission + ACGR convergence metric. Research-grounded in MAP-Elites + Mixture-of-Complementary-Agents + ambiguity decomposition.
+- Per-method tier assignment complete: 16 Tier A, ~10 Tier B, 1 Tier C, 4 Tier D candidates (COURSE, CHECK, EDIT, VALID2 — deprecation deferred for implementation-audit confirmation).
+- Wave 5 empty-cell targets identified: 5 high-importance Axis-D cells empty + (compression × *) has only a Tier-B occupant. See qd-triage.md §8.
+- Architecture audit has NOT yet hit the new convergence criterion (Wave 4 ACGR ~45%); Wave 5 projected ~10-15%; Wave 6 projected <5% (target met).
 
-**Second action:** run BMAD multi-pass implementation audit against
-`tools/spec_lint/`, `tools/ci/`, `_bmad/`, `.github/workflows/` using the
-same COMPOSITE-V2 methodology (Wave 1 = 8-10 streams across diverse
-methods/models, iterate until Gate 6 met).
+**Read in this order before doing anything else:**
 
-**Third action:** consolidate architecture + implementation audit
-findings jointly into a single ledger. Draft the audit-methodology ADR
-(ADR-0009 or higher, allocated post-consolidation) codifying COMPOSITE-V2
-for all future architecture and project-level audits. Per-project audits
-applied dogfood-style.
+1. This file (STATUS.md), especially the CHG status table, Audit findings ledger, Open architectural questions, and Recent decisions.
+2. `openspec/architecture/ARCHITECTURE.md` §1 (principles) and §11 (active phase).
+3. `openspec/_bmad-output/knowledge/audit/2026-05-17-architecture/qd-triage.md` — the full QD triage. Required reading: §2 (framework definitions), §5 (Tier A/B/C/D catalog), §7 (ACGR convergence diagnostic), §8 (Wave 5 admission targets), §9 (draft clauses for methodology ADR).
+4. `openspec/_bmad-output/knowledge/audit/2026-05-17-architecture/consolidated.md` — the ~70 themes, organised by tier of confirmation; required if planning resolution CHGs, otherwise reference-only.
 
-**Fourth action:** plan resolution CHG sequence against the joint
-ledger. Per user direction, do NOT start any Tier 1+ resolution CHG
-(CHG-0014b drop `generated_at`, CHG-0015 REQ-ARCH migration, etc.) until
-both audits converge and the joint resolution sequence is approved.
+**First action on resume:** ask the user which next move they want.
+
+The two defensible orderings are:
+- **(a)** Run Wave 5 architecture audit first (4 streams targeting Tier-1 empty cells per qd-triage.md §8). Closes architecture audit to ACGR <15%, then either iterate to Wave 6 or call it converged-enough and move to implementation audit.
+- **(b)** Start implementation audit now against `tools/spec_lint/`, `tools/ci/`, `_bmad/`, `.github/workflows/`, using the QD catalog from qd-triage.md §5 dogfood-style. Accept architecture-audit non-convergence on the basis that Wave 4 produced no new BLOCKING findings (only new themes; severity distribution stable).
+
+User's standing direction (Recent decisions, 2026-05-17 "Run implementation audit after architecture audit convergence; consolidate jointly") favours (a). But the implementation audit was originally planned under COMPOSITE-V2, and the QD framework adopted since then changes the convergence calculus — worth re-asking.
+
+**Second action (whichever audit runs next):** apply the QD framework. Score each new stream on σ × κ; place into the cell map (qd-triage.md §4); update ACGR. **Do NOT re-run COURSE, CHECK, EDIT, or VALID2** unless the user explicitly overrides — they are Tier-D candidates pending implementation-audit confirmation of their κ ≈ 0 status.
+
+**Third action:** consolidate architecture + implementation audit findings jointly. Draft the methodology codification ADR using qd-triage.md §9 as the starting point — adopt the eight proposed clauses (operating principle, behavioural axes, admission rule, ACGR convergence criterion, initial method catalog, measurement discipline, deprecation procedure, stopping rule). Allocate an ADR number at draft time (next available is ADR-0009 unless something else takes it first).
+
+**Fourth action:** plan resolution CHG sequence against the joint ledger. Per user direction, do NOT start any Tier 1+ resolution CHG (CHG-0014b drop `generated_at`, CHG-0015 REQ-ARCH migration, etc.) until both audits converge and the joint resolution sequence is approved.
 
 **Persistent audit artifact:**
-- `openspec/_bmad-output/knowledge/audit/2026-05-17-architecture/README.md`
-- `openspec/_bmad-output/knowledge/audit/2026-05-17-architecture/consolidated.md` (~70 themes across 36 streams, ~700 raw findings, proposed 17-tier resolution sequence)
-- `openspec/_bmad-output/knowledge/audit/2026-05-17-architecture/findings-index.md` (per-stream provenance)
-- `openspec/_bmad-output/knowledge/audit/2026-05-17-architecture/qd-triage.md` (Quality-Diversity triage; per-method σ × κ scoring; Tier A/B/C/D catalog; empty-cell Wave-5 targets; methodology ADR draft clauses §§1-11)
+- `openspec/_bmad-output/knowledge/audit/2026-05-17-architecture/README.md` — session metadata + method
+- `openspec/_bmad-output/knowledge/audit/2026-05-17-architecture/consolidated.md` — ~70 themes across 36 streams; proposed 17-tier resolution sequence (Tier 0 = doc-only sync, Tier 16 = artifact rebaseline)
+- `openspec/_bmad-output/knowledge/audit/2026-05-17-architecture/findings-index.md` — per-stream provenance ledger; theme → constituent finding IDs
+- `openspec/_bmad-output/knowledge/audit/2026-05-17-architecture/qd-triage.md` — Quality-Diversity triage; per-method σ × κ scoring; QD matrix occupancy; Tier A/B/C/D catalog; ACGR diagnostic; Wave-5 admission targets; methodology ADR draft clauses §§1-11
 
-**Status update for next session re: convergence:** under the new ACGR metric (qd-triage.md §7), Wave 4 = ~45%; Wave 5 (Tier-1 empty-cell targets + meta-review = 4 streams) projected ACGR ~10-15%; Wave 6 (remaining empty cells + confirmation pairs) projected ACGR <5% (convergence met). Per Tier-A coverage check (qd-triage.md §7.4), 5 high-importance Axis-D cells are empty AND (compression × *) has only a Tier-B occupant — these constitute the Wave 5 admission targets.
+**Convergence projection (under ACGR metric, qd-triage.md §7):** Wave 4 = ~45%; Wave 5 (Tier-1 empty-cell targets + meta-review = 4 streams) projected ~10-15%; Wave 6 (remaining empty cells + confirmation pairs) projected <5% (convergence). Compression × * lens has no Tier-A occupant (DISTILL is Tier B only); flag this as a known gap in the methodology ADR.
+
+**Commit trailers (per CLAUDE.md, mandatory):**
+
+```
+Task: TASK-NNNN
+Requirements: REQ-<X>-NNNN[, ...]
+Tests-Status: <none|red|red→green|green|deprecated>
+Phase: PHASE-1
+```
+
+Last TASK number used: TASK-0039 (STATUS.md staleness sweep). Next available: TASK-0040. No `--no-verify`, no hook bypass.
