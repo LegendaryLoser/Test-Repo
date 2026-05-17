@@ -1338,6 +1338,98 @@ The remaining Wave-5 architecture findings reinforce existing themes from Waves 
 - **Convergence implication:** the architecture audit has NOT converged under ACGR < 5%. A Wave 6 is warranted IF the remaining empty cells (per `qd-triage.md` §7.3: `(structural × current × holistic × governance)`, `(compression × *)` Tier-A gap) are similarly theme-dense. If they are sparse (the more likely case for compression-lens), Wave 6 may converge.
 - **Caveat:** these counts use the sole-source approximation per §2.3, not full greedy ablation. The "~50 new (cell, theme) pairs" estimate has wide uncertainty; could be as low as ~30 (more overlap with existing themes than estimated) or as high as ~70 (under-counting cell-occupancy multiplicity). The methodology ADR's audit-meta-test suite should mechanise this measurement before declaring convergence.
 
+## Wave 6 supplement (4 streams, complete)
+
+Methods added per user direction ("keep going wave after wave; each cell is important"): structural-governance review (`STRUCTGOV-`, opus, bmad-editorial-review-structure with governance focus), security-focused distillation (`SECDISTILL-`, opus, bmad-distillator on security/ops content), scenario-unfold-current-state (`SCENNOW-`, opus, 6-actor scenario walk), Winston-2029 persona-retrospective (`PERSRETRO-`, opus, from-future retrospective).
+
+**Wave 6 raw findings: 75 total** (STRUCTGOV 22, SECDISTILL 16, SCENNOW 20, PERSRETRO 17). All 75 are architecture-defect findings (META- was a Wave-5 corpus-audit stream; no analog in Wave 6).
+
+**New themes from Wave 6 (~29 added).** Numbering continues from Wave-5's THEME-WWWW final. ID scheme moves from quadruple-letters to quintuple-letters after THEME-ZZZZ (i.e., XXXX, YYYY, ZZZZ, then AAAAA, BBBBB, ...).
+
+### From STRUCTGOV- (structural-governance, ~6 new themes)
+
+- **THEME-XXXX — Amendment overlay without separable addressing** (STRUCTGOV-CRIT-002, CRIT-003, SER-001, SER-010, PROC-003, PROC-006; PERSRETRO-PROC-004 confirms): ADR amendments retro-fit sections/rows with no marker distinguishing them; future amendments cannot reliably target a specific row; convention inconsistent across ADRs (only ADR-0002 and ADR-0005 have amendment logs); amendment-vs-supersession threshold undefined leads to multi-amendment ADRs that become their own diff history.
+- **THEME-YYYY — Gate / Hook identifier discipline missing from atomic units** (STRUCTGOV-SER-004): Hook and CI Gate are introduced as named entities (ADR-0005 §6, ADR-0008 §1) but absent from the atomic-units identifier table (ARCHITECTURE.md §4); no stable ID format; rename or removal of a gate has no immutable identifier to supersede.
+- **THEME-ZZZZ — Naming convention drift** (STRUCTGOV-SER-005): four naming conventions coexist (kebab-case for gates, ALL-CAPS for atomic units, snake_case for hook paths, lowercase for `prose-xref-banned`) with no convention table.
+- **THEME-AAAAA — Phase frontmatter structural gaps** (STRUCTGOV-SER-007): PHASE files lack `exit:`, `requires_adrs:`, `produces_reqs:` in frontmatter; exit criteria parseable only from prose; `phase-exit` gate is structurally non-mechanical.
+- **THEME-BBBBB — Authored/derived not directory-distinguishable** (STRUCTGOV-SER-011): `specs/` (authored) and `traceability/matrix.yaml` (derived) sit at sibling-equal positions; tools walking `openspec/` cannot mechanically distinguish; every tool must hardcode a denylist.
+- **THEME-CCCCC — Principles lack stable IDs** (STRUCTGOV-SER-012): ADRs reference P1..P5 as anchors but ARCHITECTURE.md §1 doesn't declare those IDs; principle reordering would silently invalidate every ADR cross-reference and `xref-resolves` can't detect.
+
+### From SECDISTILL- (security compression, ~1 new theme + heavy reinforcement)
+
+- **THEME-DDDDD — GitHub Actions supply chain unconstrained** (SECDISTILL-CRIT-009): workflows named four times across the corpus and never described in security terms; no SHA pinning, no `permissions:` minimization, no third-party action allowlist; CI is the enforcement surface for every gate, so a third-party action compromise propagates to every gate.
+
+(The other 15 SECDISTILL findings reinforce existing security themes from Waves 4-5 — see "Reinforcements" below. Compression-as-discovery is expected to surface "what's already known but understated"; this is the predicted outcome.)
+
+### From SCENNOW- (actor-scenario, ~10 new themes)
+
+- **THEME-EEEEE — Bootstrap / install path absent** (SCENNOW-CRIT-001): no document explains how to set up Python, Node, clasp, BMAD install, GCP credentials, or what Python version; first-day contributor cannot run a test.
+- **THEME-FFFFF — Agent session start procedure unimplementable today** (SCENNOW-CRIT-005, CRIT-006, SER-007, PROC-008): CLAUDE.md instructs the agent to run a `SessionStart` hook that doesn't exist + read a `STATUS.md` document not required by any REQ-ARCH-*; phase status determined by frontmatter with no "exactly one in-progress" rule; phase-scope tests are PHASE-2-owned but referenced from PHASE-0.
+- **THEME-GGGGG — CHG schema unenumerated** (SCENNOW-SER-010, CRIT-009, PROC-011): CHG required artifacts not listed; CHG/TASK number allocation has no documented procedure (races possible); `_TEMPLATE/` directory referenced but contents unspecified.
+- **THEME-HHHHH — REQ-epic-story chicken-and-egg** (SCENNOW-CRIT-012): new REQ must reference Story+Epic frontmatter; Story/Epic must be empty templates per REQ-ARCH-0003 throughout PHASE-0..4; no transitional rule.
+- **THEME-IIIII — Domain registry unbounded** (SCENNOW-PROC-014): `DOMAIN` in REQ-IDs is "uppercase alphanumeric ≤ 12 chars" with no registry; new author can introduce `REQ-AUTH` or `REQ-AUTHENTICATION` ambiguously; anti-aliasing covers descriptions but not domain names.
+- **THEME-JJJJJ — CHG audit invocation absent** (SCENNOW-CRIT-015): `tools/trace/audit.py <id>` IDs are REQ/TASK/STORY/EPIC/PHASE but not CHG; reviewers cannot mechanically "show the CHG context for this PR."
+- **THEME-KKKKK — Local hook / gate invocation undocumented** (SCENNOW-SER-016, CRIT-018): no documented way to run `validate_commit.py` or `audit.py` locally outside Claude Code firing them; investigator cannot reproduce a hook failure.
+- **THEME-LLLLL — Diagnostic format unspecified for hook/gate failures** (SCENNOW-SER-019): "aborts the hook with a diagnostic" appears in multiple ADRs without specifying the diagnostic format (JSON? prose? exit code semantics?); machine-readable triage impossible.
+- **THEME-MMMMM — Audit at-sha / at-time replay unsupported** (SCENNOW-PROC-020): `audit.py` reconciles from working-tree state; no `--at <sha>` flag, no per-tree journal scoping documented; "did this REQ ever go through red?" historical audit not supported.
+- **THEME-NNNNN — Developer-onboarding credentials path** (SCENNOW-PROC-004): permissions/secrets/service-account provisioning silent across the corpus; `.claude/settings.local.json` is gitignored but no convention for how a contributor obtains/stores Anthropic key, clasp credentials, CI service account.
+
+### From PERSRETRO- (Winston-2029 retrospective, ~12 new themes)
+
+- **THEME-OOOOO — Unqualified-principle absolutism cost** (PERSRETRO-CRIT-001): ADR-0006 §2's universal "no mocks of in-repo modules" cost 18%/project velocity over 3 years; principle was right, unqualified statement was wrong; gradient mattered and was knowable in 2026.
+- **THEME-PPPPP — Review-format vs raw-diff for vendored code** (PERSRETRO-CRIT-002): BMAD-as-vendored is correct; 11,400-line diffs trained reviewers to rubber-stamp; structured changelog (added/removed/modified by skill ID) would have been the right review surface.
+- **THEME-QQQQQ — Red-first granularity overreach** (PERSRETRO-CRIT-003): commit-granular red-first produced 9% ceremonial commits; PR-level enforcement would have caught the same defect class without polluting `git blame`.
+- **THEME-RRRRR — Annotation co-validator missing** (PERSRETRO-SER-002): `@covers` annotations were copy-pasted by LLMs during test splits; matrix triple-counted; co-validator (annotation agrees with symbol-level dependency) needed to prevent phantom-coverage.
+- **THEME-SSSSS — Tier-as-flag vs tier-as-category** (PERSRETRO-SER-003): four tiers (unit/integration/e2e/stochastic) was one tier too many; stochastic should have been a `bool` orthogonal to the three-tier axis; refactoring this in 2028 was a 6-week CHG.
+- **THEME-TTTTT — Trailer auto-population vs validation** (PERSRETRO-SER-004): mandatory trailers became 30% commit-rejection source for human contributors; pre-commit hook should auto-populate from active task / journal state, validator runs as last-line check.
+- **THEME-UUUUU — Hook transactionality** (PERSRETRO-SER-006): hooks are not atomic with the operation they wrap; failed pushes leave local state next session cannot detect; intent-recording in journal *before* the operation + reconciliation at SessionStart is the architectural pattern that was missing.
+- **THEME-VVVVV — Stochastic test flake budgeting** (PERSRETRO-SER-007): banning `seed=` was right for correctness; produced 1.7% median flake rate by 2028 unmanaged; needed per-test `max_acceptable_flake_rate` + auto-quarantine policy.
+- **THEME-WWWWW — Single-access-point inhibits experimentation** (PERSRETRO-SER-008): the per-provider single-LLM-access-point rule prevented A/B testing a second provider; 11-week unblock CHG when product question moved on; rule needed `packages/_experimental/<provider>-client/` carve-out with 90-day promote-or-expire deadline.
+- **THEME-XXXXX — PLACEHOLDER enforcement on empty templates** (PERSRETRO-SER-009): empty product-content templates (REQ-ARCH-0003) became magnet for premature content that became load-bearing; needed `PLACEHOLDER: true` frontmatter flag + CI gate.
+- **THEME-YYYYY — "Material change" definition** (PERSRETRO-PROC-001): "Material-Architecture-Change" trailer used without enumerated definition; five 2026-2028 arguments cost half-day each; needed explicit enumeration (changes to §3 layout, §1 principles, ADR-0008 gate inventory, ADR supersession).
+- **THEME-ZZZZZ — Parallel-convention detector** (PERSRETRO-PROC-003): P5 "no parallel convention" had no gate; three parallel conventions (`RFC-XXXX.md`, Notion decision log, ad-hoc `RUNBOOK-*`) emerged unattributed by 2028; principle without gate decays.
+
+### Reinforcements (the remaining ~46 Wave-6 architecture findings)
+
+- **THEME-A (BMAD strategy drift)** reinforced by STRUCTGOV-CRIT-001 (concrete 3-place naming inconsistency).
+- **THEME-B (Trailer schema)** reinforced by SCENNOW-CRIT-002 (first-commit-cannot-satisfy) + SCENNOW-PROC-017 (trailer catalog absent).
+- **THEME-G (REQ-ARCH format)** reinforced by STRUCTGOV-SER-003.
+- **THEME-I (Test tier semantics)** reinforced by STRUCTGOV-PROC-004 (4-document declaration).
+- **THEME-K (Phase ordering)** reinforced by PERSRETRO-SER-005 (shadow-phase emergence).
+- **THEME-L (CLAUDE/ARCH duplication + SoT)** reinforced by STRUCTGOV-SER-013, STRUCTGOV-SER-009, SECDISTILL-SER-006.
+- **THEME-M (Amendment-log discipline)** reinforced by STRUCTGOV-SER-001, STRUCTGOV-PROC-003, STRUCTGOV-PROC-006.
+- **THEME-N (Summary-of-summaries drift)** reinforced by STRUCTGOV-SER-006, STRUCTGOV-PROC-005 (concrete extant drift: `skill-removal-acknowledged` exists in ADR-0002 §Compliance + PHASE-2 §Scope but NOT ADR-0008 §1), SECDISTILL-SER-005 (concrete extant drift: ARCH §8 failure-mode table vs ADR-0005 §8 row).
+- **THEME-O (Status enum)** reinforced by STRUCTGOV-SER-002.
+- **THEME-P (the paper)** reinforced by PERSRETRO-PROC-002 (became folklore by year 3).
+- **THEME-Q (Anti-aliasing defects)** reinforced by SCENNOW-SER-013, PERSRETRO-SER-001 (quarterly review never happened).
+- **THEME-Y (PHASE-5 §Scope numbering)** reinforced by STRUCTGOV-SER-008 (two §Scope-4 items).
+- **THEME-Z (commit-trailers-valid trigger surface)** reinforced (and re-corroborated) by SECDISTILL-SER-010.
+- **THEME-AAA (commit signing)** reinforced by SECDISTILL-CRIT-004; corrected severity per corrections.md META-SER-012 still applies.
+- **THEME-BBB (secrets threat model)** reinforced by SECDISTILL-CRIT-001 (compression revealed NULL canonical claim).
+- **THEME-CCC (SRE/ops surface)** reinforced by SECDISTILL-PROC-012.
+- **THEME-EEE (journal integrity)** reinforced by SECDISTILL-SER-015.
+- **THEME-FFF (supply chain attestation)** reinforced by SECDISTILL-CRIT-007 (BMAD).
+- **THEME-III (vendor lock-in)** reinforced by PERSRETRO-SER-008 (provider experimentation cost).
+- **THEME-JJJ (Anthropic SDK supply chain)** reinforced by SECDISTILL-CRIT-008.
+- **THEME-FFFF (hook sandbox, Wave 5)** reinforced by SECDISTILL-CRIT-003.
+- **THEME-GGGG (origin URL allowlist, Wave 5)** reinforced by SECDISTILL-CRIT-002.
+- **THEME-IIII (threat model documentation, Wave 5)** reinforced by SECDISTILL-PROC-014.
+- **THEME-KKKK (MCP scope, Wave 5)** reinforced by SECDISTILL-PROC-016.
+- **THEME-LLLL (network egress, Wave 5)** reinforced by SECDISTILL-CRIT-011.
+- **THEME-MMMM (settings.json approval, Wave 5)** reinforced by SECDISTILL-SER-013.
+- **THEME-DDDD (CHG lifecycle, Wave 5)** reinforced by SCENNOW-SER-003, SCENNOW-CRIT-009, SCENNOW-CRIT-015.
+- **THEME-TTTT (phase-exit rollback, Wave 5)** reinforced by PERSRETRO-PROC-005.
+- **THEME-XXXX (amendment overlay, Wave 6 new)** reinforced retrospectively by PERSRETRO-PROC-004 (8-amendment ADR accretion).
+
+**Wave 6 ACGR (preliminary, sole-source approximation):**
+
+- New (cell, theme) pairs added by Wave 6: ~29 new themes × estimated 2 cells avg = ~58 new (cell, theme) pairs.
+- Cumulative archive after Wave 6: ~142 (Wave 5) + ~58 (Wave 6) ≈ **~200**.
+- ACGR = ΔArchive / `meaningful_cells` = 58 / (55 ± 10) = **~105% ± 21%** (preliminary, sole-source approximation).
+- **Interpretation:** Wave 6's ACGR is even higher than Wave 5's ~91%. Two consecutive waves above 90% on the QD admission rule's projected ~5% terminal threshold falsify the original prediction model decisively. The user direction "keep going wave after wave; each cell is important; don't consider the QD matrix as final till we've run out of signal" is borne out empirically: cells continue to be theme-dense rather than sparse; methods admitted by cell-fill continue to produce sole-source themes; the audit has not converged because there's still signal.
+- **Signal-exhaustion check (per user-direction terminal condition):** has signal exhausted? NO. Wave 6 produced 29 new themes from 4 streams (~7 new themes/stream). Compared to Wave 5's ~25 / 4 = ~6 new themes/stream (excluding META-), Wave 6 was *more* productive per stream, not less. Continuation is the default action.
+- **Cell-targeting recommendation for Wave 7+:** the remaining (Lens × Temporal) empty cells per `qd-triage.md` §4.1 (after Waves 5-6 fills): `(attitudinal × post-hoc)`, `(attitudinal × forward-looking)`, `(structural × post-hoc)`, `(structural × forward-looking)`, `(scenario × forward-looking)`, `(contrarian × post-hoc)`, `(compression × post-hoc)`. Plus the candidate 5th axis (meta) where META- demonstrated value — a recursive META-META- stream auditing META-'s own corrections is a defensible target. Plus potential 6th-axis methods that may emerge (per "don't consider the QD matrix as final").
+
 ## COMPOSITE-V2 status after Wave 4
 
 | Gate | Status |

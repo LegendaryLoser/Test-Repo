@@ -224,6 +224,25 @@ Wave 5 was the first wave admitted under the σ × κ Pareto admission rule: cel
 
 **Wave 5 tier summary:** **4 Tier A, 0 Tier B, 0 Tier C, 0 Tier D.** All four streams cleared the σ ≥ 0.30 floor with margin AND opened previously-empty cells AND surfaced sole themes (or sole corrections for META-). The 4-for-4 Tier-A admission is consistent with the QD admission rule: when cells are deliberately targeted to fill empty regions of the behavioural map, individual κ is high almost by construction.
 
+### 3.6 Wave 6 — 4 streams (cell-targeting per user direction "each cell is important")
+
+Wave 6 continued the QD admission rule, with cell-selection mixing the 2 remaining Tier-1 high-importance Axis-D empty cells (STRUCTGOV, SECDISTILL) + 2 never-occupied (Lens × Temporal) cells (SCENNOW, PERSRETRO).
+
+| # | Stream | Model | Method | QD signature (Lens, Temporal, Decomp, Severity) | Raw findings | σ (est.) | Themes contributed | κ (sole / co) | Tier |
+|---|---|---|---|---|---|---|---|---|---|
+| 41 | `STRUCTGOV-` | opus | editorial-review-structure governance-focused | (structural, current, holistic, governance) | 22 | 0.75 | sole on XXXX-CCCCC (6 new structural-governance themes); reinforced THEME-A/G/I/L/M/N/O/Y/Z + STRUCTGOV-CRIT-001 surfaces concrete 3-place naming drift; STRUCTGOV-PROC-005 surfaces concrete `skill-removal-acknowledged` gate-inventory drift | **6 sole** | **A** (only structural-governance method) |
+| 42 | `SECDISTILL-` | opus | distillator security-focused | (compression, current, derivative, security/ops) | 16 | 0.85 | sole on DDDDD (GitHub Actions supply chain); reinforced 15 of 16 findings against existing security themes (AAA, BBB, CCC, EEE, FFF, JJJ, FFFF, GGGG, IIII, KKKK, LLLL, MMMM, Z, L); compression-as-discovery surfaced what's already known but understated | **1 sole + 15 reinforce** | **A** (only compression-security method; fills compression-lens Tier-A gap when its high σ is considered; resolves §7.4 gap conditionally) |
+| 43 | `SCENNOW-` | opus | scenario-unfold from current state (6-actor walk) | (scenario, current, holistic, blocking-impl) | 20 | 0.80 | sole on EEEEE-NNNNN (10 new actor-experience themes); reinforced THEME-B, DDDD, Q + new scenario-class defects | **10 sole** | **A** (only scenario-current-state method; first actor-experience-class admission) |
+| 44 | `PERSRETRO-` | opus | persona-Winston retrospective-from-future | (persona, post-hoc, holistic, * — Axis D spans blocking/governance/cost/value) | 17 | 0.85 | sole on OOOOO-ZZZZZ (12 new retrospective-regret themes); reinforced THEME-K, P, Q, III, TTTT, XXXX | **12 sole** | **A** (only persona-retrospective method; highest κ in Wave 6) |
+
+**Wave 6 tier summary:** **4 Tier A, 0 Tier B, 0 Tier C, 0 Tier D.** Same pattern as Wave 5 — cell-targeted admission produces Tier-A streams by construction. Total Wave-6 new sole themes: 29 (across 4 streams). Compression-lens Tier-A gap from §7.4 is conditionally resolved by SECDISTILL's high σ in cell `(compression × current × derivative × security/ops)` — DISTILL still occupies `(compression × current × derivative × narrative)` at Tier B, but the cell-row now has at least one Tier-A occupant for the highest-importance Axis-D dimension.
+
+**Notes:**
+- All σ estimates use the sole-theme-membership approximation per §2.3; greedy ablation deferred to methodology ADR. PERSRETRO's σ (0.85) is high because its findings are reflectively-anchored (each cites a specific 2026 decision + a 2029 consequence) — the actionability filter is satisfied with margin.
+- PERSRETRO is the first stream where some findings (e.g., PERSRETRO-SER-006 "hooks outside transactions" hindsight) require 3 years of operational data that the 2026 architecture cannot reasonably have. These are PROC-class regrets, not architectural defects; severity recalibration deferred to a future pass.
+- SECDISTILL's high σ (0.85) is artifact of the compression method: its findings cite the absence (NULL canonical claim) which is verifiable by inspection. The reinforcement count (15/16) confirms that compression as a discovery method surfaces "what's already known but understated" rather than novel themes — consistent with the method's design.
+- SCENNOW's 10 sole themes include actor-experience-class defects that may warrant their own sub-axis (Axis F: actor experience surface). The methodology ADR should decide whether to extend the QD framework.
+
 **Notes carried forward to §4 and §7:**
 - META- is the first stream to invoke a 5th axis. Per §2.1 the framework treats this as a candidate extension; the methodology codification ADR must decide whether to fold "meta" into the axis list or treat meta-streams as an orthogonal class.
 - σ estimates fold in the [`corrections.md`](corrections.md) META- adjustments (PROSE κ down 1, PAIGE κ down 1, STAKE raw count 20-not-25, STAKE cell signature spans 3 Axis-B cells per META-SER-004). Tier admission for the original streams is unaffected; numerical revisions deferred to a future re-issue of §3.1-§3.4.
@@ -451,20 +470,22 @@ Computing `archive(W)` for each wave, where archive elements are distinct (cell,
 | 3 | +8 | 9 themes × ~3 cells = ~12 pairs | ~67 | 12/55 = **~22%** |
 | 4 | +8 | 17 themes × ~5 cells = ~25 pairs (STAKE+COUNTER opened (persona, forward) and (contrarian, axis-spanning) cells) | ~92 | 25/55 = **~45%** |
 | 5 | +4 | ~25 themes × ~2 cells avg = ~50 pairs (GOV/GOVDEV opened (attitudinal/contrarian × governance-focused); SEC opened (persona × security/ops × holistic) with theme-density 10 — high; META invokes 5th axis) | ~142 | 50/55 = **~91% ± 16%** (preliminary, sole-source approximation; see Wave-5 supplement in `consolidated.md`) |
+| 6 | +4 | ~29 themes × ~2 cells avg = ~58 pairs (STRUCTGOV opened (structural × governance) with theme-density 6; SECDISTILL opened (compression × security/ops) sparsely with 1 sole + 15 reinforce; SCENNOW opened (scenario × current × holistic) with theme-density 10; PERSRETRO opened (persona × post-hoc × holistic) with theme-density 12) | ~200 | 58/55 = **~105% ± 21%** (preliminary, sole-source approximation; see Wave-6 supplement in `consolidated.md`) |
 
 **Interpretation under ACGR:**
 - Wave 4's 45% ACGR is identical magnitude to Wave 2's, but the *cause is structurally different*. Wave 2 opened new (lens × temporal) cells via new methods (RED forward/security, RETRO post-hoc/governance). Wave 4 opened (persona × forward, exhaustive × security/ops + cost/value) via STAKE, and (contrarian × derivative × axis-spanning) via COUNTER.
 - **Wave 5's ~91% is high and unexpected.** The §8 projection ("Wave 5 ACGR 10-15%") assumed the targeted empty cells were sparse (2-3 themes/cell). Empirically, the security-architectural-primitives cell (`persona × current × holistic × security/ops`) and the governance-machinery cells (`attitudinal/contrarian × current × focused × governance`) turned out to be **theme-dense** (SEC alone opened 10 new themes; GOV+GOVDEV jointly opened 15). The projection was wrong about cell theme-density, not about cell-fill direction.
+- **Wave 6's ~105% confirms and extends the Wave-5 falsification.** Two consecutive waves above 90% ACGR decisively falsify the original convergence-projection model. Cells continue to be theme-dense (STRUCTGOV opened 6, SCENNOW opened 10, PERSRETRO opened 12; only SECDISTILL was sparse with 1 sole + 15 reinforcements, consistent with compression-as-discovery behaviour). Per the user direction ("keep going wave after wave; each cell is important; don't consider the QD matrix as final till we've run out of signal"), continuation is the correct action — the audit has not exhausted signal.
 - **Convergence rule under ACGR was satisfied transiently in Wave 3** (22% < 50% of allowed delta from the previous wave's growth) but not in absolute terms (<5% threshold). Wave 5 regressed the convergence trajectory significantly.
 - **Revised Wave 6 prediction:** the remaining high-importance empty cells (per §7.3 updated for Wave 5) are `(structural × current × holistic × governance)` and the compression-lens Tier-A gap. Structural-governance is likely theme-dense (similar to attitudinal-governance discovered above; estimate 5-10 new themes). Compression-lens for security is unknown but likely sparse (compression lens has produced only 1 stream historically — DISTILL — with low κ). **Revised Wave 6 estimated ACGR: 10-25%.** Convergence to <5% likely requires Wave 7 or admission of a saturation rule (e.g., "stop after first wave with ACGR < 10% AND no high-importance empty cells").
 - **Methodology implication:** the original prediction model assumed cells are sparse-by-default. Wave 5 falsified this for the governance and security axes. The methodology codification ADR should either (a) calibrate the prediction model against the new theme-density data, or (b) accept that the architecture audit has higher residual κ than the framework predicted and adjust the convergence threshold. Per [`corrections.md`](corrections.md) META-PROC-001, the `|meaningful_cells|` denominator itself has ±10 uncertainty that affects ACGR precision.
 
 ### 7.2 Comparison to COMPOSITE-V2 Gate 6
 
-| Metric | Wave 2 | Wave 3 | Wave 4 | Wave 5 |
-|---|---|---|---|---|
-| COMPOSITE-V2 Gate 6 (marginal novelty) | ~50% | ~30-37% | ~46% (regression) | not re-measured (replaced by ACGR) |
-| ACGR | ~45% | ~22% | ~45% | ~91% ± 16% (preliminary) |
+| Metric | Wave 2 | Wave 3 | Wave 4 | Wave 5 | Wave 6 |
+|---|---|---|---|---|---|
+| COMPOSITE-V2 Gate 6 (marginal novelty) | ~50% | ~30-37% | ~46% (regression) | not re-measured (replaced by ACGR) | not re-measured |
+| ACGR | ~45% | ~22% | ~45% | ~91% ± 16% (preliminary) | ~105% ± 21% (preliminary) |
 
 The two metrics are roughly correlated but ACGR has a defensible terminal state (the archive is finite-bounded by `|meaningful_cells|`), while marginal novelty does not. **Recommendation: replace COMPOSITE-V2 Gate 6 with ACGR in the methodology ADR.** Wave-5's high ACGR is consistent with the QD admission principle (cell-targeted methods should produce high ACGR) — it indicates the audit is still discovering, not converging.
 
@@ -509,6 +530,17 @@ Cells in Axis D ∈ {blocking-impl, governance, security/ops}:
 Plus the candidate 5th axis was invoked: `(meta × * × * × *)` filled by META- with 19 corpus-correction findings (not architecture themes; processed via [`corrections.md`](corrections.md)).
 
 **Theme-density discovery.** Wave 5 falsified the §8 projection assumption that empty cells would be sparse. Governance and security/ops cells were theme-dense (avg 8 new themes/cell). The high observed ACGR (~91%) is therefore expected, not anomalous — it reflects accurate cell-filling, not over-counting.
+
+**Wave-6 update (post-execution).** The 2 remaining Tier-1 cells were filled, and 2 never-occupied (Lens × Temporal) cells were also filled:
+
+| Cell | Status after Wave 6 | Filler | Theme-density observed |
+|---|---|---|---|
+| (compression × current × derivative × security/ops) | ✓ filled | SECDISTILL- | 1 new theme + 15 reinforcements (sparse for new themes; high signal density for re-surfacing existing under-stated claims) |
+| (structural × current × holistic × governance) | ✓ filled | STRUCTGOV- | 6 new themes (XXXX-CCCCC), dense |
+| (scenario × current × holistic × blocking-impl) | ✓ filled (newly-targeted) | SCENNOW- | 10 new themes (EEEEE-NNNNN), very dense |
+| (persona × post-hoc × holistic × *) | ✓ filled (newly-targeted) | PERSRETRO- | 12 new themes (OOOOO-ZZZZZ), highest single-stream κ in Wave 6 |
+
+**Compression-lens Tier-A gap (§7.4) conditionally resolved.** SECDISTILL's σ ≈ 0.85 in `(compression × current × derivative × security/ops)` admits a compression-lens Tier-A stream for the highest-importance Axis-D dimension. DISTILL retains Tier B for `(compression × current × derivative × narrative)`; the cell-row now has Tier-A representation. This resolves the methodology-ADR-flagged gap from §7.4.
 
 ### 7.4 Tier-A method × Axis-A coverage check
 
@@ -564,6 +596,26 @@ Wave 6 candidates (cells not yet filled or under-saturated):
 3. **Compression-lens Tier-A gap (§7.4)** — DISTILL is the only compression-lens method and is Tier B. **Recommended:** revisit DISTILL's tier classification after the Wave-5 corrections re-issue σ × κ in TASK-0044 successor; if compression-lens remains Tier-B-only, document the gap in the methodology codification ADR rather than forcing a Tier-A admission.
 
 **Convergence outlook for Wave 6:** with the §8 projection model now falsified by Wave 5, the convergence threshold (ACGR < 5% for two consecutive waves) is unlikely to be met at Wave 6 if either Tier-1 cell remains theme-dense. The methodology ADR will need to address whether (a) the threshold is too tight given empirical cell theme-density, (b) the `|meaningful_cells|` denominator was under-estimated (a larger denominator lowers ACGR mechanically), or (c) the audit accepts higher residual ACGR than originally targeted and convergence is declared on cell-occupancy criterion (criterion #2 in §2.6) instead.
+
+### 8.2 Wave 6 actual outcome + Wave 7 candidates
+
+**Wave 6 ran with 4 streams** per the §8.1 plan, expanded to include 2 never-occupied (Lens × Temporal) cells per user direction "each cell is important." **Actual ACGR ~105% ± 21%** — even higher than Wave 5's ~91%. The §8.1 prediction (~10-25% for STRUCTGOV likely-dense + SECDISTILL likely-sparse) was decisively falsified by SCENNOW (10 sole themes — actor-experience-class previously unaudited) and PERSRETRO (12 sole themes — retrospective-regret class previously unaudited).
+
+**User-direction terminal condition (signal-exhaustion).** Per user direction, the audit terminates when signal exhausts, not when ACGR hits a pre-defined threshold. Wave 6 produced 29 new themes from 4 streams (~7 themes/stream) — *more* productive per stream than Wave 5 (~6 themes/stream excluding META). Signal has NOT exhausted; continuation is the correct action.
+
+**Wave 7 candidate cells** (drawn from §4.1 Lens × Temporal empty cells not yet filled by Waves 1-6):
+
+1. **`(scenario × forward-looking)`** — forward scenario unfold (SCENNOW's temporal counterpart). Examples: "imagine an agent maintaining this architecture in 18 months after PHASE-5 ships and 3 projects are running" or "scenario: a new contributor joins after a year of operational drift; what's broken about the SoT discipline?" Expected theme-density: medium-high (5-8 themes; PERSRETRO already covered retrospective; this is the forward complement).
+2. **`(structural × forward-looking)`** — structural changes anticipated by the architecture's growth trajectory. Examples: "as the architecture accumulates ADRs/amendments per qd-triage's amendment-overlay pattern, what structural transformations does the artifact set need?" or "where will summary-of-summaries drift become untractable at PHASE-5?" Expected theme-density: medium.
+3. **`(contrarian × post-hoc)`** — devil's-advocate retrospective: "in 3 years what will critics say we should have done differently?" Distinct from PERSRETRO (architect retrospective, ego-honest) and DEVIL/GOVDEV (current-state contrarian). Expected theme-density: medium.
+4. **`(attitudinal × forward-looking)`** — pre-mortem attitudinal (distinct from PREM's contrarian-forward and STAKE's persona-forward). "What gates / REQs / ADRs will the architecture need to add as it matures? What's the gap between today's spec and the spec required for sustainable PHASE-5 operation?" Expected theme-density: medium.
+
+**Wave 7 expected ACGR (preliminary):** assuming theme-density continues at the empirical ~6-12 themes/stream rate (not the §8 sparse-projection rate), expected Wave 7 ACGR is **~50-100%**. Convergence to <5% remains structurally unlikely without methodology re-framing.
+
+**Wave 8+ candidates** (anticipating continued cell-exhaustion):
+- `(attitudinal × post-hoc)`, `(structural × post-hoc)`, `(compression × post-hoc)`, `(compression × forward-looking)` — remaining empty Lens × Temporal cells.
+- A recursive META-META- stream auditing META-'s own corrections (per user direction "don't consider the QD matrix as final" — META should not exempt itself from audit).
+- Potential 5th-axis (`meta × * × * × *`) and 6th-axis methods that may emerge as the framework discovers new orthogonal dimensions.
 
 ---
 

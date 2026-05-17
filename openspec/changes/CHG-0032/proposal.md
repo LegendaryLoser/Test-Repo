@@ -168,7 +168,8 @@ progress, decisions made, and the "Next session: start here" pointer.
 | TASK-0042 | docs | done | Architecture audit Wave 5 (4 streams: governance, security, governance-devil's-advocate, meta-auditor) | `13f5401` |
 | TASK-0043 | docs | done | META- audit corrections log + findings-index Wave 4 + Wave 5 catch-up | `067eefc` |
 | TASK-0044 | docs | done | Wave-5 thematic consolidation (~25 new themes) + qd-triage §3.5 + ACGR re-measurement (~91% ± 16%) | `9ae2a6a` |
-| TASK-0045 | docs | done | Architecture audit Wave 6 (4 streams: STRUCTGOV, SECDISTILL, SCENNOW, PERSRETRO; 75 raw findings) | (this commit) |
+| TASK-0045 | docs | done | Architecture audit Wave 6 (4 streams: STRUCTGOV, SECDISTILL, SCENNOW, PERSRETRO; 75 raw findings) | `cd45777` |
+| TASK-0046 | docs | done | Wave-6 thematic consolidation (~29 new themes) + qd-triage §3.6 + ACGR re-measurement (~105% ± 21%) | (this commit) |
 
 See `tasks/` for per-task detail.
 
