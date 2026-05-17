@@ -211,6 +211,24 @@ Findings counts from [findings-index.md](findings-index.md); per-method marginal
 
 **Wave 4 tier summary:** 4 Tier A (RETRO2, PREM2, STAKE, COUNTER), 3 Tier B (RED2, EDGE2, INHER2), 1 Tier D candidate (VALID2).
 
+### 3.5 Wave 5 — 4 streams (QD admission rule applied)
+
+Wave 5 was the first wave admitted under the σ × κ Pareto admission rule: cells targeted are the 4 high-importance empty cells from §7.3 + the candidate 5th axis (meta). σ values for Wave-5 streams are estimated against the new architecture themes opened (consolidated.md "Wave 5 supplement" § new themes). META- σ is computed differently: signal = corpus-correction findings that verifiably hold against the cited artifacts (high; 16 of 19 confirmed on spot-check during TASK-0043).
+
+| # | Stream | Model | Method | QD signature (Lens, Temporal, Decomp, Severity) | Raw findings | σ (est.) | Themes contributed | κ (sole / co) | Tier |
+|---|---|---|---|---|---|---|---|---|---|
+| 37 | `GOV-` | opus | validate-prd governance-focused | (attitudinal, current, focused, governance) | 22 | 0.80 | sole on YYY-EEEE (7 new); reinforced ~12 existing | **7 sole** | **A** (only attitudinal-governance-focused method) |
+| 38 | `SEC-` | opus | persona security-engineer holistic | (persona, current, holistic, security/ops) | 21 | 0.85 | sole on FFFF-OOOO (10 new security-architectural-primitive themes); reinforced AA/AAA/BBB/CCC/EEE/III/TTT | **10 sole** | **A** (only security-engineer-current-state-holistic method; highest-κ Wave-5 stream) |
+| 39 | `GOVDEV-` | opus | advanced-elicitation devil's-advocate (governance-focused) | (contrarian, current, focused, governance) | 22 | 0.80 | sole on PPPP-WWWW (8 new governance/contrarian themes); reinforced THEME-L cluster + DDD/M/MM | **8 sole** | **A** (only contrarian-governance-focused method) |
+| 40 | `META-` | opus | reasoning-tree meta-audit | (meta × * × * × *) — candidate 5th axis | 19 | 0.84 | N/A (corrections, not architecture themes); 16/19 spot-verified | (audits the audit; orthogonal to architecture κ) | **A** (only meta-axis method; first wave to invoke 5th axis) |
+
+**Wave 5 tier summary:** **4 Tier A, 0 Tier B, 0 Tier C, 0 Tier D.** All four streams cleared the σ ≥ 0.30 floor with margin AND opened previously-empty cells AND surfaced sole themes (or sole corrections for META-). The 4-for-4 Tier-A admission is consistent with the QD admission rule: when cells are deliberately targeted to fill empty regions of the behavioural map, individual κ is high almost by construction.
+
+**Notes carried forward to §4 and §7:**
+- META- is the first stream to invoke a 5th axis. Per §2.1 the framework treats this as a candidate extension; the methodology codification ADR must decide whether to fold "meta" into the axis list or treat meta-streams as an orthogonal class.
+- σ estimates fold in the [`corrections.md`](corrections.md) META- adjustments (PROSE κ down 1, PAIGE κ down 1, STAKE raw count 20-not-25, STAKE cell signature spans 3 Axis-B cells per META-SER-004). Tier admission for the original streams is unaffected; numerical revisions deferred to a future re-issue of §3.1-§3.4.
+- κ for GOV/GOVDEV is partially reduced by within-cell pairing (both occupy the governance-focused cell pair; some themes co-surfaced — e.g., THEME-AAAA from GOV-CRIT-004 + GOVDEV-CRIT-004 + GOVDEV-SER-010 is a 3-way co-surface that the sole-count approximation here treats as GOV-sole). Greedy ablation would re-distribute attribution; deferred per §2.3.
+
 ---
 
 ## 4. QD matrix occupancy
@@ -426,26 +444,29 @@ Of ~70 themes, attributing each to its sole-surfacer or first-surfacer establish
 
 Computing `archive(W)` for each wave, where archive elements are distinct (cell, theme) pairs. (Cells defined per §2.1; themes per consolidated.md.)
 
-| Wave | Streams added | New (cell, theme) pairs | Cumulative archive | ACGR = Δ / |meaningful_cells| (~55) |
+| Wave | Streams added | New (cell, theme) pairs | Cumulative archive | ACGR = Δ / |meaningful_cells| (~55 ± 10 per [`corrections.md`](corrections.md) META-PROC-001) |
 |---|---|---|---|---|
 | 1 | 12 | 26 themes × ~7 cells active = ~30 pairs | ~30 | n/a (baseline) |
 | 2 | +8 | 16 themes × ~5 new cells = ~25 pairs | ~55 | 25/55 = **~45%** |
 | 3 | +8 | 9 themes × ~3 cells = ~12 pairs | ~67 | 12/55 = **~22%** |
 | 4 | +8 | 17 themes × ~5 cells = ~25 pairs (STAKE+COUNTER opened (persona, forward) and (contrarian, axis-spanning) cells) | ~92 | 25/55 = **~45%** |
+| 5 | +4 | ~25 themes × ~2 cells avg = ~50 pairs (GOV/GOVDEV opened (attitudinal/contrarian × governance-focused); SEC opened (persona × security/ops × holistic) with theme-density 10 — high; META invokes 5th axis) | ~142 | 50/55 = **~91% ± 16%** (preliminary, sole-source approximation; see Wave-5 supplement in `consolidated.md`) |
 
 **Interpretation under ACGR:**
 - Wave 4's 45% ACGR is identical magnitude to Wave 2's, but the *cause is structurally different*. Wave 2 opened new (lens × temporal) cells via new methods (RED forward/security, RETRO post-hoc/governance). Wave 4 opened (persona × forward, exhaustive × security/ops + cost/value) via STAKE, and (contrarian × derivative × axis-spanning) via COUNTER.
-- **Convergence rule under ACGR was satisfied transiently in Wave 3** (22% < 50% of allowed delta from the previous wave's growth) but not in absolute terms (<5% threshold).
-- **Wave 5 prediction:** if Wave 5 targets empty cells (per §8), expected ACGR is *bounded by* the new (cell, theme) pairs the cells can hold. If the empty cells we target are small (e.g., 2-3 themes per cell), expected Wave 5 ACGR is ~10-15%. **Two more waves of empty-cell-targeting should drive ACGR < 5%.**
+- **Wave 5's ~91% is high and unexpected.** The §8 projection ("Wave 5 ACGR 10-15%") assumed the targeted empty cells were sparse (2-3 themes/cell). Empirically, the security-architectural-primitives cell (`persona × current × holistic × security/ops`) and the governance-machinery cells (`attitudinal/contrarian × current × focused × governance`) turned out to be **theme-dense** (SEC alone opened 10 new themes; GOV+GOVDEV jointly opened 15). The projection was wrong about cell theme-density, not about cell-fill direction.
+- **Convergence rule under ACGR was satisfied transiently in Wave 3** (22% < 50% of allowed delta from the previous wave's growth) but not in absolute terms (<5% threshold). Wave 5 regressed the convergence trajectory significantly.
+- **Revised Wave 6 prediction:** the remaining high-importance empty cells (per §7.3 updated for Wave 5) are `(structural × current × holistic × governance)` and the compression-lens Tier-A gap. Structural-governance is likely theme-dense (similar to attitudinal-governance discovered above; estimate 5-10 new themes). Compression-lens for security is unknown but likely sparse (compression lens has produced only 1 stream historically — DISTILL — with low κ). **Revised Wave 6 estimated ACGR: 10-25%.** Convergence to <5% likely requires Wave 7 or admission of a saturation rule (e.g., "stop after first wave with ACGR < 10% AND no high-importance empty cells").
+- **Methodology implication:** the original prediction model assumed cells are sparse-by-default. Wave 5 falsified this for the governance and security axes. The methodology codification ADR should either (a) calibrate the prediction model against the new theme-density data, or (b) accept that the architecture audit has higher residual κ than the framework predicted and adjust the convergence threshold. Per [`corrections.md`](corrections.md) META-PROC-001, the `|meaningful_cells|` denominator itself has ±10 uncertainty that affects ACGR precision.
 
 ### 7.2 Comparison to COMPOSITE-V2 Gate 6
 
-| Metric | Wave 2 | Wave 3 | Wave 4 |
-|---|---|---|---|
-| COMPOSITE-V2 Gate 6 (marginal novelty) | ~50% | ~30-37% | ~46% (regression!) |
-| ACGR | ~45% | ~22% | ~45% |
+| Metric | Wave 2 | Wave 3 | Wave 4 | Wave 5 |
+|---|---|---|---|---|
+| COMPOSITE-V2 Gate 6 (marginal novelty) | ~50% | ~30-37% | ~46% (regression) | not re-measured (replaced by ACGR) |
+| ACGR | ~45% | ~22% | ~45% | ~91% ± 16% (preliminary) |
 
-The two metrics are roughly correlated but ACGR has a defensible terminal state (the archive is finite-bounded by `|meaningful_cells|`), while marginal novelty does not. **Recommendation: replace COMPOSITE-V2 Gate 6 with ACGR in the methodology ADR.**
+The two metrics are roughly correlated but ACGR has a defensible terminal state (the archive is finite-bounded by `|meaningful_cells|`), while marginal novelty does not. **Recommendation: replace COMPOSITE-V2 Gate 6 with ACGR in the methodology ADR.** Wave-5's high ACGR is consistent with the QD admission principle (cell-targeted methods should produce high ACGR) — it indicates the audit is still discovering, not converging.
 
 ### 7.3 High-importance cell occupancy check
 
@@ -474,6 +495,20 @@ Cells in Axis D ∈ {blocking-impl, governance, security/ops}:
 | (structural × current × holistic × governance) | **EMPTY** | (none) |
 
 **High-importance empty cells: 5.** These do not block ACGR convergence (their theme-density is unknown), but they represent the most defensible targets for Wave-5 admission.
+
+**Wave-5 update (post-execution).** Three of the five high-importance empty cells were filled in Wave 5:
+
+| Cell | Status after Wave 5 | Filler | Theme-density observed |
+|---|---|---|---|
+| (attitudinal × current × focused × governance) | ✓ filled | GOV- | 7 new themes (YYY-EEEE), dense |
+| (persona × current × holistic × security/ops) | ✓ filled | SEC- | 10 new themes (FFFF-OOOO), very dense |
+| (contrarian × current × focused × governance) | ✓ filled | GOVDEV- | 8 new themes (PPPP-WWWW), dense |
+| (compression × * × * × security/ops) | **STILL EMPTY** | — | (Wave-6 candidate; expected sparse per compression-lens history) |
+| (structural × current × holistic × governance) | **STILL EMPTY** | — | (Wave-6 candidate; expected dense by analogy to attitudinal-governance) |
+
+Plus the candidate 5th axis was invoked: `(meta × * × * × *)` filled by META- with 19 corpus-correction findings (not architecture themes; processed via [`corrections.md`](corrections.md)).
+
+**Theme-density discovery.** Wave 5 falsified the §8 projection assumption that empty cells would be sparse. Governance and security/ops cells were theme-dense (avg 8 new themes/cell). The high observed ACGR (~91%) is therefore expected, not anomalous — it reflects accurate cell-filling, not over-counting.
 
 ### 7.4 Tier-A method × Axis-A coverage check
 
@@ -517,6 +552,18 @@ Per §7.3 and §7.4, the empty/sparse cells worth targeting in Wave 5:
 - If only Tier-1 (#1, #2, #3) pursued: estimated 6-10 new themes. Estimated ACGR: ~10-15%.
 
 **Recommended Wave 5 scope:** Tier-1 targets + meta-review (4 streams). Estimated convergence: Wave 5 ACGR ~10-15%, Wave 6 ACGR <5% (target met).
+
+### 8.1 Wave 5 actual outcome + Wave 6 candidates
+
+**Wave 5 ran with 4 streams** (Tier-1 #1, #2, #3 + meta-review). **Actual ACGR: ~91% ± 16% — much higher than predicted (~10-15%).** Cause: empty cells were theme-dense (~8 new themes/cell average), not sparse (2-3 themes/cell) as the projection assumed. The QD admission rule worked as designed (cell-targeted methods produce high κ); the prediction model under-estimated cell theme-density.
+
+Wave 6 candidates (cells not yet filled or under-saturated):
+
+1. **`(structural × current × holistic × governance)`** — still empty after Wave 5. Estimated theme-density: 5-10 (governance cells have proven dense; structural lens may surface ARCHITECTURE.md cross-document drift specifically about governance machinery). **Recommended Wave-6 stream:** `bmad-editorial-review-structure` with governance focus. Estimate: opens 5-10 new themes; ACGR contribution ~10-20%.
+2. **`(compression × * × security/ops)`** — still empty. Estimated theme-density: sparse (compression-lens method DISTILL produced only 1-2 sole themes per pass). **Recommended Wave-6 stream:** `bmad-distillator` applied specifically to ADRs covering security/operations primitives. Estimate: opens 2-4 new themes; ACGR contribution ~5-10%.
+3. **Compression-lens Tier-A gap (§7.4)** — DISTILL is the only compression-lens method and is Tier B. **Recommended:** revisit DISTILL's tier classification after the Wave-5 corrections re-issue σ × κ in TASK-0044 successor; if compression-lens remains Tier-B-only, document the gap in the methodology codification ADR rather than forcing a Tier-A admission.
+
+**Convergence outlook for Wave 6:** with the §8 projection model now falsified by Wave 5, the convergence threshold (ACGR < 5% for two consecutive waves) is unlikely to be met at Wave 6 if either Tier-1 cell remains theme-dense. The methodology ADR will need to address whether (a) the threshold is too tight given empirical cell theme-density, (b) the `|meaningful_cells|` denominator was under-estimated (a larger denominator lowers ACGR mechanically), or (c) the audit accepts higher residual ACGR than originally targeted and convergence is declared on cell-occupancy criterion (criterion #2 in §2.6) instead.
 
 ---
 

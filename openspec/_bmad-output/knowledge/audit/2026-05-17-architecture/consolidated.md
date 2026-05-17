@@ -1267,6 +1267,77 @@ The remaining ~5 Wave-4 themes are sharpenings of existing themes
 (VALID2 on shallow-clone CI defeating history walk; EDGE2 on cosmetic-edit
 exemption being undefined; RED2 sub-threshold green-start evasion).
 
+## Wave 5 supplement (4 streams, complete)
+
+Methods added (per `qd-triage.md` §8 Wave-5 admission targets): governance-focused validate-prd (`GOV-`, opus), security-engineer holistic persona (`SEC-`, opus), governance-focused devil's-advocate (`GOVDEV-`, opus), reasoning-tree meta-auditor (`META-`, opus).
+
+**Wave 5 raw findings: 84 total** (GOV 22, SEC 21, GOVDEV 22, META 19). **`META-` is the corpus-audit stream — its 19 findings audit the audit, not the architecture; they are processed via [`corrections.md`](corrections.md) and excluded from the architecture-theme tally below.** Remaining: **65 architecture-defect findings** across GOV / SEC / GOVDEV.
+
+**Convergence under ACGR (per `qd-triage.md` §7):** Wave 5 added the 4 Tier-1 empty cells targeted in §8 plus the candidate 5th axis (meta). Per-stream new-theme contribution + reinforcement counts in §3.5 of `qd-triage.md` (pending re-issue per TASK-0044 plan; preliminary counts below).
+
+**New themes from Wave 5 (~25 added).** Numbering continues from THEME-XXX (Wave 4 final):
+
+### From GOV- (governance-focused validation, 7 new themes)
+
+- **THEME-YYY — REQ ownership / attribution model absent** (GOV-CRIT-001): `ADR-0004` §5 has no `owner` / `author` / `approver` / `steward` field on REQ frontmatter; any agent with write access can advance `status` unrelatable.
+- **THEME-ZZZ — Supersession has no reviewer-class gate** (GOV-CRIT-003): the `supersedes:` pointer exists but no required approver-id; a constraining REQ can be deprecated and replaced with a permissive one in one CHG with no semantic-correctness attestation.
+- **THEME-AAAA — ADR amendment authority unbounded** (GOV-CRIT-004, GOVDEV-SER-010, GOVDEV-CRIT-004): no quorum, no approver class, no monotonicity enforcement on amendment IDs, no criterion distinguishing "amendment" from "supersession" (ADR-0002's "Amendment 0001" was a complete rewrite — the cheaper path that future authors will follow).
+- **THEME-BBBB — Self-amendment hazard on ADR-0008** (GOV-CRIT-005, GOVDEV-CRIT-002): `gate-coverage` is meta-gate over the table that defines it; an amendment to ADR-0008 can remove a gate row in lock-step with amending `gate-coverage` itself, undetectable.
+- **THEME-CCCC — CHG approval provenance + approver classification** (GOV-SER-003, GOV-SER-004, GOVDEV-PROC-022): no `Approved-By:` trailer; no approver-class enumeration per CHG type (substrate-PR-approver, spec-PR-approver, gate-amendment-approver); ADR `accepted` status has no signoff trail.
+- **THEME-DDDD — CHG lifecycle: open/close/stalled** (GOV-SER-008, GOV-SER-009): no rule for what blocks a CHG from being opened or closed; no reassignment / escalation for a stalled CHG; `stale-staging` deferred but no stale-CHG analog.
+- **THEME-EEEE — Hook-failure governance / appeal mechanism** (GOV-SER-007): `--no-verify` forbidden by CLAUDE.md, but no documented appeal path when a hook is genuinely buggy; the system has no recourse for its own bugs except merging a hook-fix PR (which the buggy hook may block).
+
+### From SEC- (security-engineer holistic, 10 new themes)
+
+- **THEME-FFFF — Hook sandboxing + capability declaration** (SEC-CRIT-002): seven hooks run arbitrary Python with full ambient privilege; no uid separation, container, capability list, file allowlist, or egress allowlist. Textbook hostile-PR-via-hook attack surface.
+- **THEME-GGGG — Origin URL allowlist for push hook** (SEC-CRIT-006): autopush sends to whatever `origin` is currently set; no validation that origin is the legitimate upstream. A malicious `git remote set-url` lets the next commit's hook autopush to the attacker.
+- **THEME-HHHH — Branch protection codified in repo** (SEC-CRIT-007): branch protection is asserted as enforcement surface (`ADR-0008` §6) but its contents (required reviewers, status checks, restrict-push-list) live only in GitHub UI; can be silently lowered. No `branch-protection-snapshot` gate diffs the live ruleset against a committed canonical.
+- **THEME-IIII — Threat model documentation** (SEC-SER-010): no STRIDE / LINDDUN / trust-boundary diagram anywhere; reviewers cannot tell which components are inside the trust boundary.
+- **THEME-JJJJ — Untrusted-input perimeter for LLM responses** (SEC-SER-011, SEC-PROC-020): LLM output is attacker-controllable in practice (prompt injection via tool results, web-fetch content, indirect injection through spec text); no classification or sanitisation layer before it reaches Edit/Bash tool calls.
+- **THEME-KKKK — MCP scope declaration / least privilege** (SEC-SER-012): GitHub MCP token scope, repository list, releases/secrets/fork capabilities — all unconstrained in the architecture.
+- **THEME-LLLL — Network egress policy** (SEC-SER-013): seven distinct outbound destinations (Anthropic, Sheets/Drive, Apps Script Execution, clasp, GitHub MCP, BMAD upstream during install, origin); no allowlist, no egress proxy, no DNS allowlist.
+- **THEME-MMMM — settings.json approval gate** (SEC-SER-014): `.claude/settings.json` declares permissions/env/hooks and is repo-committed; no diff-review gate on permissions or env additions, no two-person approval on hook changes.
+- **THEME-NNNN — Data classification policy** (SEC-CRIT-004): no classification (secret / confidential / public) declared before storage location chosen. Journals carry test stdout (which routinely contains tokens, response bodies, PII from test spreadsheets) in cleartext.
+- **THEME-OOOO — Checkpoint exemption registry** (SEC-PROC-017, GOVDEV-CRIT-005): `tools/trace/checkpoint_exemptions.yaml` is named but does not exist yet (PHASE-2); no ADR enumerates which gates may be exempted; `Checkpoint:` trailer is the sanctioned bypass invokable by the agent itself with no human-in-the-loop.
+
+### From GOVDEV- (contrarian governance, 8 new themes)
+
+- **THEME-PPPP — Matrix rebuilder silent overwrite** (GOVDEV-CRIT-003): the pre-commit hook re-runs `rebuild.py` and stages the result without signalling that the human's edit was discarded; the CI "fails if differs" check is tautological under normal operation (dead code unless the pre-commit hook is bypassed).
+- **THEME-QQQQ — Trailer semantic vs syntactic validation** (GOVDEV-SER-007): `validate_commit.py` checks trailer format but cannot verify `Requirements:` REQs are actually touched by the diff; one paste-and-forge satisfies the gate. Traceability matrix asserts false coverage under realistic pressure.
+- **THEME-RRRR — History-rewrite hazard (rebase erases red-first)** (GOVDEV-SER-008): GitHub squash merges + rebase-to-resolve produce a single commit with no prior red state in main's history. `validate_commit.py` must run pre-merge on PR branch; the architecture nowhere documents rebase discipline or squash policy.
+- **THEME-SSSS — Promotion-direction asymmetry** (GOVDEV-SER-012): `_bmad-output/` → `openspec/specs/` promotion has no `stale-staging` rule (deferred) and no inverse — content can appear in canonical homes without transiting staging, and no gate detects this.
+- **THEME-TTTT — Phase-exit rollback procedure** (GOVDEV-SER-013): `phase-exit` enforces ordering but if a later-phase REQ is accidentally `tests-green`, no ceremony un-greens it (a passing test cannot be un-passed). Under realistic pressure the operator will fudge status or rewrite history.
+- **THEME-UUUU — PHASE-5 pre-authorizes ADR amendments** (GOVDEV-SER-015): PHASE-5's "load test" framing pre-licenses amendment over abort; no threshold, no neutral arbiter, no test that an amendment is not wholesale capitulation.
+- **THEME-VVVV — PHASE-0 self-disabled enforcement** (GOVDEV-PROC-020): exit-0 hook placeholders ensure PHASE-0 commits cannot fail commit-trailer validation. PHASE-0's red-first discipline is unenforced for PHASE-0 itself; no retroactive validation pass is documented.
+- **THEME-WWWW — Deferred-CHG decisional ambiguity** (GOVDEV-PROC-017): ADRs reference "future deferred CHGs" as authoritative controls that do not exist; no meta-rule for "when does a deferred CHG count as decided." Prescriptivism ("if it isn't an ADR, it isn't decided") collides with the practice of pre-deciding in deferred CHGs that have not been written.
+
+### Reinforcements (the remaining ~30 Wave-5 architecture findings)
+
+The remaining Wave-5 architecture findings reinforce existing themes from Waves 1-4 rather than open new ones. Mapping (per-finding precision deferred to next consolidation pass):
+
+- **THEME-A..K (Waves 1-2 governance/structural)** reinforced by: GOV-SER-005 (phase-exit decision authority → K), GOV-SER-006 (gate-coverage scope → C), GOV-SER-011 (quarterly review owner → Q), GOV-SER-012/013/014 + GOV-PROC-002 (status enum, amendment numbering, arrow character → B/M/O).
+- **THEME-AA (supply chain)** reinforced by SEC-CRIT-005 + THEME-FFF (BMAD checksum/signature) extended.
+- **THEME-AAA (commit signing)** reinforced by SEC-CRIT-003. Severity correction per META-SER-012 (CRIT → SER).
+- **THEME-BBB (secrets threat model)** reinforced by SEC-CRIT-001 + SEC-PROC-021 (PHASE-5 service account).
+- **THEME-CCC (SRE/ops surface)** reinforced by SEC-PROC-018 (no incident response / disclosure process).
+- **THEME-DDD (separation of duties)** reinforced by GOVDEV-SER-010 + GOVDEV-SER-016 + GOV-SER-005 (multiple angles on same defect).
+- **THEME-EEE (journal integrity primitives)** reinforced by SEC-CRIT-004 + SEC-SER-009 (cleartext + append-only-by-convention).
+- **THEME-III (vendor lock-in)** reinforced by SEC-SER-015 (stochastic tier real API in CI = security angle as well as cost).
+- **THEME-L (CLAUDE/ARCH duplication)** reinforced and broadened by GOVDEV-CRIT-001 + GOVDEV-SER-006 + GOVDEV-PROC-019 (SoT principle structurally violated; STATUS.md hand-maintained; "verbatim" undefined).
+- **THEME-M (amendment-log discipline)** reinforced by GOVDEV-PROC-018 (append-only ungated).
+- **THEME-MM (retroactive remediation)** reinforced by GOVDEV-SER-009 (bulk-green-start ceremony underspecified).
+- **THEME-TTT (agent identity)** reinforced by SEC-SER-008 (commit trailer doesn't distinguish agent from developer).
+- **THEME-Z (commit-trailers-valid trigger surface)** reinforced (and corrected) by SEC-SER-016 + GOVDEV-SER-014 (pre-receive vs `--no-verify` conflation; per [`corrections.md`](corrections.md) META-SER-002 the "three trigger surfaces" was over-cardinalized — actual is two trigger surfaces + one stream-introduced misreading).
+
+**Wave 5 ACGR (preliminary, pending greedy-ablation re-measurement per `qd-triage.md` §2.3 + corrections.md META-PROC-001 uncertainty bands):**
+
+- New (cell, theme) pairs added by Wave 5: ~25 new themes × estimated 2 cells avg = ~50 new (cell, theme) pairs.
+- Cumulative archive after Wave 5: ~92 (Wave 4) + ~50 (Wave 5) ≈ **~142**.
+- ACGR = ΔArchive / `meaningful_cells` = 50 / 55 ± 10 = **~91% ± 16% (preliminary; high)**.
+- **Interpretation:** the new themes opened by Wave-5 (especially security architectural primitives from SEC- and governance authority/lifecycle from GOV+GOVDEV) substantially expanded the archive. This invalidates the prior qd-triage.md §7 projection of "Wave 5 ACGR 10-15%" — the projection assumed Wave 5 would fill empty cells with sparse themes (2-3 themes/cell), but the empty cells turned out to be theme-dense (7-10 themes/cell on the security and governance axes).
+- **Convergence implication:** the architecture audit has NOT converged under ACGR < 5%. A Wave 6 is warranted IF the remaining empty cells (per `qd-triage.md` §7.3: `(structural × current × holistic × governance)`, `(compression × *)` Tier-A gap) are similarly theme-dense. If they are sparse (the more likely case for compression-lens), Wave 6 may converge.
+- **Caveat:** these counts use the sole-source approximation per §2.3, not full greedy ablation. The "~50 new (cell, theme) pairs" estimate has wide uncertainty; could be as low as ~30 (more overlap with existing themes than estimated) or as high as ~70 (under-counting cell-occupancy multiplicity). The methodology ADR's audit-meta-test suite should mechanise this measurement before declaring convergence.
+
 ## COMPOSITE-V2 status after Wave 4
 
 | Gate | Status |

@@ -14,7 +14,7 @@ then proceed.
 **Last updated:** 2026-05-17 (architecture audit session, branch `claude/bmad-architecture-review-sV42w-bPd8l`)
 **Active phase:** PHASE-1 (paused — BMAD audit track in progress)
 **Last master commit:** `455ba06` (PR #15 merged: CHG-0014 + CHG-0031)
-**Last branch commit** (`claude/bmad-architecture-review-sV42w-bPd8l`): see `git log -1` — most recent work is CHG-0032 TASK-0043 (META- audit corrections log + findings-index Wave 4 + Wave 5 catch-up). TASK-0042 (Wave 5 audit) at `13f5401`.
+**Last branch commit** (`claude/bmad-architecture-review-sV42w-bPd8l`): see `git log -1` — most recent work is CHG-0032 TASK-0044 (Wave-5 thematic consolidation, qd-triage §3.5, ACGR re-measurement). TASK-0042 (Wave 5 audit) at `13f5401`; TASK-0043 (META corrections + findings-index) at `067eefc`.
 **Open PRs:** none
 **Test count:** 184 passing on master (audit + STATUS.md commits do not change test count)
 
@@ -170,17 +170,19 @@ Sequenced from current state. `[x]` merged, `[~]` in flight, `[ ]` queued.
 | 2026-05-17 | Mixed invocation policy for Wave 5: BMAD skills for in-catalog cells, general-purpose with custom prompts for out-of-catalog cells | Derived from Wave-4 empirical evidence (STAKE+COUNTER, the two highest-κ streams in the entire corpus, used general-purpose with custom prompts). Methodology codification ADR queued to decide whether the catalog admits a single class of methods or two classes (BMAD-skill + general-purpose-prompted). |
 | 2026-05-17 | META- corrections applied via append-only audit-of-the-audit log (`corrections.md`) rather than silent in-place edits to consolidated.md and qd-triage.md | Preserves provenance (original framings remain readable); makes each correction traceable to a META- finding ID; models the correction protocol the methodology codification ADR will need. Surgical inline edits limited to mechanically-wrong-and-one-line-fixable cases (THEME-X count, FIRST artifact annotation) + top-of-document pointers. |
 | 2026-05-17 | `findings-index.md` brought current with Waves 4 + 5 per-stream tallies; per-theme constituent listing for Waves 4-5 deferred to next consolidation pass | META-CRIT-002 surfaced that the index was stale at Wave 3 (28 streams) while consolidated.md and qd-triage.md both referenced 36 streams. Per-stream tally is the structural skeleton; per-theme listing requires Wave-5 thematic consolidation first. |
+| 2026-05-17 | Wave-5 thematic consolidation: ~25 new themes (THEMES YYY-WWWW), ~30 reinforcements of Waves 1-4 themes; qd-triage §3.5 authored with Wave-5 per-method σ × κ (all 4 streams Tier-A) | Wave-5 ACGR re-measured at **~91% ± 16%** — much higher than the §8 projected 10-15%. Cause: governance and security/ops cells were theme-dense (~8 themes/cell), not sparse (2-3 themes/cell) as the projection assumed. The QD admission rule (cell-fill criterion) is vindicated; the convergence threshold (ACGR < 5%) is questioned. |
+| 2026-05-17 | Wave 6 candidates surfaced in qd-triage §8.1 but not scheduled — user decision required | Remaining empty cells: `(structural × current × holistic × governance)` likely dense (5-10 themes) and `(compression × * × security/ops)` likely sparse (2-4 themes). Convergence threshold is open: if structural-governance is also theme-dense, ACGR < 5% may not be achievable without changing the denominator definition or accepting higher residual κ. Methodology codification ADR must resolve. |
 
 ## Next session: start here
 
 **Current state of the architecture audit (CHG-0032):**
 
-- Waves 1, 2, 3, 4, 5 all complete — 40 streams total. Waves 1-4: ~700 raw findings, ~70 themes (consolidated). Wave 5: 4 new streams (`GOV-`, `SEC-`, `GOVDEV-`, `META-`) targeting Tier-1 empty cells per qd-triage.md §8; raw findings persisted at `findings/<PREFIX>-findings.md`; thematic consolidation deferred to next session.
-- Wave 1-4 findings consolidated and triaged. Wave 5 thematic consolidation, qd-triage.md §3.5 (per-method σ × κ for the 4 new streams), and ACGR re-measurement after Wave 5 are pending and constitute the FIRST action for the next session.
-- Quality-Diversity (QD) framework adopted (see Recent decisions row "Adopt Quality-Diversity framework"). Replaces COMPOSITE-V2 Gate 6 marginal-novelty rule with σ × κ Pareto admission + ACGR convergence metric. Research-grounded in MAP-Elites + Mixture-of-Complementary-Agents + ambiguity decomposition. Wave 5 was the first wave admitted under the QD admission rule (cell-fill, not raw novelty).
-- Per-method tier assignment complete for Waves 1-4: 16 Tier A, ~10 Tier B, 1 Tier C, 4 Tier D candidates (COURSE, CHECK, EDIT, VALID2 — deprecation deferred for implementation-audit confirmation). Wave-5 streams pending σ × κ scoring; cell assignments per TASK-0042.
-- Outstanding empty cells after Wave 5: `(structural × current × holistic × governance)` and the `(compression × *)` Tier-A gap (DISTILL is Tier B). Targets for Wave 6 conditional on ACGR re-measurement.
-- Architecture audit has NOT yet hit the new convergence criterion (Wave 4 ACGR ~45%; Wave 5 ACGR pending consolidation; projected ~10-15%); Wave 6 projected <5% if pursued (target met).
+- Waves 1, 2, 3, 4, 5 all complete — 40 streams total. Waves 1-4: ~700 raw findings, ~70 themes. Wave 5: 4 streams (`GOV-`, `SEC-`, `GOVDEV-`, `META-`); 84 raw findings (21 CRIT / 46 SER / 17 PROC); thematic consolidation complete (~25 new architecture themes + ~30 reinforcements of existing themes; META-'s 19 corrections processed via `corrections.md`).
+- Per-method tier assignment complete for all 40 streams (Waves 1-4 in qd-triage.md §3.1-§3.4; Wave 5 in §3.5). Wave-5 streams **all 4 admitted to Tier A** (cell-targeted admission produces high κ by construction).
+- Quality-Diversity (QD) framework adopted. Wave 5 was the first wave admitted under the QD admission rule (cell-fill, not raw novelty); the admission rule is **vindicated** (4 Tier-A admissions consistent with cell-targeting), the convergence threshold is **questioned** (Wave 5 ACGR ~91% ± 16% — much higher than projected ~10-15%; governance and security/ops cells turned out to be theme-dense).
+- Outstanding empty cells after Wave 5: `(structural × current × holistic × governance)` (likely theme-dense), `(compression × * × security/ops)` (likely sparse), and the compression-lens Tier-A gap. Wave 6 candidates documented in `qd-triage.md` §8.1 but NOT scheduled — user decision required.
+- Architecture audit has NOT hit the convergence criterion (ACGR < 5% for two consecutive waves) and is unlikely to hit it at Wave 6 without changing the threshold or denominator. The methodology codification ADR must resolve this.
+- META- corrections (19 total, 4 CRIT / 12 SER / 3 PROC) are logged in `corrections.md` as append-only audit-of-the-audit; major affected items: THEME-P misattribution to PROSE (CRIT), `findings-index.md` Wave-4 omission (CRIT), `FIRST-CRIT-01` self-inflicted method artifact (CRIT), STAKE/COUNTER raw-count inflation (CRIT).
 
 **Read in this order before doing anything else:**
 
@@ -189,15 +191,24 @@ Sequenced from current state. `[x]` merged, `[~]` in flight, `[ ]` queued.
 3. `openspec/_bmad-output/knowledge/audit/2026-05-17-architecture/qd-triage.md` — the full QD triage. Required reading: §2 (framework definitions), §5 (Tier A/B/C/D catalog), §7 (ACGR convergence diagnostic), §8 (Wave 5 admission targets), §9 (draft clauses for methodology ADR).
 4. `openspec/_bmad-output/knowledge/audit/2026-05-17-architecture/consolidated.md` — the ~70 themes, organised by tier of confirmation; required if planning resolution CHGs, otherwise reference-only.
 
-**First action on resume:** complete Wave-5 thematic consolidation. Concretely:
+**First action on resume:** USER DECISION on Wave 6 / implementation audit / methodology ADR. Wave-5 architecture-audit consolidation is complete (TASK-0044 in the previous commit on this branch); the choice is:
 
-Steps 1 + 2 below were DONE in TASK-0043 (this session): META- retractions logged in `corrections.md` (19 corrections, 4 CRIT / 12 SER / 3 PROC) and `findings-index.md` Wave 4 + Wave 5 per-stream tallies added. The remaining work:
+1. **Run Wave 6** targeting the two remaining empty cells (`(structural × current × holistic × governance)` likely dense; `(compression × * × security/ops)` likely sparse). Per `qd-triage.md` §8.1, expected ACGR ~10-25% — still above the 5% convergence threshold. Wave 6 will not converge the architecture audit absent a threshold revision.
+2. **Declare the architecture audit "exhausted-but-not-converged" and move to the implementation audit.** Use the QD catalog from `qd-triage.md` §5 dogfood-style against `tools/spec_lint/`, `tools/ci/`, `_bmad/`, `.github/workflows/`. Argument: Wave 5's high ACGR is unlikely to recur on a code+spec corpus (cell-density empirics will be different); convergence may be tractable there.
+3. **Author the methodology codification ADR now** (rather than after both audits, per the prior decision) to resolve the convergence-threshold question before more wave/audit work happens. The ADR draft clauses in `qd-triage.md` §9 + the Wave-5 outcome + `corrections.md` give enough material; the threshold revision is the key open question.
 
-3. Read each `findings/<PREFIX>-findings.md` for the 3 Wave-5 architecture-audit prefixes (`GOV-`, `SEC-`, `GOVDEV-`; META- is the corpus-audit stream already processed via corrections.md). 84 findings total minus META's 19 = 65 architecture-defect findings to cluster.
-4. For each Wave-5 finding, decide whether it reinforces an existing theme in `consolidated.md` or opens a new theme. Add new themes (likely THEMES TTTT+ or similar continuation of the naming scheme) and record per-theme sole-source attribution. Add per-theme constituent-finding listing for Waves 4 + 5 to `findings-index.md` (the deferral noted in TASK-0043).
-5. Update `qd-triage.md` §3.5 (NEW SECTION) with the per-method σ × κ scores for the 4 Wave-5 streams. Fold in the corrections from `corrections.md` (PROSE/PAIGE/STAKE/COUNTER κ adjustments; STAKE cell-occupancy refinement per META-SER-004). Update §4 cell-occupancy maps.
-6. Recompute ACGR for Wave 5 with explicit uncertainty bands per META-PROC-001. If ACGR < 5%, the convergence criterion's first half is satisfied (one of two consecutive waves); decide whether Wave 6 is needed.
-7. Ask the user the next-move question:
+User's standing direction (Recent decisions 2026-05-17 "Run implementation audit after architecture audit convergence; consolidate jointly") favours option 1 + 2 sequentially. But the convergence-threshold question makes the joint consolidation premature: without a defensible threshold, the joint sequence cannot define "converged."
+
+Steps that were DONE in this session (this branch):
+- TASK-0042 (commit `13f5401`): Wave 5 architecture audit (4 streams, 84 raw findings).
+- TASK-0043 (commit `067eefc`): META- corrections log + findings-index Wave 4 + 5 catch-up.
+- TASK-0044 (latest commit): Wave-5 thematic consolidation (~25 new themes), qd-triage §3.5 σ × κ table, ACGR re-measurement (~91% ± 16%).
+
+Pending consolidation work after the user decision (these were NOT done in this session):
+- Per-theme constituent-finding listing for Waves 4-5 in `findings-index.md` (currently per-stream-tally-only; per-theme requires more clustering work).
+- Full greedy-ablation σ × κ measurement (current §3.5 uses sole-source approximation per §2.3).
+- `|meaningful_cells|` formal enumeration (currently ~55 ± 10).
+- Severity recalibration of STAKE-CRIT-001 → STAKE-SER-001 per `corrections.md` META-SER-012 in `findings/STAKE-findings.md`.
 
 The two defensible orderings AFTER consolidation are:
 - **(a)** If Wave 5 ACGR < 15%, declare the architecture audit converged-enough and move to the implementation audit (`tools/spec_lint/`, `tools/ci/`, `_bmad/`, `.github/workflows/`) using the QD catalog from qd-triage.md §5 dogfood-style.
