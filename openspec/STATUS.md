@@ -14,7 +14,7 @@ then proceed.
 **Last updated:** 2026-05-17 (architecture audit session, branch `claude/bmad-architecture-review-sV42w-bPd8l`)
 **Active phase:** PHASE-1 (paused — BMAD audit track in progress)
 **Last master commit:** `455ba06` (PR #15 merged: CHG-0014 + CHG-0031)
-**Last branch commit** (`claude/bmad-architecture-review-sV42w-bPd8l`): see `git log -1` — most recent work is CHG-0032 TASK-0042 (Wave 5 architecture audit: 4 streams targeting Tier-1 empty cells; first wave admitted under QD admission rule; Wave-5 thematic consolidation deferred to follow-on task)
+**Last branch commit** (`claude/bmad-architecture-review-sV42w-bPd8l`): see `git log -1` — most recent work is CHG-0032 TASK-0043 (META- audit corrections log + findings-index Wave 4 + Wave 5 catch-up). TASK-0042 (Wave 5 audit) at `13f5401`.
 **Open PRs:** none
 **Test count:** 184 passing on master (audit + STATUS.md commits do not change test count)
 
@@ -168,6 +168,8 @@ Sequenced from current state. `[x]` merged, `[~]` in flight, `[ ]` queued.
 | 2026-05-17 | Author CHG-0032 envelope retroactively (proposal.md + 7 TASK files + REQ-AUDIT-0001 at `openspec/specs/audit/methodology.spec.md`) | Audit work had been carrying dangling `Task: TASK-NNNN` and `Requirements: REQ-AUDIT-0001` trailers that referenced files which did not exist. Retroactive authoring resolves the dangling references and gives the fresh session a canonical scope declaration. P4 violation acknowledged (envelope is descriptive not prescriptive); methodology codification ADR queued to address audit-CHG lifecycle question. |
 | 2026-05-17 | Run Wave 5 architecture audit: 4 streams (`GOV-`, `SEC-`, `GOVDEV-`, `META-`) targeting Tier-1 empty cells in the QD matrix | First wave admitted under the QD admission rule (cell-fill, not raw novelty). `SEC-` and `META-` invoked as general-purpose subagents with custom prompts (no BMAD skill maps to their cells); `GOV-` and `GOVDEV-` invoked named BMAD skills with focused biasing. Persistence performed inline this session (not post-hoc rescue): `persist-corpus.py` made incremental — pass 1 ingests new cache transcripts, pass 2 preserves pre-existing on-disk rows from prior sessions. |
 | 2026-05-17 | Mixed invocation policy for Wave 5: BMAD skills for in-catalog cells, general-purpose with custom prompts for out-of-catalog cells | Derived from Wave-4 empirical evidence (STAKE+COUNTER, the two highest-κ streams in the entire corpus, used general-purpose with custom prompts). Methodology codification ADR queued to decide whether the catalog admits a single class of methods or two classes (BMAD-skill + general-purpose-prompted). |
+| 2026-05-17 | META- corrections applied via append-only audit-of-the-audit log (`corrections.md`) rather than silent in-place edits to consolidated.md and qd-triage.md | Preserves provenance (original framings remain readable); makes each correction traceable to a META- finding ID; models the correction protocol the methodology codification ADR will need. Surgical inline edits limited to mechanically-wrong-and-one-line-fixable cases (THEME-X count, FIRST artifact annotation) + top-of-document pointers. |
+| 2026-05-17 | `findings-index.md` brought current with Waves 4 + 5 per-stream tallies; per-theme constituent listing for Waves 4-5 deferred to next consolidation pass | META-CRIT-002 surfaced that the index was stale at Wave 3 (28 streams) while consolidated.md and qd-triage.md both referenced 36 streams. Per-stream tally is the structural skeleton; per-theme listing requires Wave-5 thematic consolidation first. |
 
 ## Next session: start here
 
@@ -187,14 +189,14 @@ Sequenced from current state. `[x]` merged, `[~]` in flight, `[ ]` queued.
 3. `openspec/_bmad-output/knowledge/audit/2026-05-17-architecture/qd-triage.md` — the full QD triage. Required reading: §2 (framework definitions), §5 (Tier A/B/C/D catalog), §7 (ACGR convergence diagnostic), §8 (Wave 5 admission targets), §9 (draft clauses for methodology ADR).
 4. `openspec/_bmad-output/knowledge/audit/2026-05-17-architecture/consolidated.md` — the ~70 themes, organised by tier of confirmation; required if planning resolution CHGs, otherwise reference-only.
 
-**First action on resume:** consolidate Wave 5. Concretely:
+**First action on resume:** complete Wave-5 thematic consolidation. Concretely:
 
-1. **Process META- retractions FIRST.** `META-` produced 4 CRIT-class retractions against the existing corpus. Specifically: THEME-P (paper citation) mis-attributed to PROSE (verified — actual surfacers IND/ADVS/STRUCT/INHER/WIN/SALLY); `findings-index.md` structurally incomplete (documents 28 streams, missing all 8 Wave-4 streams); `FIRST-CRIT-01` is a self-inflicted method artifact (FIRST misread its own prompt re: ADR-0003); STAKE/COUNTER raw counts in qd-triage.md inflated. Plus 12 SER-class fragilities and 3 PROC issues. These corrections must land in `consolidated.md`, `qd-triage.md`, and `findings-index.md` BEFORE any further consolidation, or downstream work compounds errors. Full retraction list in `findings/META-findings.md`.
-2. **Then add Wave 5 to `findings-index.md`** (the index is currently stale at Wave 3; need to add Wave 4 AND Wave 5 sections together).
-3. Read each `findings/<PREFIX>-findings.md` for the 4 new prefixes (`GOV-`, `SEC-`, `GOVDEV-`, `META-`).
-4. For each Wave-5 finding (excluding META-, which is processed under step 1), decide whether it reinforces an existing theme in `consolidated.md` or opens a new theme. Add new themes (likely THEMES TTTT+ or similar continuation of the naming scheme) and record per-theme sole-source attribution.
-5. Update `qd-triage.md` §3.5 (NEW SECTION) with the per-method σ × κ scores for the 4 Wave-5 streams. Update §4 cell-occupancy maps.
-6. Recompute ACGR for Wave 5. If ACGR < 5%, the convergence criterion's first half is satisfied (one of two consecutive waves); decide whether Wave 6 is needed.
+Steps 1 + 2 below were DONE in TASK-0043 (this session): META- retractions logged in `corrections.md` (19 corrections, 4 CRIT / 12 SER / 3 PROC) and `findings-index.md` Wave 4 + Wave 5 per-stream tallies added. The remaining work:
+
+3. Read each `findings/<PREFIX>-findings.md` for the 3 Wave-5 architecture-audit prefixes (`GOV-`, `SEC-`, `GOVDEV-`; META- is the corpus-audit stream already processed via corrections.md). 84 findings total minus META's 19 = 65 architecture-defect findings to cluster.
+4. For each Wave-5 finding, decide whether it reinforces an existing theme in `consolidated.md` or opens a new theme. Add new themes (likely THEMES TTTT+ or similar continuation of the naming scheme) and record per-theme sole-source attribution. Add per-theme constituent-finding listing for Waves 4 + 5 to `findings-index.md` (the deferral noted in TASK-0043).
+5. Update `qd-triage.md` §3.5 (NEW SECTION) with the per-method σ × κ scores for the 4 Wave-5 streams. Fold in the corrections from `corrections.md` (PROSE/PAIGE/STAKE/COUNTER κ adjustments; STAKE cell-occupancy refinement per META-SER-004). Update §4 cell-occupancy maps.
+6. Recompute ACGR for Wave 5 with explicit uncertainty bands per META-PROC-001. If ACGR < 5%, the convergence criterion's first half is satisfied (one of two consecutive waves); decide whether Wave 6 is needed.
 7. Ask the user the next-move question:
 
 The two defensible orderings AFTER consolidation are:
@@ -219,7 +221,8 @@ User's standing direction (Recent decisions, 2026-05-17 "Run implementation audi
 - `openspec/_bmad-output/knowledge/audit/2026-05-17-architecture/README.md` — session metadata + method
 - `openspec/_bmad-output/knowledge/audit/2026-05-17-architecture/consolidated.md` — ~70 themes across 36 streams; proposed 17-tier resolution sequence (Tier 0 = doc-only sync, Tier 16 = artifact rebaseline)
 - `openspec/_bmad-output/knowledge/audit/2026-05-17-architecture/findings-index.md` — per-stream provenance ledger; theme → constituent finding IDs
-- `openspec/_bmad-output/knowledge/audit/2026-05-17-architecture/qd-triage.md` — Quality-Diversity triage; per-method σ × κ scoring; QD matrix occupancy; Tier A/B/C/D catalog; ACGR diagnostic; Wave-5 admission targets; methodology ADR draft clauses §§1-11
+- `openspec/_bmad-output/knowledge/audit/2026-05-17-architecture/qd-triage.md` — Quality-Diversity triage; per-method σ × κ scoring (Waves 1-4; §3.5 Wave-5 pending); QD matrix occupancy; Tier A/B/C/D catalog; ACGR diagnostic; Wave-5 admission targets; methodology ADR draft clauses §§1-11
+- `openspec/_bmad-output/knowledge/audit/2026-05-17-architecture/corrections.md` — Wave-5 META- audit corrections: 19 corrections (4 CRIT / 12 SER / 3 PROC) against consolidated.md, qd-triage.md, and findings-index.md. Authoritative for corrected attributions and counts pending the qd-triage.md §3.5 re-issue (TASK-0044).
 - `openspec/_bmad-output/knowledge/audit/2026-05-17-architecture/raw-transcripts/` — 35 sub-agent `.jsonl` transcripts (full conversation logs incl. tool calls); MANIFEST.md maps stream prefix → file; persist-corpus.py is the one-shot extraction tool
 - `openspec/_bmad-output/knowledge/audit/2026-05-17-architecture/findings/` — 35 per-stream extracted findings markdown files (sub-agent's initial prompt + final deliverable text); the human-readable evidence base for the audit; use this for re-clustering, implementation-audit calibration, or resolution-CHG drafting
 

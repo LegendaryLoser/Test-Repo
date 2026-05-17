@@ -2,11 +2,12 @@
 
 **Audit date:** 2026-05-17
 **Status:** STAGING (non-authoritative; input to future CHG envelopes)
-**Streams:** Wave 1: 12 · Wave 2: 8 · Wave 3: 8 · Wave 4: 8 · **Total: 36** (see [README.md](README.md))
-**Raw findings:** Wave 1: 270 · Wave 2: 142 · Wave 3: ~147 · Wave 4: ~130 · **Total: ~700** (plus 19 pre-existing in STATUS.md)
-**Distinct themes after dedup:** Wave 1: 26 · Wave 2: +16 · Wave 3: +9 · Wave 4: +~17 · **Total: ~70**
-**Convergence (COMPOSITE-V2 Gate 6):** 6/7 gates met. Marginal novelty: Wave 2 ~50%, Wave 3 ~30-37%, Wave 4 **~46% (spiked back up because STAKE+COUNTER introduced 2 new methods).** Target <10%. Empirical finding: marginal novelty is dominated by methodology variance, not model variance. Same-method-different-model converges well (INHER2: 12%, EDGE2: 25-30%); different-method-any-model surfaces 50%+ novelty.
+**Streams:** Wave 1: 12 · Wave 2: 8 · Wave 3: 8 · Wave 4: 8 · Wave 5: 4 · **Total: 40** (see [README.md](README.md)). Wave-5 thematic consolidation in progress — see "Wave 5 supplement" section near the end.
+**Raw findings:** Wave 1: 270 · Wave 2: 142 · Wave 3: ~147 · Wave 4: ~130 · Wave 5: 84 · **Total: ~770** (plus 19 pre-existing in STATUS.md)
+**Distinct themes after dedup:** Wave 1: 26 · Wave 2: +16 · Wave 3: +9 · Wave 4: +~17 · Wave 5: pending consolidation (next pass) · **Total to date: ~70 (Waves 1-4 only)**
+**Convergence:** Originally measured under COMPOSITE-V2 Gate 6 (marginal novelty); destabilised by Wave 4's ~46% rebound (STAKE+COUNTER new methods spiked novelty). Replaced by Archive Coverage Growth Rate (ACGR) per `qd-triage.md` §2.6. Wave 4 ACGR ~45%; Wave 5 ACGR pending re-measurement after consolidation; projected ~10-15%; Wave 6 (if pursued) projected <5% (convergence target).
 **Provenance:** [findings-index.md](findings-index.md)
+**META- audit corrections:** [corrections.md](corrections.md) — Wave-5 reasoning-tree meta-auditor produced 19 corrections against the Waves-1-4 consolidation (4 CRIT / 12 SER / 3 PROC); read alongside the original framings below. Inline annotations cross-reference the META- finding ID.
 
 ---
 
@@ -814,17 +815,23 @@ banned` between PHASE-1 and PHASE-3; cross-language equivalence gate.
 
 ### THEME-X — Append-only spec calcification (long-horizon risk)
 
-**Severity:** SERIOUS · **Streams:** 1/12 · **Constituent findings:** 1
+**Severity:** SERIOUS · **Streams:** 2/40 · **Constituent findings:** 2 (PREM-07, STAKE-PROC-020) <!-- corrected per META-SER-003; see corrections.md -->
 
-PREM-07 alone surfaced this: ADR-0004 §1 + §7 enforce append-only.
-At scale (~600 REQs), supersession chains 4-deep produce a 22 MB
-matrix and a 4m17s rebuild; developers stop reading specs, drift
-ensues. The architecture has no garbage-collection or compaction
-path.
+PREM-07 surfaced this in Wave 1; STAKE-PROC-020 surfaced an
+independent formulation in Wave 4. ADR-0004 §1 + §7 enforce
+append-only. At scale (~600 REQs), supersession chains 4-deep produce
+a 22 MB matrix and a 4m17s rebuild; developers stop reading specs,
+drift ensues. The architecture has no garbage-collection or
+compaction path. STAKE-PROC-020 adds that the near-duplicate
+anti-aliasing rule (§4) will increasingly fire false positives
+against deprecated REQs, forcing either threshold-loosening or
+manual exclusion lists.
 
-Low convergence but high impact at scale. The other 11 streams missed
-it because they review the current 0-REQ state; only the pre-mortem
-considered long-horizon dynamics.
+Two independent surfacers from different methods + waves (PREM
+forward-looking pre-mortem; STAKE persona-stakeholder simulation
+including a future-architect lens). Originally classified Tier C
+based on the (since-corrected) 1/12 count; revised to Tier B per
+two-independent-surfacer criterion.
 
 **Recommended CHG:** ADR-0004 amendment with compaction protocol
 (merge superseded chains under a single canonical REQ at a defined

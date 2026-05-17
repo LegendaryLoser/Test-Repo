@@ -4,8 +4,9 @@
 
 **Companion documents:**
 - [`README.md`](README.md) — audit session metadata + method
-- [`consolidated.md`](consolidated.md) — thematic findings (~70 themes)
-- [`findings-index.md`](findings-index.md) — per-stream provenance ledger
+- [`consolidated.md`](consolidated.md) — thematic findings (~70 themes; Wave-5 themes pending consolidation)
+- [`findings-index.md`](findings-index.md) — per-stream provenance ledger (40 streams as of Wave 5)
+- [`corrections.md`](corrections.md) — Wave-5 META- audit corrections against this triage and consolidated.md (19 corrections: 4 CRIT / 12 SER / 3 PROC). Read alongside the σ × κ rows in §3 below; in particular, **PROSE-Wave-1 κ-source-of-THEME-P attribution is incorrect** (META-CRIT-001), **STAKE raw-finding count is 20 not ~25** (META-CRIT-004), **PAIGE κ count is 2 sole + 1 co-surfaced not 3 sole** (META-SER-011), and **`(attitudinal × current-state)` over-saturation count of 12 double-counts cells** (META-SER-008). Inline §3 row text below is preserved as the historical scoring; see corrections.md for the authoritative re-statements pending the §3.5 re-issue.
 
 **Purpose:** Re-frame the 36-stream / ~700-finding / ~70-theme audit corpus through a Quality-Diversity (QD) lens. Produces:
 

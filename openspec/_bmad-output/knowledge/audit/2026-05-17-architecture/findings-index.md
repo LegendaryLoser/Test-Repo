@@ -1,11 +1,16 @@
 # Findings Provenance Index — 2026-05-17 Architecture Audit
 
-Cross-reference between the ~550 raw findings (across 28 streams in 3
-waves) and the ~51 themes consolidated in [consolidated.md](consolidated.md).
+Cross-reference between the ~770 raw findings (across 40 streams in 5
+waves) and the consolidated themes in [consolidated.md](consolidated.md).
+Per-theme constituent listings cover Waves 1-3 fully; Wave 4 and Wave 5
+constituent listings are deferred to the next consolidation pass — see
+[corrections.md](corrections.md) META-CRIT-002 for the rationale.
 
 The raw finding *bodies* are not duplicated here — they exist in the
-session transcripts that produced them. This index preserves the *mapping*:
-which stream surfaced which finding, and which theme it clusters under.
+per-stream findings files under [`findings/`](findings/) and in the raw
+transcripts under [`raw-transcripts/`](raw-transcripts/). This index
+preserves the *mapping*: which stream surfaced which finding, and which
+theme it clusters under (for Waves 1-3).
 
 For each theme, the constituent finding IDs are listed. For each stream,
 the per-stream tally is recorded.
@@ -42,7 +47,7 @@ the per-stream tally is recorded.
 | Spec-validation | `VALID-` | opus | validate-prd | 8 / 8 / 2 | 18 |
 | Winston solo (architect) | `WIN-` | opus | persona self-critique | 6 / 12 / 4 | 22 |
 | Compression-based | `DISTILL-` | sonnet | distillator | 3 / 7 / 5 | 15 |
-| First-principles | `FIRST-` | sonnet | advanced-elicitation first-principles | 5 / 6 / 4 | 13 (+1 methodology artifact) |
+| First-principles | `FIRST-` | sonnet | advanced-elicitation first-principles | 5 / 6 / 4 | 13 (+1 methodology artifact: `FIRST-CRIT-01` retracted — FIRST misread its own prompt re: ADR-0003, which WAS in the listed 15 documents; see [corrections.md](corrections.md) META-CRIT-003) |
 | Amelia solo (dev) | `AME-` | sonnet | persona implementability | 7 / 8 / 5 | 20 |
 | **Wave 2 total** | | | | | **142** |
 
@@ -60,16 +65,44 @@ the per-stream tally is recorded.
 | Devil's advocate | `DEVIL-` | opus | advanced-elicitation devil's-advocate | 4 / 7 / 5 | 16 |
 | **Wave 3 total** | | | | | **~147** (some EDIT- entries split into multiple findings) |
 
-### Grand total (all 28 streams)
+### Wave 4 — 8 streams (sonnet model-permutations + 2 new methods)
+
+| Stream | Prefix | Model | Method | C/SER/PROC | Total |
+|---|---|---|---|---|---|
+| Red-team sonnet | `RED2-` | sonnet | advanced-elicitation red-team | (mixed) | ~15 |
+| Retrospective sonnet | `RETRO2-` | sonnet | retrospective | (mixed) | ~15 |
+| Edge-case-hunter sonnet | `EDGE2-` | sonnet | edge-case-hunter | (mixed) | ~25-30 |
+| Inheritor sonnet | `INHER2-` | sonnet | inheritor-framing | (mixed) | ~10 |
+| Spec-validation sonnet | `VALID2-` | sonnet | validate-prd | (mixed) | ~12 |
+| Pre-mortem sonnet | `PREM2-` | sonnet | advanced-elicitation pre-mortem | (mixed) | ~10 |
+| Stakeholder simulation | `STAKE-` | opus | stakeholder-simulation (NEW) | 5 / 12 / 3 | 20 (originally reported as ~25 in qd-triage.md §3.4; corrected per [corrections.md](corrections.md) META-CRIT-004) |
+| Counter-factual | `COUNTER-` | opus | counter-factual (NEW) | (mixed) | ~20 (count needs re-verification per [corrections.md](corrections.md) META-CRIT-004) |
+| **Wave 4 total** | | | | | **~130** |
+
+### Wave 5 — 4 streams (QD admission: cell-targeted methods)
+
+| Stream | Prefix | Model | Method | C/SER/PROC | Total | Cell (Lens × Temporal × Decomp × Severity) |
+|---|---|---|---|---|---|---|
+| Governance-focused validation | `GOV-` | opus | validate-prd-governance-focused | 5 / 14 / 3 | 22 | attitudinal × current × focused × governance |
+| Security engineer (holistic) | `SEC-` | opus | persona-security-engineer-holistic | 7 / 9 / 5 | 21 | persona × current × holistic × security/ops |
+| Devil's advocate (governance focus) | `GOVDEV-` | opus | advanced-elicitation devil's-advocate (governance-focused) | 5 / 11 / 6 | 22 | contrarian × current × focused × governance |
+| Reasoning-tree meta-auditor | `META-` | opus | reasoning-tree-meta-audit | 4 / 12 / 3 | 19 | meta × * × * × * (candidate 5th axis) |
+| **Wave 5 total** | | | | | **84** | |
+
+### Grand total (all 40 streams)
 
 | | Count |
 |---|---|
 | Wave 1 raw findings | 270 |
 | Wave 2 raw findings | 142 |
 | Wave 3 raw findings | ~147 |
-| **Grand total raw findings** | **~559** |
-| Distinct themes (after dedup) | ~51 |
+| Wave 4 raw findings | ~130 |
+| Wave 5 raw findings | 84 |
+| **Grand total raw findings** | **~770** |
+| Distinct themes (after dedup, Waves 1-4 only) | ~70 |
+| Wave-5 distinct themes (next consolidation pass) | pending |
 | Pre-existing in STATUS.md (C/S/P/NEW) | 19 |
+| META- corrections logged | 19 (4 / 12 / 3) — see [corrections.md](corrections.md) |
 
 Plus 19 pre-existing in STATUS.md (`C1-C5`, `S1-S5`, `P1-P6`, `NEW-1..3`).
 

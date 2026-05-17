@@ -157,7 +157,8 @@ progress, decisions made, and the "Next session: start here" pointer.
 | TASK-0039 | docs | done | STATUS.md staleness sweep | `50b21f8` |
 | TASK-0040 | docs | done | Corpus rescue: 35 transcripts + findings + manifest | `04be686` |
 | TASK-0041 | docs | done | Author CHG-0032 envelope retroactively (this proposal + 7 TASK files + REQ-AUDIT-0001) | `5df73fb` |
-| TASK-0042 | docs | done | Architecture audit Wave 5 (4 streams: governance, security, governance-devil's-advocate, meta-auditor) | (this commit) |
+| TASK-0042 | docs | done | Architecture audit Wave 5 (4 streams: governance, security, governance-devil's-advocate, meta-auditor) | `13f5401` |
+| TASK-0043 | docs | done | META- audit corrections log + findings-index Wave 4 + Wave 5 catch-up | (this commit) |
 
 See `tasks/` for per-task detail.
 
