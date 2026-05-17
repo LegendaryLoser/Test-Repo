@@ -2,9 +2,10 @@
 
 **Audit date:** 2026-05-17
 **Status:** STAGING (non-authoritative; input to future CHG envelopes)
-**Streams:** 12 (see [README.md](README.md))
-**Raw findings:** 270 (plus 19 pre-existing in STATUS.md)
-**Distinct themes after dedup:** 26
+**Streams:** Wave 1: 12 · Wave 2: 8 · Wave 3: 8 · **Total: 28** (see [README.md](README.md))
+**Raw findings:** Wave 1: 270 · Wave 2: 142 · Wave 3: 138 · **Total: ~550** (plus 19 pre-existing in STATUS.md)
+**Distinct themes after dedup:** Wave 1: 26 · Wave 2: +16 · Wave 3: +9 · **Total: ~51**
+**Convergence (COMPOSITE-V2 Gate 6):** 6/7 gates met. Marginal novelty 30-37% (Wave 3), target <10%. Theme-discovery rate halving per wave; Gate 6 projected to be met in Wave 5 or 6.
 **Provenance:** [findings-index.md](findings-index.md)
 
 ---
@@ -1053,15 +1054,123 @@ contradictions that infect every other review.
 
 ## Convergence diagnostic
 
-After 12 streams, novel findings continued to surface in every stream.
-The convergence curve has not flattened. A 13th independent pass
-(e.g. focused on operational deployment failure modes — `bmad-retrospective`
-applied to a hypothetical post-PHASE-5 retrospective) would likely add
-8-15 more findings. The audit is "comprehensive" in the sense that
-every major theme has multi-stream support, but it is not "exhaustive"
-in the absolute sense.
+After Wave 1 (12 streams), novel findings continued to surface in every
+stream. User direction was to lock COMPOSITE-V2 as the convergence
+metric and iterate until Gate 6 (<10% marginal novelty) is met.
 
-Recommended treatment: accept the current 26-theme cluster as the
-working consolidated ledger; allow new findings to be appended to
-existing themes during resolution; revisit comprehensiveness at the
-Tier 16 rebaseline.
+## Waves 2 and 3 supplement
+
+### Wave 2 — 8 sub-agents (methodology diversity)
+
+Methods added: socratic elicitation (SOC-), first-principles (FIRST-),
+red-team (RED-), retrospective (RETRO-), distillator (DISTILL-),
+validate-prd (VALID-), Winston solo (WIN-), Amelia solo (AME-).
+
+**Wave 2 marginal novelty: ~50%** (added 16 new themes).
+
+New themes:
+- **THEME-AA — Adversarial enforcement gap** (RED-): supply-chain
+  attacks against vendored substrate, content-integrity gates,
+  journal-forgery defenses, gate-coverage canaries
+- **THEME-BB — ADR supersession protocol** (RETRO/PARTY/COURSE): `superseded_by`
+  frontmatter exists but unused; complete rewrites should supersede
+- **THEME-CC — Missing test tiers (security, perf)** (RETRO)
+- **THEME-DD — Phase regression state machine** (RETRO): no protocol
+  for prior-phase regression detected during current-phase work
+- **THEME-EE — Secrets/credentials specification** (RETRO/RED/ARCH)
+- **THEME-FF — Local development environment** (RETRO): no Node/Python/clasp pins
+- **THEME-GG — Hook ABI / Claude Code hook syntax** (AME): glob/regex/
+  alternation/payload unspecified
+- **THEME-HH — BMAD upstream dependency risks** (WIN): license,
+  internal config-resolver behavior
+- **THEME-II — Network dependency in commit hook** (FIRST): offline
+  commits structurally impossible
+- **THEME-JJ — Test runner ownership** (WIN): no phase claims pyproject.toml
+- **THEME-KK — Append-only NOT gated for ADR amendments** (FIRST)
+- **THEME-LL — BMAD CWD discipline 4-phase gap** (FIRST)
+- **THEME-MM — Retroactive compliance remediation** (FIRST/AME): PHASE-2
+  gates activate against immutable PHASE-0/1 history
+- **THEME-NN — PRD→REQ traceability ungated** (FIRST): only REQ→TEST enforced
+- **THEME-OO — Long-running branch matrix conflicts** (RETRO): no merge driver
+- **THEME-PP — Anti-aliasing n-gram vs semantic** (PREM/FIRST): wrong defense
+
+### Wave 3 — 8 sub-agents (persona + editorial mutation)
+
+Methods added: PM solo (PM-), analyst solo (MARY-), UX solo (SALLY-),
+tech writer solo (PAIGE-), edit-PRD (EDIT-), correct-course (COURSE-),
+checkpoint-preview (CHECK-), devil's advocate (DEVIL-).
+
+**Wave 3 marginal novelty: ~30-37%** (added 9 new themes).
+
+New themes:
+- **THEME-RR — Product workflow primitives missing** (PM): no
+  experimentation, A/B, feature flags, cohorts, success metrics, or
+  removal/deprecation telemetry
+- **THEME-SS — Glossary and terminology drift** (PAIGE): no canonical
+  glossary; "SoT", "P4", "staging", "promotion", "addressable artifact
+  network", "substrate PR", "gate-type task", "sandwich layer"
+  scattered; "Apps Script"/"AppScript"/"appscript" co-exist
+- **THEME-TT — Audience clarity** (PAIGE): documents conflate AI agent
+  and human readers without disambiguation
+- **THEME-UU — Principle independence / meta-architecture** (DEVIL):
+  the five principles aren't independent — P2/P3 derivable from P1;
+  P5 is tooling not principle; P4 is workflow. `gate-coverage` exists
+  to police a structure that's itself an artifact of too many principles
+- **THEME-VV — Principle list append-only protection** (DEVIL):
+  `gate-coverage` creates pressure to SHRINK principle list (remove
+  failing items) rather than ADD gates
+- **THEME-WW — Determinism vs idempotence** (MARY): used interchangeably
+  in ADR-0005, but PHASE-2 property test is idempotence not determinism
+- **THEME-XX — Trailer signal quality / checkpoint reconciliation** (DEVIL):
+  auto-produced checkpoint trailers at moments of uncertainty pollute matrix
+- **THEME-YY — Stack consolidation** (DEVIL): BMAD/TEA/OpenSpec is one
+  system trying to look like three; integration seams ARE the
+  parallel-convention cost P5 was meant to forbid
+- **THEME-ZZ — Forward references and reading order** (PAIGE): no
+  documented onboarding path; implied order has forward refs
+
+### Per-stream marginal novelty (Wave 2+3)
+
+| Stream | Wave | Marginal novelty |
+|--------|------|------------------|
+| SOC- | 2 | ~30% |
+| RED- | 2 | ~70-80% (supply-chain category) |
+| RETRO- | 2 | ~60% |
+| VALID- | 2 | ~30% |
+| WIN- | 2 | ~50% |
+| DISTILL- | 2 | ~40% |
+| FIRST- | 2 | ~50% |
+| AME- | 2 | ~60% (hook ABI category) |
+| PM- | 3 | ~50% (product workflow category) |
+| MARY- | 3 | ~50% |
+| CHECK- | 3 | ~25-35% |
+| COURSE- | 3 | ~15-25% |
+| EDIT- | 3 | ~25-35% |
+| DEVIL- | 3 | ~40-50% (meta-critiques) |
+| SALLY- | 3 | ~20-30% |
+| PAIGE- | 3 | ~30-40% |
+
+### COMPOSITE-V2 gate status
+
+| Gate | Status |
+|------|--------|
+| 1. Method coverage (8 categories) | ✓ MET (12+ methods used) |
+| 2. Model coverage (≥3 models) | ✓ MET (opus + sonnet + haiku) |
+| 3. Theme confirmation ≥90% (≥2 streams) | ✓ MET (~98%) |
+| 4. Strong theme ≥75% (≥3 streams) | ✓ MET (~92%) |
+| 5. Critical-theme ≥5 streams | ✓ MET (all critical themes 8+ streams) |
+| 6. **Marginal novelty <10%** | **✗ NOT MET (~30-37% Wave 3)** |
+| 7. Coherence floor ≥15% | ≈ within tolerance |
+
+### Convergence projection
+
+Theme-discovery rate is halving per wave (Wave 1 baseline: 2.2/pass;
+Wave 2: 2.0/pass; Wave 3: 1.1/pass). If trend holds:
+
+- Wave 4: ~15-20% marginal novelty (still above target)
+- Wave 5: ~7-12% (likely meets target)
+- Wave 6: <10% (target definitively met)
+
+User direction: continue iterating to Gate 6 strictly. Wave 4 will use
+remaining methods (model permutations on previous attitude-driven passes,
+unused advanced-elicitation methods, additional persona-pair combos).

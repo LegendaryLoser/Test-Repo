@@ -1,7 +1,7 @@
 # Findings Provenance Index — 2026-05-17 Architecture Audit
 
-Cross-reference between the 270 raw findings (across 12 streams) and the
-26 themes consolidated in [consolidated.md](consolidated.md).
+Cross-reference between the ~550 raw findings (across 28 streams in 3
+waves) and the ~51 themes consolidated in [consolidated.md](consolidated.md).
 
 The raw finding *bodies* are not duplicated here — they exist in the
 session transcripts that produced them. This index preserves the *mapping*:
@@ -14,7 +14,9 @@ the per-stream tally is recorded.
 
 ## Per-stream tally
 
-| Stream | Prefix | Model | Method | C/SER/PROC or BLK/SHOULD/NICE | Total |
+### Wave 1 — 12 streams (broad methodology coverage)
+
+| Stream | Prefix | Model | Method | C/SER/PROC | Total |
 |---|---|---|---|---|---|
 | In-context | `ARCH-` | opus | adversarial-general | 8 / 14 / 9 | 31 |
 | First isolated | `IND-` | opus | adversarial-general | 8 / 12 / 7 | 27 |
@@ -22,13 +24,52 @@ the per-stream tally is recorded.
 | Sonnet isolated | `ADVS-` | sonnet | adversarial-general | 5 / 9 / 5 | 19 |
 | Haiku isolated | `ADVH-` | haiku | adversarial-general | 6 / 6 / 3 | 15 |
 | Inheritor framing | `INHER-` | opus | scenario | (mixed) | 22 |
-| Edge-case hunter | `EDGE-` | opus | branch-walk | (mixed CRIT/SER/PROC) | 44 |
-| Implementation readiness | `READY-` | opus | completeness | 6 BLK / 7 SHOULD / 6 NICE | 19 |
+| Edge-case hunter | `EDGE-` | opus | branch-walk | (mixed) | 44 |
+| Implementation readiness | `READY-` | opus | completeness | 6/7/6 | 19 |
 | Editorial structure | `STRUCT-` | opus | restructure | (mixed) | 15 |
 | Editorial prose | `PROSE-` | sonnet | modal/quantifier | 3 / 7 / 4 | 14 |
-| Pre-mortem | `PREM-` | opus | failure-narrative | 4 CRIT, rest SER | 18 |
+| Pre-mortem | `PREM-` | opus | failure-narrative | 4 CRIT+rest SER | 18 |
 | Party-mode | `PARTY-` | opus | 6-persona roundtable | 3 / 14 / 5 | 22 |
-| **Total** | | | | | **270** |
+| **Wave 1 total** | | | | | **270** |
+
+### Wave 2 — 8 streams (methodology + model diversity)
+
+| Stream | Prefix | Model | Method | C/SER/PROC | Total |
+|---|---|---|---|---|---|
+| Socratic elicitation | `SOC-` | opus | advanced-elicitation socratic | 5 / 10 / 4 | 19 |
+| Red-team adversary | `RED-` | opus | advanced-elicitation red-team | 5 / 7 / 4 | 16 |
+| Post-PHASE-5 retrospective | `RETRO-` | opus | retrospective (hypothetical) | 4 CRIT-WRONG + 3 CRIT-MISSING + 5 SER-MISSING + 2 PROC | 19 |
+| Spec-validation | `VALID-` | opus | validate-prd | 8 / 8 / 2 | 18 |
+| Winston solo (architect) | `WIN-` | opus | persona self-critique | 6 / 12 / 4 | 22 |
+| Compression-based | `DISTILL-` | sonnet | distillator | 3 / 7 / 5 | 15 |
+| First-principles | `FIRST-` | sonnet | advanced-elicitation first-principles | 5 / 6 / 4 | 13 (+1 methodology artifact) |
+| Amelia solo (dev) | `AME-` | sonnet | persona implementability | 7 / 8 / 5 | 20 |
+| **Wave 2 total** | | | | | **142** |
+
+### Wave 3 — 8 streams (personas + editorial mutations)
+
+| Stream | Prefix | Model | Method | C/SER/PROC | Total |
+|---|---|---|---|---|---|
+| John solo (PM) | `PM-` | opus | persona product-mgmt | 6 / 9 / 5 | 20 |
+| Mary solo (analyst) | `MARY-` | opus | persona requirements | 8 / 10 / 4 | 22 |
+| Sally solo (UX) | `SALLY-` | sonnet | persona UX (3-user-populations) | 5 / 7 / 5 | 17 |
+| Paige solo (tech writer) | `PAIGE-` | sonnet | persona knowledge-curation | 4 / 8 / 8 | 20 |
+| Edit-PRD defects | `EDIT-` | opus | edit-prd | 7 / 10 / 7 | 24 (paginated; actual ~17 unique) |
+| Course-correction | `COURSE-` | opus | correct-course | 4 / 5 / 3 | 12 |
+| Checkpoint-preview | `CHECK-` | opus | checkpoint-preview | 4 / 8 / 4 | 16 |
+| Devil's advocate | `DEVIL-` | opus | advanced-elicitation devil's-advocate | 4 / 7 / 5 | 16 |
+| **Wave 3 total** | | | | | **~147** (some EDIT- entries split into multiple findings) |
+
+### Grand total (all 28 streams)
+
+| | Count |
+|---|---|
+| Wave 1 raw findings | 270 |
+| Wave 2 raw findings | 142 |
+| Wave 3 raw findings | ~147 |
+| **Grand total raw findings** | **~559** |
+| Distinct themes (after dedup) | ~51 |
+| Pre-existing in STATUS.md (C/S/P/NEW) | 19 |
 
 Plus 19 pre-existing in STATUS.md (`C1-C5`, `S1-S5`, `P1-P6`, `NEW-1..3`).
 
@@ -242,6 +283,160 @@ Streams: 3/12 · Severity: CRITICAL · Tier B (rolled into B for resolution)
 Findings: READY-03, ADVS-CRIT-02, ADVH-SER-08.
 
 ---
+
+## Wave 2 themes added
+
+### THEME-AA — Adversarial enforcement gap (no gates that verify gates)
+
+Streams: RED, VALID (orthogonal angle) · Severity: CRITICAL · Convergence: Tier B
+
+Findings: RED-CRIT-01 (BMAD skill content smuggling), RED-CRIT-04 (raw HTTP bypass), RED-CRIT-05 (squash-merge trailer bypass), RED-SER-08 (gate-coverage canary missing), RED-SER-09 (journal forgery), RED-SER-10 (token exfiltration via E2E spreadsheet), RED-SER-12 (silent stochastic power degradation), VALID-SERIOUS-15 (gate-coverage self-test missing).
+
+### THEME-BB — ADR supersession protocol (`superseded_by` unused)
+
+Streams: PARTY, IND, RETRO, COURSE · Severity: CRITICAL · Convergence: Tier A
+
+Findings: PARTY-CRIT-03, IND-PROC-01, RETRO-CRIT-07, COURSE-CRIT-01, COURSE-PROC-10, EDIT-CRIT-05.
+
+### THEME-CC — Missing test tiers (security, performance)
+
+Streams: RETRO, RED · Severity: CRITICAL · Convergence: Tier B
+
+Findings: RETRO-CRIT-04, RED-SER-10 (security-tier overlap).
+
+### THEME-DD — Phase regression state machine
+
+Streams: RETRO · Severity: CRITICAL · Convergence: Tier C
+
+Findings: RETRO-CRIT-06.
+
+### THEME-EE — Secrets/credentials specification
+
+Streams: RETRO, RED, ARCH · Severity: CRITICAL · Convergence: Tier B
+
+Findings: RETRO-CRIT-05, RED-SER-10, ARCH-PROC-06.
+
+### THEME-FF — Local development environment
+
+Streams: RETRO, WIN · Severity: SERIOUS · Convergence: Tier C
+
+Findings: RETRO-SER-06, WIN-CRIT-21.
+
+### THEME-GG — Hook ABI / Claude Code hook syntax
+
+Streams: AME, ADR-0005-implementation related · Severity: CRITICAL · Convergence: Tier B
+
+Findings: AME-CRIT-01, AME-CRIT-02, AME-CRIT-03, AME-CRIT-04, AME-SERIOUS-07.
+
+### THEME-HH — BMAD upstream dependency risks (license, internal API)
+
+Streams: WIN · Severity: SERIOUS · Convergence: Tier C
+
+Findings: WIN-CRIT-08, WIN-CRIT-09.
+
+### THEME-II — Network dependency in commit hook
+
+Streams: FIRST, ADVH (related) · Severity: CRITICAL · Convergence: Tier C
+
+Findings: FIRST-CRIT-05, ADVH-SER-04 (related on hook-abort UX).
+
+### THEME-JJ — Test runner ownership
+
+Streams: WIN, AME · Severity: SERIOUS · Convergence: Tier C
+
+Findings: WIN-CRIT-21, AME-PROCESS-04 (related).
+
+### THEME-KK — Append-only NOT gated for ADR amendments
+
+Streams: FIRST · Severity: SERIOUS · Convergence: Tier C
+
+Findings: FIRST-PROC-01.
+
+### THEME-LL — BMAD CWD discipline 4-phase gap
+
+Streams: FIRST · Severity: PROCESS · Convergence: Tier C
+
+Findings: FIRST-PROC-03.
+
+### THEME-MM — Retroactive compliance remediation protocol
+
+Streams: FIRST, AME, ADVS · Severity: SERIOUS · Convergence: Tier B
+
+Findings: FIRST-PROC-04, AME-CRIT-07, ADVS-CRIT-01.
+
+### THEME-NN — PRD→REQ traceability ungated
+
+Streams: FIRST · Severity: SERIOUS · Convergence: Tier C
+
+Findings: FIRST-SERI-02.
+
+### THEME-OO — Long-running branch matrix conflicts
+
+Streams: RETRO, WIN · Severity: SERIOUS · Convergence: Tier C
+
+Findings: RETRO-SER-10, WIN-CRIT-06 (related on derived-cache thrash).
+
+### THEME-PP — Anti-aliasing n-gram vs semantic similarity
+
+Streams: PREM, FIRST, WIN, DEVIL · Severity: SERIOUS · Convergence: Tier B
+
+Findings: PREM-06, FIRST-SERI-01, WIN-CRIT-05, DEVIL-SER-07.
+
+## Wave 3 themes added
+
+### THEME-RR — Product workflow primitives missing (experimentation, removal, metrics)
+
+Streams: PM, PARTY (partial), DEVIL · Severity: CRITICAL · Convergence: Tier B
+
+Findings: PM-CRIT-03, PM-CRIT-04, PM-CRIT-05, PM-CRIT-06, PM-SER-08, PM-SER-09, PM-SER-15, PM-PROC-16, PM-PROC-17, PM-PROC-18, PM-PROC-19, PM-PROC-20, PARTY-PROC-01 (overlap with THEME-S).
+
+### THEME-SS — Glossary and terminology drift
+
+Streams: PAIGE · Severity: CRITICAL · Convergence: Tier C
+
+Findings: PAIGE-CRIT-03, PAIGE-SER-04, PAIGE-SER-05.
+
+### THEME-TT — Audience clarity
+
+Streams: PAIGE · Severity: SERIOUS · Convergence: Tier C
+
+Findings: PAIGE-SER-07.
+
+### THEME-UU — Principle independence / meta-architecture
+
+Streams: DEVIL · Severity: CRITICAL · Convergence: Tier C
+
+Findings: DEVIL-CRIT-01.
+
+### THEME-VV — Principle list append-only protection
+
+Streams: DEVIL · Severity: PROCESS · Convergence: Tier C
+
+Findings: DEVIL-PRO-12.
+
+### THEME-WW — Determinism vs idempotence (terminology + property test)
+
+Streams: MARY · Severity: SERIOUS · Convergence: Tier C
+
+Findings: MARY-SERIOUS-12.
+
+### THEME-XX — Trailer signal quality (checkpoint auto-production)
+
+Streams: DEVIL · Severity: SERIOUS · Convergence: Tier C
+
+Findings: DEVIL-SER-11.
+
+### THEME-YY — Stack consolidation (BMAD/TEA/OpenSpec as one)
+
+Streams: DEVIL · Severity: PROCESS · Convergence: Tier C
+
+Findings: DEVIL-PRO-13.
+
+### THEME-ZZ — Forward references / reading order / onboarding
+
+Streams: PAIGE, SALLY · Severity: SERIOUS · Convergence: Tier C
+
+Findings: PAIGE-SER-01, SALLY-SERIOUS-06 (related on STATUS.md being unspecified).
 
 ## Findings not yet bucketed into a theme
 
