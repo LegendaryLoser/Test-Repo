@@ -25,6 +25,7 @@ import argparse
 import pathlib
 import sys
 
+from .index import check_index, write_index
 from .parser import parse_spec_file
 from .rules.anti_aliasing import AntiAliasing
 from .rules.bmad_direct_reference import BmadDirectReference
@@ -136,6 +137,25 @@ def _cmd_check_layout(args: argparse.Namespace) -> int:
     return 1 if findings else 0
 
 
+def _cmd_index(args: argparse.Namespace) -> int:
+    repo_root = pathlib.Path.cwd()
+    specs_root = repo_root / "openspec" / "specs"
+    target = specs_root / "INDEX.yaml"
+
+    if args.check:
+        result = check_index(specs_root, repo_root, target)
+        if result != 0:
+            print(
+                "INDEX.yaml is stale or missing; regenerate with "
+                "`python -m tools.spec_lint index`",
+                file=sys.stderr,
+            )
+        return result
+
+    write_index(specs_root, repo_root, target)
+    return 0
+
+
 def main(argv: list[str] | None = None) -> int:
     parser = argparse.ArgumentParser(prog="spec_lint")
     sub = parser.add_subparsers(dest="cmd", required=True)
@@ -146,6 +166,17 @@ def main(argv: list[str] | None = None) -> int:
 
     c = sub.add_parser("check-layout", help="Run top-level-allowlist over CWD")
     c.set_defaults(func=_cmd_check_layout)
+
+    i = sub.add_parser(
+        "index",
+        help="Regenerate openspec/specs/INDEX.yaml (or --check it for staleness)",
+    )
+    i.add_argument(
+        "--check",
+        action="store_true",
+        help="Exit non-zero if INDEX.yaml is stale; do not modify files.",
+    )
+    i.set_defaults(func=_cmd_index)
 
     args = parser.parse_args(argv)
     return args.func(args)
