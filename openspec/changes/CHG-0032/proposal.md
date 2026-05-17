@@ -181,7 +181,8 @@ progress, decisions made, and the "Next session: start here" pointer.
 | TASK-0049 | docs | done | Signal-filter triage of 867 findings: 42 dup clusters, 1 contradiction, ~120-150 unique defects (signal-ledger.md) | `b3eab84` |
 | TASK-0050 | docs | done | Methodology research note: dual-metric critique (coverage tautology, ordering bias, audit-type variance) + saturation-based reformulation + two-layer framework (methodology-research-note.md) | `e2fc8ad` |
 | TASK-0051 | docs | done | Cell finalization: 42 clusters → 15 cells; saturation 93% strict / 80% inclusive; QD-score baseline ~58.8; W7 ΔQD-score 29% (cell-occupancy.md) | `6c02984` |
-| TASK-0052 | docs | done | Wave 8 path-dependence test (Option C): 3 streams (COMPLIRETRO, FAILSCEN, INTRRETRO) opened ~30 new clusters; 42 → 72 clusters; saturation 93% → 58%; path-dependence empirically substantial (wave-8-path-dependence-results.md) | (this commit) |
+| TASK-0052 | docs | done | Wave 8 path-dependence test (Option C): 3 streams (COMPLIRETRO, FAILSCEN, INTRRETRO) opened ~30 new clusters; 42 → 72 clusters; saturation 93% → 58%; path-dependence empirically substantial (wave-8-path-dependence-results.md) | `cad45f4` |
+| TASK-0053 | docs | queued | POC instantiate v1.0 closure-argument-framework for architecture-audit archetype against 72-cluster corpus (closure-argument-framework.md is the spec; TASK-0053 is the fresh-session POC) | (queued for fresh session) |
 
 See `tasks/` for per-task detail.
 
