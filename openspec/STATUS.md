@@ -14,7 +14,7 @@ then proceed.
 **Last updated:** 2026-05-17 (architecture audit session, branch `claude/bmad-architecture-review-sV42w-bPd8l`)
 **Active phase:** PHASE-1 (paused — BMAD audit track in progress)
 **Last master commit:** `455ba06` (PR #15 merged: CHG-0014 + CHG-0031)
-**Last branch commit** (`claude/bmad-architecture-review-sV42w-bPd8l`): see `git log -1` — most recent work is CHG-0032 TASK-0051 (cell finalization: 42 clusters → 15 cells; saturation 93% strict / 80% inclusive; QD-score baseline ~58.8; W7 ΔQD-score 29%). Prior commits this session: TASK-0042 `13f5401`, TASK-0043 `067eefc`, TASK-0044 `9ae2a6a`, TASK-0045 `cd45777`, TASK-0046 `bd702ea`, TASK-0047 `48097c3`, TASK-0048 `78a03a7`, TASK-0049 `b3eab84`, TASK-0050 `e2fc8ad`.
+**Last branch commit** (`claude/bmad-architecture-review-sV42w-bPd8l`): see `git log -1` — most recent work is CHG-0032 TASK-0052 (Wave 8 path-dependence test: 3 streams opened ~30 new clusters; pre-W8 saturation 93% → post-W8 58%; path-dependence empirically substantial). Prior commits this session: TASK-0042 `13f5401`, TASK-0043 `067eefc`, TASK-0044 `9ae2a6a`, TASK-0045 `cd45777`, TASK-0046 `bd702ea`, TASK-0047 `48097c3`, TASK-0048 `78a03a7`, TASK-0049 `b3eab84`, TASK-0050 `e2fc8ad`, TASK-0051 `6c02984`, TASK-0052 (prep) `4abf3a6`.
 **Open PRs:** none
 **Test count:** 184 passing on master (audit + STATUS.md commits do not change test count)
 
@@ -182,6 +182,7 @@ Sequenced from current state. `[x]` merged, `[~]` in flight, `[ ]` queued.
 | 2026-05-17 | Signal-filter triage of all 867 sub-agent findings (TASK-0049): 4 parallel subagents classified each finding into 7 categories; cross-batch deduplication identified **42 dense duplicate-claim clusters + ~80-110 long-tail singletons = ~120-150 unique architecture defects** (corpus has ~6-7× redundancy vs raw 867); 1 hard contradiction (PREM2-PROC-009 vs META-CRIT-003, both about ADR-0003 existence); per-stream true-σ median ~73% (vs within-batch 99.3%) | The 99.3% within-batch SIGNAL rate misleads about corpus convergence. True effective discovery surface is ~120-150 defects concentrating in 5 macro-areas (path/wrapper drift; governance machinery; security primitives; bootstrap/scale; test/CI discipline). ACGR convergence regression (~87-105% headline for Waves 5-7) is partly illusory — much of "new themes" are framing-refinements of existing clusters; true unique-claim ACGR for Waves 5-7 probably 30-50%. Audit may be substantially closer to convergence than headline ACGR suggested. `signal-ledger.md` is the empirical input for the methodology codification ADR's §6 (measurement discipline) and for cell-pruning. |
 | 2026-05-17 | Dual-metric (coverage + QD-score) reformulation REJECTED in favour of saturation-based reformulation: user's three critiques (coverage tautology, ordering bias, audit-type criticality variance) are well-founded per QD literature (Mouret & Clune 2015; Cully & Demiris 2018; Stock 2025); drop coverage as a metric (tautological in post-hoc-cell setup); replace with per-cell saturation (operates within observed cells; no |meaningful| denominator); keep QD-score as depth metric; adopt two-layer framework (domain-general algorithm + audit-type-specific behaviour-descriptor) | TASK-0050 authored `methodology-research-note.md` documenting the three critiques against research literature + proposing the saturation-based reformulation as the operational framework. Dual stopping condition: `saturation ≥ 95% AND ΔQD-score < 5% for two consecutive waves`. Path-dependence acknowledged explicitly (mitigated via method-sequence documentation rather than N-restart bootstrap, which is cost-prohibitive). Input to methodology codification ADR. |
 | 2026-05-17 | Cell-finalization (TASK-0051) executed per saturation-based scope: 42 dense clusters mapped to 15 distinct cells via defect-content labeling (not surfacing-method default); per-cell saturation status computed (93% strict K=2 / 80% inclusive K=2); QD-score baseline ~58.8; ΔQD-score W7 = 29% (driven by SCENFUT's W7 admission opening 3 scenario-forward cells); path-dependence inventory shows 60% Wave-1 cluster dominance | Audit close to cluster-level saturation but depth still expanding. Dual stopping NOT met (saturation close to 95% threshold; ΔQD-score at 29% vs <5% target). Decision options: (A) one more wave testing Pareto stability in recently-opened cells likely meets both thresholds; (B) declare convergence-enough at 93% saturation + acknowledge ongoing depth discovery at decreasing rate; (C) continue path-dependence remediation. `cell-occupancy.md` is the Layer-2 instance for the methodology codification ADR. |
+| 2026-05-17 | Wave 8 path-dependence test (TASK-0052; user Option C): 3 second-methods (COMPLIRETRO compliance-officer-retrospective, FAILSCEN failure-mode-scenarios, INTRRETRO internal-team-retrospective) added to cells previously occupied by single Wave-6/7 methods. Opened **~30 NEW clusters** (~47%, 78%, 44% NEW per stream). **Pre-W8 93% saturation was decisively wrong; revised to 58%**. 42 clusters → ~72; 15 cells → ~24; QD-score 58.8 → 83.2; W8 ΔQD-score = 29% (same as W7). Path-dependence is empirically substantial, not just theoretical | `wave-8-path-dependence-results.md` authored. 4 methodology implications: (1) path-dependence ~71% cluster expansion under partial bootstrap, documentation-only mitigation insufficient; (2) cell map incomplete by construction (~9 new cells opened); (3) N-restart bootstrap empirically necessary, not just preferable; (4) saturation requires per-cell Pareto-stability evidence, not just K-consecutive-no-new-method. Updated stopping options: A' continue path-dependence (more new clusters expected); B' accept exhaustively-explored-but-path-dependent and pivot to resolution+methodology-ADR+implementation-audit (RECOMMENDED); C' bootstrap-style Wave-1 restart with different method-mix (~2× cost). Audit has likely passed ROI peak; marginal value of each new cluster decreasing. |
 
 ## Next session: start here
 
@@ -202,17 +203,16 @@ Sequenced from current state. `[x]` merged, `[~]` in flight, `[ ]` queued.
 3. `openspec/_bmad-output/knowledge/audit/2026-05-17-architecture/qd-triage.md` — the full QD triage. Required reading: §2 (framework definitions), §5 (Tier A/B/C/D catalog), §7 (ACGR convergence diagnostic), §8 (Wave 5 admission targets), §9 (draft clauses for methodology ADR).
 4. `openspec/_bmad-output/knowledge/audit/2026-05-17-architecture/consolidated.md` — the ~70 themes, organised by tier of confirmation; required if planning resolution CHGs, otherwise reference-only.
 
-**First action on resume:** USER DECISION between three options surfaced by TASK-0051 in `cell-occupancy.md` §7:
+**First action on resume:** USER DECISION between three UPDATED options post-Wave-8 (per `wave-8-path-dependence-results.md` §5). The pre-W8 Options A/B/C from `cell-occupancy.md` §7 are now superseded; Wave 8's empirical result (~30 new clusters; saturation dropped 93% → 58%; path-dependence substantial) invalidates the pre-W8 projections.
 
-**Option A — Wave 8 testing depth saturation** (recommended). Spawn 2 streams to test Pareto-front stability in cells recently opened by single methods:
-- A SECOND scenario-forward-holistic method (different from SCENFUT) to test cells V/Y/II
-- A SECOND attitudinal-current-focused-governance method (different from GOV) to test cells K/CC/HH
+**Option A' — Continue path-dependence remediation.** Spawn Wave 9 with second-methods in the 9 new Wave-8 cells (FAILSCEN's 11-cluster failure-mode cell especially needs a second method to test Pareto stability). Expected ~15-30 new clusters; saturation might rise to 65-75% but unlikely to reach 95%.
 
-Expected outcome: ΔQD-score drops sharply (Pareto fronts stabilize on second points); saturation reaches ≥95%. Dual stopping criterion met. **Minimal-additional-wave path.**
+**Option B' — Accept exhaustively-explored-but-path-dependent** (RECOMMENDED per `wave-8-path-dependence-results.md` §5). Document the corpus as ~72 clusters + path-dependence-acknowledged-as-fundamental. Pivot to:
+- Resolution-CHG sequencing for the 72 clusters
+- Methodology codification ADR drafting (uses signal-ledger.md + methodology-research-note.md + cell-occupancy.md + wave-8-path-dependence-results.md as inputs)
+- Implementation audit using QD catalog dogfood-style on `tools/spec_lint/`, `tools/ci/`, `_bmad/`, `.github/workflows/`
 
-**Option B — Declare convergence-enough.** Accept 93% strict saturation + ongoing depth discovery at decreasing rate. Pivot to methodology codification ADR drafting + resolution-CHG sequencing + implementation audit.
-
-**Option C — Continue path-dependence remediation.** Spawn methods specifically in counterfactual-undiscovered cells (persona × post-hoc + scenario × current + contrarian × post-hoc) to test whether the path-dependence acknowledgment in §6 underestimates missed-discovery cost.
+**Option C' — Bootstrap-style restart.** Re-run Wave 1 with a DIFFERENT method-mix (e.g., persona-retrospective + failure-mode-scenarios FIRST) and compare which clusters surface in both runs. Genuine path-dependence mitigation; ~2× audit cost.
 
 Steps that were DONE in this session (this branch):
 - TASK-0042 (`13f5401`): Wave 5 architecture audit.
@@ -224,14 +224,15 @@ Steps that were DONE in this session (this branch):
 - TASK-0048 (`78a03a7`): Wave-7 consolidation.
 - TASK-0049 (`b3eab84`): Signal-filter triage of 867 findings; `signal-ledger.md` (42 clusters).
 - TASK-0050 (`e2fc8ad`): Methodology research note + saturation-based reformulation; `methodology-research-note.md`.
-- TASK-0051 (latest commit): Cell finalization; `cell-occupancy.md` (15 cells, 93%/80% saturation, QD-score 58.8, ΔQD-score W7 29%).
+- TASK-0051 (`6c02984`): Cell finalization; `cell-occupancy.md` (15 cells, 93%/80% saturation, QD-score 58.8) — **superseded by TASK-0052**.
+- TASK-0052 prep (`4abf3a6`): persist-corpus.py DESC_TO_STREAM extended with Wave-8 entries.
+- TASK-0052 (latest commit): Wave 8 path-dependence test; 3 streams; `wave-8-path-dependence-results.md` (~30 new clusters; 42→72; saturation 93%→58%; path-dependence empirically substantial).
 
 Pending work (NOT done in this session):
-- TASK-0052: Conditional on Option A/B/C choice.
-- TASK-0053+: Methodology codification ADR drafting + resolution-CHG sequencing per joint-consolidation direction.
-- Per-theme constituent-finding listing for Waves 4-7 in `findings-index.md` (stale).
+- TASK-0053+: Conditional on Option A'/B'/C' choice.
+- Per-theme constituent-finding listing for Waves 4-8 in `findings-index.md` (stale).
 - Severity recalibration of STAKE-CRIT-001 → STAKE-SER-001 per corrections.md META-SER-012.
-- Layer 1/Layer 2 split rewrite of `qd-triage.md` (deferred to methodology ADR drafting).
+- Layer 1/Layer 2 split rewrite of `qd-triage.md` (deferred to methodology codification ADR drafting). <!-- spec-lint: allow prose-xref-banned -->
 
 Steps that were DONE in this session (this branch):
 - TASK-0042 (`13f5401`): Wave 5 architecture audit (4 streams, 84 raw findings).

@@ -4,9 +4,9 @@ Mechanically generated from the sub-agent task transcripts. Each row maps a stre
 
 **Note:** the `ARCH-` stream is not in this manifest. It was the in-context pass run by the main session (not a sub-agent), so it has no separate transcript — its findings live in the main-session transcript which is not part of this corpus.
 
-**Total streams:** 47 sub-agent streams across waves 1, 2, 3, 4, 5, 6, 7 (+ the in-context `ARCH-` stream).
+**Total streams:** 50 sub-agent streams across waves 1, 2, 3, 4, 5, 6, 7, 8 (+ the in-context `ARCH-` stream).
 
-**Total raw transcript size:** 8,109,321 bytes (~7.7 MB).
+**Total raw transcript size:** 8,565,696 bytes (~8.2 MB).
 
 ## Stream → transcript mapping
 
@@ -59,6 +59,9 @@ Mechanically generated from the sub-agent task transcripts. Each row maps a stre
 | 7 | `DEVRETRO` | advanced-elicitation-devils-advocate-retrospective | opus | `a3029b4ef950624fb` | [`raw-transcripts/DEVRETRO-agent-a3029b4ef950624fb.jsonl`](raw-transcripts/DEVRETRO-agent-a3029b4ef950624fb.jsonl) | [`findings/DEVRETRO-findings.md`](findings/DEVRETRO-findings.md) | 150 |
 | 7 | `SCENFUT` | scenario-unfold-forward-eighteen-months | opus | `a259180743a48e765` | [`raw-transcripts/SCENFUT-agent-a259180743a48e765.jsonl`](raw-transcripts/SCENFUT-agent-a259180743a48e765.jsonl) | [`findings/SCENFUT-findings.md`](findings/SCENFUT-findings.md) | 144 |
 | 7 | `STRUCTFUT` | editorial-review-structure-forward-transformations | opus | `a9bbc43cc082fa7eb` | [`raw-transcripts/STRUCTFUT-agent-a9bbc43cc082fa7eb.jsonl`](raw-transcripts/STRUCTFUT-agent-a9bbc43cc082fa7eb.jsonl) | [`findings/STRUCTFUT-findings.md`](findings/STRUCTFUT-findings.md) | 150 |
+| 8 | `COMPLIRETRO` | persona-compliance-officer-retrospective | opus | `a6d88c2a9a6a7aac9` | [`raw-transcripts/COMPLIRETRO-agent-a6d88c2a9a6a7aac9.jsonl`](raw-transcripts/COMPLIRETRO-agent-a6d88c2a9a6a7aac9.jsonl) | [`findings/COMPLIRETRO-findings.md`](findings/COMPLIRETRO-findings.md) | 148 |
+| 8 | `FAILSCEN` | scenario-unfold-failure-modes-current | opus | `a2ac761040a0645b9` | [`raw-transcripts/FAILSCEN-agent-a2ac761040a0645b9.jsonl`](raw-transcripts/FAILSCEN-agent-a2ac761040a0645b9.jsonl) | [`findings/FAILSCEN-findings.md`](findings/FAILSCEN-findings.md) | 148 |
+| 8 | `INTRRETRO` | contrarian-internal-team-retrospective | opus | `ac855e398401469e8` | [`raw-transcripts/INTRRETRO-agent-ac855e398401469e8.jsonl`](raw-transcripts/INTRRETRO-agent-ac855e398401469e8.jsonl) | [`findings/INTRRETRO-findings.md`](findings/INTRRETRO-findings.md) | 149 |
 
 ## How to use this corpus
 
@@ -82,6 +85,10 @@ The extraction is performed by [`persist-corpus.py`](persist-corpus.py) checked 
 
 These transcripts were found in the source cache but their description is not in `DESC_TO_STREAM`. They are **not** ingested into the audit corpus (no raw copy, no findings extraction, no manifest row above). They are listed here for future investigation in case an audit-relevant transcript was spawned with an off-catalog description and needs to be recovered before the cache is reclaimed. To ingest one: add its description to `DESC_TO_STREAM` and re-run.
 
+- `agent-a5051b2aefe2e39a2` — description: `Signal triage Waves 4-5`
+- `agent-a6b659ff3cfc77150` — description: `Signal triage Wave 1`
+- `agent-a96589799ed798a5a` — description: `Signal triage Waves 2-3`
+- `agent-a988b6f7bee2746ae` — description: `Signal triage Waves 6-7`
 - `agent-a0feaa6b98527b7af` — description: `Re-read STATUS.md after sweep`
 - `agent-a13539ac839e9255c` — description: `Sample findings + raw-transcripts format`
 - `agent-a841871f48d0f5fd7` — description: `Audit qd-triage §8 + consolidated tail`
