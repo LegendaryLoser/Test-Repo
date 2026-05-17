@@ -10,11 +10,14 @@ by the matrix, INDEX, or any spec.
 
 ## What this directory contains
 
-| File | Purpose |
+| File / subdir | Purpose |
 |---|---|
 | `README.md` | This file. Session metadata + method. |
-| `consolidated.md` | Main deliverable: thematic clustering of all findings, convergence analysis, proposed CHG sequence. |
-| `findings-index.md` | Flat one-line-per-finding index across all 12 streams (provenance ledger). |
+| `consolidated.md` | Main deliverable: thematic clustering of all findings, convergence analysis, proposed CHG sequence. Now spans all 4 waves (~70 themes; previously only Wave 1). |
+| `findings-index.md` | Flat one-line-per-finding index across all 36 streams (provenance ledger). |
+| `qd-triage.md` | Quality-Diversity triage of all 36 streams: per-method σ × κ scoring; Tier A/B/C/D catalog; QD matrix occupancy; empty-cell Wave-5 targets; ACGR convergence metric; draft clauses for the methodology codification ADR. |
+| `raw-transcripts/` | 35 sub-agent task transcripts as `.jsonl` files, named by stream prefix (e.g. `EDGE-agent-abf3f95219d0706c3.jsonl`). Full conversation logs including tool calls, intermediate reasoning, and final deliverables. ~5.7 MB total. See [`raw-transcripts/MANIFEST.md`](raw-transcripts/MANIFEST.md) for the stream → file mapping. The 36th stream (`ARCH-`) was the in-context pass and has no separate transcript. |
+| `findings/` | 35 per-stream extracted findings markdown files (e.g. `EDGE-findings.md`). Each file contains the sub-agent's initial prompt and its final assistant message (the audit deliverable for that stream). Derived from `raw-transcripts/` by [`raw-transcripts/persist-corpus.py`](raw-transcripts/persist-corpus.py). ~776 KB total. |
 
 ## Why this audit exists
 
@@ -63,10 +66,18 @@ Plus 19 pre-existing findings in
 
 ## Caveats
 
-- Raw stream outputs are not persisted as separate files (the agent
-  task-transcript outputs in `/tmp/` are the authoritative raw record;
-  this audit captures their content via the consolidated thematic
-  clustering and the per-finding index).
+- ~~Raw stream outputs are not persisted as separate files~~ **(Corrected
+  2026-05-17.)** The original README claimed raw outputs lived only in
+  ephemeral container `/tmp/` storage. That was a recoverability defect:
+  on container reclaim the corpus would have been lost. The 35 sub-agent
+  transcripts were rescued post-hoc from the container-local
+  `/root/.claude/projects/-home-user-Test-Repo/<session>/subagents/`
+  cache and persisted into [`raw-transcripts/`](raw-transcripts/) with
+  per-stream findings extracted into [`findings/`](findings/). See
+  [`raw-transcripts/MANIFEST.md`](raw-transcripts/MANIFEST.md). The
+  `ARCH-` stream (in-context pass) is the one exception — no separate
+  transcript exists; its findings live in the main-session transcript
+  which is not persisted.
 - The audit was performed against the in-tree architecture as of the
   most recent commit on `claude/bmad-architecture-review-sV42w`. STATUS.md
   open question #5 about BMAD review integration into the CHG workflow
@@ -74,5 +85,11 @@ Plus 19 pre-existing findings in
   itself should have followed a formal CHG-envelope shape.
 - "Consolidated" means thematically deduplicated. The thematic
   clustering is the consolidator's judgment (this session) and is itself
-  reviewable — the per-finding index preserves the raw provenance so a
-  later reviewer can re-cluster.
+  reviewable — the per-finding index preserves the raw provenance and
+  the per-stream findings markdown preserves the raw text, so a later
+  reviewer can fully re-cluster from source.
+- **Lesson for future audits:** persist the corpus inline (per-stream
+  findings markdown written into the audit directory as each sub-agent
+  returns) rather than relying on post-hoc rescue from a container-
+  local cache. The cache happened to survive long enough this time;
+  next time it may not.

@@ -163,6 +163,7 @@ Sequenced from current state. `[x]` merged, `[~]` in flight, `[ ]` queued.
 | 2026-05-17 | Re-sequence: do not start any Tier 1+ resolution CHG until both audits converge   | User direction ("resolve thoroughly before going ahead with anything") |
 | 2026-05-17 | Adopt Quality-Diversity framework (σ × κ Pareto admission, ACGR convergence) replacing COMPOSITE-V2 Gate 6 marginal-novelty rule; codify in methodology ADR | User decision after research synthesis (MAP-Elites, Mixture-of-Complementary-Agents, ambiguity decomposition); satisfies "new methods that provide signal must be admitted" constraint while still producing a defensible stopping rule |
 | 2026-05-17 | Full QD triage of all 36 audit streams complete (qd-triage.md); 4 Tier-D deprecation candidates surfaced (COURSE, CHECK, EDIT, VALID2); 5 high-importance empty cells identified as Wave 5 admission targets | Triage produced empirical per-method σ × κ scores from existing audit corpus without re-running streams |
+| 2026-05-17 | Rescue-persist the 35 sub-agent raw transcripts + per-stream findings into the repo (raw-transcripts/ + findings/) | Original audit README mistakenly relied on ephemeral container `/tmp/` storage for raw outputs; container reclaim would have lost the corpus. Future audits must persist inline. |
 
 ## Next session: start here
 
@@ -201,6 +202,8 @@ User's standing direction (Recent decisions, 2026-05-17 "Run implementation audi
 - `openspec/_bmad-output/knowledge/audit/2026-05-17-architecture/consolidated.md` — ~70 themes across 36 streams; proposed 17-tier resolution sequence (Tier 0 = doc-only sync, Tier 16 = artifact rebaseline)
 - `openspec/_bmad-output/knowledge/audit/2026-05-17-architecture/findings-index.md` — per-stream provenance ledger; theme → constituent finding IDs
 - `openspec/_bmad-output/knowledge/audit/2026-05-17-architecture/qd-triage.md` — Quality-Diversity triage; per-method σ × κ scoring; QD matrix occupancy; Tier A/B/C/D catalog; ACGR diagnostic; Wave-5 admission targets; methodology ADR draft clauses §§1-11
+- `openspec/_bmad-output/knowledge/audit/2026-05-17-architecture/raw-transcripts/` — 35 sub-agent `.jsonl` transcripts (full conversation logs incl. tool calls); MANIFEST.md maps stream prefix → file; persist-corpus.py is the one-shot extraction tool
+- `openspec/_bmad-output/knowledge/audit/2026-05-17-architecture/findings/` — 35 per-stream extracted findings markdown files (sub-agent's initial prompt + final deliverable text); the human-readable evidence base for the audit; use this for re-clustering, implementation-audit calibration, or resolution-CHG drafting
 
 **Convergence projection (under ACGR metric, qd-triage.md §7):** Wave 4 = ~45%; Wave 5 (Tier-1 empty-cell targets + meta-review = 4 streams) projected ~10-15%; Wave 6 (remaining empty cells + confirmation pairs) projected <5% (convergence). Compression × * lens has no Tier-A occupant (DISTILL is Tier B only); flag this as a known gap in the methodology ADR.
 
