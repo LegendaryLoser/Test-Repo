@@ -177,7 +177,8 @@ progress, decisions made, and the "Next session: start here" pointer.
 | TASK-0045 | docs | done | Architecture audit Wave 6 (4 streams: STRUCTGOV, SECDISTILL, SCENNOW, PERSRETRO; 75 raw findings) | `cd45777` |
 | TASK-0046 | docs | done | Wave-6 thematic consolidation (~29 new themes) + qd-triage §3.6 + ACGR re-measurement (~105% ± 21%) | `bd702ea` |
 | TASK-0047 | docs | done | Architecture audit Wave 7 (4 streams: SCENFUT, STRUCTFUT, DEVRETRO, ATTFUT; 72 raw findings) | `48097c3` |
-| TASK-0048 | docs | done | Wave-7 thematic consolidation (~24 new themes) + qd-triage §3.7 + ACGR re-measurement (~87% ± 17%) | (this commit) |
+| TASK-0048 | docs | done | Wave-7 thematic consolidation (~24 new themes) + qd-triage §3.7 + ACGR re-measurement (~87% ± 17%) | `78a03a7` |
+| TASK-0049 | docs | done | Signal-filter triage of 867 findings: 42 dup clusters, 1 contradiction, ~120-150 unique defects (signal-ledger.md) | (this commit) |
 
 See `tasks/` for per-task detail.
 
