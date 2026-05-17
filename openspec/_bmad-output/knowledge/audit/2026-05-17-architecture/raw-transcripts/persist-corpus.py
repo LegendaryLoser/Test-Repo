@@ -94,6 +94,12 @@ DESC_TO_STREAM = {
     "Security distillation compression review": ("SECDISTILL", 6, "distillator-security-focused", "opus"),
     "Scenario unfold current state": ("SCENNOW", 6, "scenario-unfold-current-state", "opus"),
     "Persona retrospective from future": ("PERSRETRO", 6, "persona-winston-retrospective-from-future", "opus"),
+    # Wave 7 — 4 streams continuing per user direction; targets the forward and
+    # post-hoc (Lens × Temporal) cells not yet filled by Waves 1-6
+    "Scenario unfold forward eighteen months": ("SCENFUT", 7, "scenario-unfold-forward-eighteen-months", "opus"),
+    "Structural forward transformations": ("STRUCTFUT", 7, "editorial-review-structure-forward-transformations", "opus"),
+    "Devil advocate retrospective from future": ("DEVRETRO", 7, "advanced-elicitation-devils-advocate-retrospective", "opus"),
+    "Attitudinal forward pre-mortem additions": ("ATTFUT", 7, "attitudinal-review-forward-additions", "opus"),
 }
 
 PREFIX_TO_INFO = {

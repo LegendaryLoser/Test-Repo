@@ -42,7 +42,7 @@ start any Tier 1+ resolution CHGs.
 
 ### Architecture audit corpus
 
-Six waves of multi-perspective adversarial review (and continuing per user
+Seven waves of multi-perspective adversarial review (and continuing per user
 direction "keep going wave after wave"):
 
 - **Wave 1:** 12 streams across diverse methods (adversarial-general,
@@ -70,11 +70,17 @@ direction "keep going wave after wave"):
   structural-governance (`STRUCTGOV-`), security-focused distillation
   (`SECDISTILL-`), scenario-unfold-current-state (`SCENNOW-`),
   Winston-2029 persona-retrospective (`PERSRETRO-`).
+- **Wave 7:** 4 streams targeting remaining forward + post-hoc
+  (Lens × Temporal) cells per `qd-triage.md` §8.2: 18-month-forward
+  scenario unfold (`SCENFUT-`), forward structural-growth-pressure
+  (`STRUCTFUT-`), 2029-external-critic contrarian retrospective
+  (`DEVRETRO-`), attitudinal-forward discipline-additions
+  (`ATTFUT-`).
 
-Total: 44 streams. Raw findings: ~700 (Waves 1-4) + 84 (Wave 5) + 75
-(Wave 6) ≈ ~860. Themes: ~70 from Waves 1-4 + ~25 new from Wave 5
-(per "Wave 5 supplement" in consolidated.md); Wave-6 thematic
-consolidation deferred to a follow-on task.
+Total: 48 streams. Raw findings: ~700 (Waves 1-4) + 84 (Wave 5) + 75
+(Wave 6) + 72 (Wave 7) ≈ ~932. Themes: ~70 from Waves 1-4 + ~25 new
+from Wave 5 + ~29 new from Wave 6 ≈ ~125 (Waves 1-6 consolidated);
+Wave-7 thematic consolidation deferred to a follow-on task.
 
 ### Consolidation and triage
 
@@ -104,15 +110,15 @@ and §2 for definitions.
 
 ### Corpus persistence
 
-43 sub-agent raw transcripts (35 from Waves 1-4 + 4 from Wave 5 + 4
-from Wave 6) plus per-stream extracted findings markdown persisted
-into `raw-transcripts/` and `findings/` subdirectories. Manifest at
-`raw-transcripts/MANIFEST.md`; extraction tool at
-`raw-transcripts/persist-corpus.py`. The 44th stream (`ARCH-`,
-in-context) has no separate transcript. The extraction tool is
-incremental: each re-run ingests new cache-resident transcripts whose
-description is in `DESC_TO_STREAM` and preserves rows for transcripts
-already on disk from prior sessions.
+47 sub-agent raw transcripts (35 from Waves 1-4 + 4 from Wave 5 + 4
+from Wave 6 + 4 from Wave 7) plus per-stream extracted findings
+markdown persisted into `raw-transcripts/` and `findings/`
+subdirectories. Manifest at `raw-transcripts/MANIFEST.md`; extraction
+tool at `raw-transcripts/persist-corpus.py`. The 48th stream
+(`ARCH-`, in-context) has no separate transcript. The extraction
+tool is incremental: each re-run ingests new cache-resident
+transcripts whose description is in `DESC_TO_STREAM` and preserves
+rows for transcripts already on disk from prior sessions.
 
 ### REQ-AUDIT-0001
 
@@ -169,7 +175,8 @@ progress, decisions made, and the "Next session: start here" pointer.
 | TASK-0043 | docs | done | META- audit corrections log + findings-index Wave 4 + Wave 5 catch-up | `067eefc` |
 | TASK-0044 | docs | done | Wave-5 thematic consolidation (~25 new themes) + qd-triage §3.5 + ACGR re-measurement (~91% ± 16%) | `9ae2a6a` |
 | TASK-0045 | docs | done | Architecture audit Wave 6 (4 streams: STRUCTGOV, SECDISTILL, SCENNOW, PERSRETRO; 75 raw findings) | `cd45777` |
-| TASK-0046 | docs | done | Wave-6 thematic consolidation (~29 new themes) + qd-triage §3.6 + ACGR re-measurement (~105% ± 21%) | (this commit) |
+| TASK-0046 | docs | done | Wave-6 thematic consolidation (~29 new themes) + qd-triage §3.6 + ACGR re-measurement (~105% ± 21%) | `bd702ea` |
+| TASK-0047 | docs | done | Architecture audit Wave 7 (4 streams: SCENFUT, STRUCTFUT, DEVRETRO, ATTFUT; 72 raw findings) | (this commit) |
 
 See `tasks/` for per-task detail.
 

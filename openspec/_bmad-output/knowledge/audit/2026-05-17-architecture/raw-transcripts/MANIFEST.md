@@ -4,9 +4,9 @@ Mechanically generated from the sub-agent task transcripts. Each row maps a stre
 
 **Note:** the `ARCH-` stream is not in this manifest. It was the in-context pass run by the main session (not a sub-agent), so it has no separate transcript — its findings live in the main-session transcript which is not part of this corpus.
 
-**Total streams:** 43 sub-agent streams across waves 1, 2, 3, 4, 5, 6 (+ the in-context `ARCH-` stream).
+**Total streams:** 47 sub-agent streams across waves 1, 2, 3, 4, 5, 6, 7 (+ the in-context `ARCH-` stream).
 
-**Total raw transcript size:** 7,501,752 bytes (~7.2 MB).
+**Total raw transcript size:** 8,109,321 bytes (~7.7 MB).
 
 ## Stream → transcript mapping
 
@@ -55,6 +55,10 @@ Mechanically generated from the sub-agent task transcripts. Each row maps a stre
 | 6 | `SCENNOW` | scenario-unfold-current-state | opus | `a07f43fdddd08cb06` | [`raw-transcripts/SCENNOW-agent-a07f43fdddd08cb06.jsonl`](raw-transcripts/SCENNOW-agent-a07f43fdddd08cb06.jsonl) | [`findings/SCENNOW-findings.md`](findings/SCENNOW-findings.md) | 146 |
 | 6 | `SECDISTILL` | distillator-security-focused | opus | `a3dbddc9bf6b4c61b` | [`raw-transcripts/SECDISTILL-agent-a3dbddc9bf6b4c61b.jsonl`](raw-transcripts/SECDISTILL-agent-a3dbddc9bf6b4c61b.jsonl) | [`findings/SECDISTILL-findings.md`](findings/SECDISTILL-findings.md) | 130 |
 | 6 | `STRUCTGOV` | editorial-review-structure-governance-focused | opus | `a93bfc6e74549fbc2` | [`raw-transcripts/STRUCTGOV-agent-a93bfc6e74549fbc2.jsonl`](raw-transcripts/STRUCTGOV-agent-a93bfc6e74549fbc2.jsonl) | [`findings/STRUCTGOV-findings.md`](findings/STRUCTGOV-findings.md) | 163 |
+| 7 | `ATTFUT` | attitudinal-review-forward-additions | opus | `aa1f25f0ba5230d1d` | [`raw-transcripts/ATTFUT-agent-aa1f25f0ba5230d1d.jsonl`](raw-transcripts/ATTFUT-agent-aa1f25f0ba5230d1d.jsonl) | [`findings/ATTFUT-findings.md`](findings/ATTFUT-findings.md) | 147 |
+| 7 | `DEVRETRO` | advanced-elicitation-devils-advocate-retrospective | opus | `a3029b4ef950624fb` | [`raw-transcripts/DEVRETRO-agent-a3029b4ef950624fb.jsonl`](raw-transcripts/DEVRETRO-agent-a3029b4ef950624fb.jsonl) | [`findings/DEVRETRO-findings.md`](findings/DEVRETRO-findings.md) | 150 |
+| 7 | `SCENFUT` | scenario-unfold-forward-eighteen-months | opus | `a259180743a48e765` | [`raw-transcripts/SCENFUT-agent-a259180743a48e765.jsonl`](raw-transcripts/SCENFUT-agent-a259180743a48e765.jsonl) | [`findings/SCENFUT-findings.md`](findings/SCENFUT-findings.md) | 144 |
+| 7 | `STRUCTFUT` | editorial-review-structure-forward-transformations | opus | `a9bbc43cc082fa7eb` | [`raw-transcripts/STRUCTFUT-agent-a9bbc43cc082fa7eb.jsonl`](raw-transcripts/STRUCTFUT-agent-a9bbc43cc082fa7eb.jsonl) | [`findings/STRUCTFUT-findings.md`](findings/STRUCTFUT-findings.md) | 150 |
 
 ## How to use this corpus
 
