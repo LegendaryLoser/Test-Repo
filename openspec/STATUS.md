@@ -14,7 +14,7 @@ then proceed.
 **Last updated:** 2026-05-17 (architecture audit session, branch `claude/bmad-architecture-review-sV42w-bPd8l`)
 **Active phase:** PHASE-1 (paused — BMAD audit track in progress)
 **Last master commit:** `455ba06` (PR #15 merged: CHG-0014 + CHG-0031)
-**Last branch commit** (`claude/bmad-architecture-review-sV42w-bPd8l`): see `git log -1` — most recent work is CHG-0032 TASK-0050 (methodology research note documenting three structural critiques of the dual-metric/QD framework + saturation-based reformulation + two-layer framework specification). Prior commits this session: TASK-0042 `13f5401`, TASK-0043 `067eefc`, TASK-0044 `9ae2a6a`, TASK-0045 `cd45777`, TASK-0046 `bd702ea`, TASK-0047 `48097c3`, TASK-0048 `78a03a7`, TASK-0049 `b3eab84`.
+**Last branch commit** (`claude/bmad-architecture-review-sV42w-bPd8l`): see `git log -1` — most recent work is CHG-0032 TASK-0051 (cell finalization: 42 clusters → 15 cells; saturation 93% strict / 80% inclusive; QD-score baseline ~58.8; W7 ΔQD-score 29%). Prior commits this session: TASK-0042 `13f5401`, TASK-0043 `067eefc`, TASK-0044 `9ae2a6a`, TASK-0045 `cd45777`, TASK-0046 `bd702ea`, TASK-0047 `48097c3`, TASK-0048 `78a03a7`, TASK-0049 `b3eab84`, TASK-0050 `e2fc8ad`.
 **Open PRs:** none
 **Test count:** 184 passing on master (audit + STATUS.md commits do not change test count)
 
@@ -181,6 +181,7 @@ Sequenced from current state. `[x]` merged, `[~]` in flight, `[ ]` queued.
 | 2026-05-17 | Wave-7 thematic consolidation: ~24 new themes (THEMES AAAAAA-XXXXXX, transition from quintuple- to sextuple-letter IDs); ~48 reinforcements; qd-triage §3.7 authored (all 4 Wave-7 streams Tier-A); ACGR re-measured at **~87% ± 17%** | Three consecutive waves (5, 6, 7) at >85% ACGR — convergence threshold from original projection (ACGR < 5% for two consecutive waves) is structurally unachievable at current per-wave new-theme rate. First 3-way co-surface in corpus: project-overlay-semantics rediscovered by SCENFUT + STRUCTFUT + ATTFUT independently. ATTFUT's structurally novel as audit's resolution proposer (nominates ADR-0009..0017). DEVRETRO's "meta-gate fallacy" terminology is canonical-shape; methodology ADR should adopt. Cumulative themes after Wave 7: ~149 (Waves 1-7 cumulative). Wave 8 candidates: `(attitudinal × post-hoc)`, `(structural × post-hoc)`, `(compression × post-hoc)`, recursive META-META-. |
 | 2026-05-17 | Signal-filter triage of all 867 sub-agent findings (TASK-0049): 4 parallel subagents classified each finding into 7 categories; cross-batch deduplication identified **42 dense duplicate-claim clusters + ~80-110 long-tail singletons = ~120-150 unique architecture defects** (corpus has ~6-7× redundancy vs raw 867); 1 hard contradiction (PREM2-PROC-009 vs META-CRIT-003, both about ADR-0003 existence); per-stream true-σ median ~73% (vs within-batch 99.3%) | The 99.3% within-batch SIGNAL rate misleads about corpus convergence. True effective discovery surface is ~120-150 defects concentrating in 5 macro-areas (path/wrapper drift; governance machinery; security primitives; bootstrap/scale; test/CI discipline). ACGR convergence regression (~87-105% headline for Waves 5-7) is partly illusory — much of "new themes" are framing-refinements of existing clusters; true unique-claim ACGR for Waves 5-7 probably 30-50%. Audit may be substantially closer to convergence than headline ACGR suggested. `signal-ledger.md` is the empirical input for the methodology codification ADR's §6 (measurement discipline) and for cell-pruning. |
 | 2026-05-17 | Dual-metric (coverage + QD-score) reformulation REJECTED in favour of saturation-based reformulation: user's three critiques (coverage tautology, ordering bias, audit-type criticality variance) are well-founded per QD literature (Mouret & Clune 2015; Cully & Demiris 2018; Stock 2025); drop coverage as a metric (tautological in post-hoc-cell setup); replace with per-cell saturation (operates within observed cells; no |meaningful| denominator); keep QD-score as depth metric; adopt two-layer framework (domain-general algorithm + audit-type-specific behaviour-descriptor) | TASK-0050 authored `methodology-research-note.md` documenting the three critiques against research literature + proposing the saturation-based reformulation as the operational framework. Dual stopping condition: `saturation ≥ 95% AND ΔQD-score < 5% for two consecutive waves`. Path-dependence acknowledged explicitly (mitigated via method-sequence documentation rather than N-restart bootstrap, which is cost-prohibitive). Input to methodology codification ADR. |
+| 2026-05-17 | Cell-finalization (TASK-0051) executed per saturation-based scope: 42 dense clusters mapped to 15 distinct cells via defect-content labeling (not surfacing-method default); per-cell saturation status computed (93% strict K=2 / 80% inclusive K=2); QD-score baseline ~58.8; ΔQD-score W7 = 29% (driven by SCENFUT's W7 admission opening 3 scenario-forward cells); path-dependence inventory shows 60% Wave-1 cluster dominance | Audit close to cluster-level saturation but depth still expanding. Dual stopping NOT met (saturation close to 95% threshold; ΔQD-score at 29% vs <5% target). Decision options: (A) one more wave testing Pareto stability in recently-opened cells likely meets both thresholds; (B) declare convergence-enough at 93% saturation + acknowledge ongoing depth discovery at decreasing rate; (C) continue path-dependence remediation. `cell-occupancy.md` is the Layer-2 instance for the methodology codification ADR. |
 
 ## Next session: start here
 
@@ -201,22 +202,36 @@ Sequenced from current state. `[x]` merged, `[~]` in flight, `[ ]` queued.
 3. `openspec/_bmad-output/knowledge/audit/2026-05-17-architecture/qd-triage.md` — the full QD triage. Required reading: §2 (framework definitions), §5 (Tier A/B/C/D catalog), §7 (ACGR convergence diagnostic), §8 (Wave 5 admission targets), §9 (draft clauses for methodology ADR).
 4. `openspec/_bmad-output/knowledge/audit/2026-05-17-architecture/consolidated.md` — the ~70 themes, organised by tier of confirmation; required if planning resolution CHGs, otherwise reference-only.
 
-**First action on resume:** TASK-0051 — cell-finalization with revised scope per `methodology-research-note.md` §5. TASK-0050 (this session) replaced the original cell-finalization plan after the user's three critiques of the coverage metric forced a methodology shift. TASK-0051 now produces empirical per-cell saturation status + QD-score baseline + path-dependence inventory, NOT a coverage measurement.
+**First action on resume:** USER DECISION between three options surfaced by TASK-0051 in `cell-occupancy.md` §7:
 
-Concretely, TASK-0051 should:
-1. **Cluster-to-cell labeling.** For each of the 42 dense clusters + ~80 long-tail singletons in `signal-ledger.md` §5, assign one (Lens × Temporal × Decomp × Severity) tuple based on the load-bearing finding within the cluster (NOT the surfacing stream's method default — addresses signal-ledger §6.6's axis-independence concern).
-2. **Per-cell saturation status.** For each observed cell: in the last K=2 waves, has any new method been admitted? Any new theme opened? Any new (σ, κ) Pareto point added? If all three answers are no, the cell is saturated. Output a per-cell saturation table.
-3. **QD-score baseline.** Sum of per-cell max(σ × κ) across observed cells. Per-cell contribution breakdown.
-4. **Path-dependence inventory.** Per `signal-ledger.md` cluster-to-wave first-surfacing data: which clusters were Wave-1-attitudinal-dominated? Which cells would different ordering have surfaced? Best-effort counterfactual table.
-5. **Audit-level saturation.** % of observed cells that have saturated. Combined with QD-score gradient, gives the dual stopping signal.
-6. **Layer 1 / Layer 2 split documented in `qd-triage.md`.** Separate the domain-general algorithm from the architecture-audit-specific behaviour-descriptor. Set up the methodology codification ADR's structural skeleton.
+**Option A — Wave 8 testing depth saturation** (recommended). Spawn 2 streams to test Pareto-front stability in cells recently opened by single methods:
+- A SECOND scenario-forward-holistic method (different from SCENFUT) to test cells V/Y/II
+- A SECOND attitudinal-current-focused-governance method (different from GOV) to test cells K/CC/HH
 
-After TASK-0051, the user can decide:
-- Spawn Wave 8 if observed cells are NOT yet saturated (saturation < 95%) AND ΔQD-score still high
-- Move to methodology codification ADR drafting if both signals are at terminal
-- Pivot to implementation audit if the architecture audit looks adequately discovered
+Expected outcome: ΔQD-score drops sharply (Pareto fronts stabilize on second points); saturation reaches ≥95%. Dual stopping criterion met. **Minimal-additional-wave path.**
 
-Open questions remaining (per `methodology-research-note.md` §6): behaviour-descriptor universality, adaptive-depth fairness, restart cost for path-dependence mitigation, inter-audit composability, saturation-criterion K choice. These belong in the methodology codification ADR's limitations section; they do NOT block adoption of the saturation-based framework as the working operational metric.
+**Option B — Declare convergence-enough.** Accept 93% strict saturation + ongoing depth discovery at decreasing rate. Pivot to methodology codification ADR drafting + resolution-CHG sequencing + implementation audit.
+
+**Option C — Continue path-dependence remediation.** Spawn methods specifically in counterfactual-undiscovered cells (persona × post-hoc + scenario × current + contrarian × post-hoc) to test whether the path-dependence acknowledgment in §6 underestimates missed-discovery cost.
+
+Steps that were DONE in this session (this branch):
+- TASK-0042 (`13f5401`): Wave 5 architecture audit.
+- TASK-0043 (`067eefc`): META corrections + findings-index Wave 4 + 5 catch-up.
+- TASK-0044 (`9ae2a6a`): Wave-5 consolidation.
+- TASK-0045 (`cd45777`): Wave 6 architecture audit.
+- TASK-0046 (`bd702ea`): Wave-6 consolidation.
+- TASK-0047 (`48097c3`): Wave 7 architecture audit.
+- TASK-0048 (`78a03a7`): Wave-7 consolidation.
+- TASK-0049 (`b3eab84`): Signal-filter triage of 867 findings; `signal-ledger.md` (42 clusters).
+- TASK-0050 (`e2fc8ad`): Methodology research note + saturation-based reformulation; `methodology-research-note.md`.
+- TASK-0051 (latest commit): Cell finalization; `cell-occupancy.md` (15 cells, 93%/80% saturation, QD-score 58.8, ΔQD-score W7 29%).
+
+Pending work (NOT done in this session):
+- TASK-0052: Conditional on Option A/B/C choice.
+- TASK-0053+: Methodology codification ADR drafting + resolution-CHG sequencing per joint-consolidation direction.
+- Per-theme constituent-finding listing for Waves 4-7 in `findings-index.md` (stale).
+- Severity recalibration of STAKE-CRIT-001 → STAKE-SER-001 per corrections.md META-SER-012.
+- Layer 1/Layer 2 split rewrite of `qd-triage.md` (deferred to methodology ADR drafting).
 
 Steps that were DONE in this session (this branch):
 - TASK-0042 (`13f5401`): Wave 5 architecture audit (4 streams, 84 raw findings).

@@ -179,7 +179,8 @@ progress, decisions made, and the "Next session: start here" pointer.
 | TASK-0047 | docs | done | Architecture audit Wave 7 (4 streams: SCENFUT, STRUCTFUT, DEVRETRO, ATTFUT; 72 raw findings) | `48097c3` |
 | TASK-0048 | docs | done | Wave-7 thematic consolidation (~24 new themes) + qd-triage §3.7 + ACGR re-measurement (~87% ± 17%) | `78a03a7` |
 | TASK-0049 | docs | done | Signal-filter triage of 867 findings: 42 dup clusters, 1 contradiction, ~120-150 unique defects (signal-ledger.md) | `b3eab84` |
-| TASK-0050 | docs | done | Methodology research note: dual-metric critique (coverage tautology, ordering bias, audit-type variance) + saturation-based reformulation + two-layer framework (methodology-research-note.md) | (this commit) |
+| TASK-0050 | docs | done | Methodology research note: dual-metric critique (coverage tautology, ordering bias, audit-type variance) + saturation-based reformulation + two-layer framework (methodology-research-note.md) | `e2fc8ad` |
+| TASK-0051 | docs | done | Cell finalization: 42 clusters → 15 cells; saturation 93% strict / 80% inclusive; QD-score baseline ~58.8; W7 ΔQD-score 29% (cell-occupancy.md) | (this commit) |
 
 See `tasks/` for per-task detail.
 
