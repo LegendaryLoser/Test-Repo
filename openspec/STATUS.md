@@ -67,7 +67,7 @@ P = process, NEW = surfaced after the original audit.
 | NEW-1 | SERIOUS  | `generated_at` exemption violates determinism        | OPEN        | queued CHG-0014b           |
 | NEW-2 | SERIOUS  | Tests not derived from REQ Acceptance clauses        | OPEN        | queued ADR-0009 (new ADR)  |
 | NEW-3 | PROCESS  | BMAD review skills not in CHG workflow               | IN-PROGRESS | CHG-0032 (this audit is the response; methodology ADR queued) |
-| AUDIT-2026-05-17 | INFO | Architecture audit Wave 1 (12) + Wave 2 (8) + Wave 3 (8) complete = 28 streams; ~559 raw findings → ~51 themes; COMPOSITE-V2 6/7 gates met; Gate 6 marginal novelty improving (Wave 1 baseline → Wave 2: ~50% → Wave 3: ~30-37%); theme-discovery rate halving per wave; projection: Gate 6 met in Wave 5 or 6; artifact at `openspec/_bmad-output/knowledge/audit/2026-05-17-architecture/` | IN-PROGRESS | CHG-0032 |
+| AUDIT-2026-05-17 | INFO | Architecture audit Wave 1 (12) + Wave 2 (8) + Wave 3 (8) + Wave 4 (8) complete = 36 streams; ~700 raw findings → ~70 themes; COMPOSITE-V2 6/7 gates met; Gate 6 marginal novelty trajectory: Wave 2 ~50%, Wave 3 ~30-37%, Wave 4 ~46% (spiked from STAKE+COUNTER new methods). EMPIRICAL FINDING: marginal novelty is methodology-variance-driven, not model-variance-driven. Tight-method permutations converge ~15-30%; new methods spike 60-70%. Implication for methodology ADR: Gate 6 must be defined relative to fixed methodology catalog. Artifact at `openspec/_bmad-output/knowledge/audit/2026-05-17-architecture/` | IN-PROGRESS | CHG-0032 |
 
 ## Open architectural questions
 

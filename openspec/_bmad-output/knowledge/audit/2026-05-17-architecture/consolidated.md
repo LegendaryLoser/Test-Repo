@@ -2,10 +2,10 @@
 
 **Audit date:** 2026-05-17
 **Status:** STAGING (non-authoritative; input to future CHG envelopes)
-**Streams:** Wave 1: 12 · Wave 2: 8 · Wave 3: 8 · **Total: 28** (see [README.md](README.md))
-**Raw findings:** Wave 1: 270 · Wave 2: 142 · Wave 3: 138 · **Total: ~550** (plus 19 pre-existing in STATUS.md)
-**Distinct themes after dedup:** Wave 1: 26 · Wave 2: +16 · Wave 3: +9 · **Total: ~51**
-**Convergence (COMPOSITE-V2 Gate 6):** 6/7 gates met. Marginal novelty 30-37% (Wave 3), target <10%. Theme-discovery rate halving per wave; Gate 6 projected to be met in Wave 5 or 6.
+**Streams:** Wave 1: 12 · Wave 2: 8 · Wave 3: 8 · Wave 4: 8 · **Total: 36** (see [README.md](README.md))
+**Raw findings:** Wave 1: 270 · Wave 2: 142 · Wave 3: ~147 · Wave 4: ~130 · **Total: ~700** (plus 19 pre-existing in STATUS.md)
+**Distinct themes after dedup:** Wave 1: 26 · Wave 2: +16 · Wave 3: +9 · Wave 4: +~17 · **Total: ~70**
+**Convergence (COMPOSITE-V2 Gate 6):** 6/7 gates met. Marginal novelty: Wave 2 ~50%, Wave 3 ~30-37%, Wave 4 **~46% (spiked back up because STAKE+COUNTER introduced 2 new methods).** Target <10%. Empirical finding: marginal novelty is dominated by methodology variance, not model variance. Same-method-different-model converges well (INHER2: 12%, EDGE2: 25-30%); different-method-any-model surfaces 50%+ novelty.
 **Provenance:** [findings-index.md](findings-index.md)
 
 ---
@@ -1174,3 +1174,126 @@ Wave 2: 2.0/pass; Wave 3: 1.1/pass). If trend holds:
 User direction: continue iterating to Gate 6 strictly. Wave 4 will use
 remaining methods (model permutations on previous attitude-driven passes,
 unused advanced-elicitation methods, additional persona-pair combos).
+
+## Wave 4 supplement (8 streams, complete)
+
+Methods added: red-team-sonnet (RED2-), retrospective-sonnet (RETRO2-),
+edge-case-hunter-sonnet (EDGE2-), inheritor-sonnet (INHER2-),
+validate-prd-sonnet (VALID2-), pre-mortem-sonnet (PREM2-),
+stakeholder-simulation-opus (STAKE-, NEW METHOD),
+counter-factual-opus (COUNTER-, NEW METHOD).
+
+**Wave 4 marginal novelty: ~46%** (spike from STAKE+COUNTER new methods).
+
+New themes (~17 added by Wave 4):
+
+### From STAKE- (stakeholder simulation, ~10 new themes)
+
+- **THEME-AAA — Commit signing / signed-graph requirement** (STAKE-CRIT-001):
+  no signing obligation; `--no-gpg-sign` forbidden but no positive
+  sign requirement
+- **THEME-BBB — Secrets threat model + fork-PR isolation** (STAKE-CRIT-002):
+  Anthropic API key never named in threat surface; fork-PR stochastic
+  tests could exfiltrate via prompt injection
+- **THEME-CCC — Operational / SRE surface** (STAKE-CRIT-004, 005):
+  zero on-call surface; no SLO, runbook, paging, observability; 26 CI
+  gates can block main at 3am with undefined consequence
+- **THEME-DDD — Separation of duties** (STAKE-CRIT-007): same actor
+  authors + validates + publishes; violates SOC2 CC8.1, ISO 27001 A.14.2.2
+- **THEME-EEE — Journal storage integrity primitives** (STAKE-SER-008):
+  no WORM, no S3 Object Lock, no cryptographic chain; `O_TRUNC` destroys
+  audit trail silently
+- **THEME-FFF — Supply chain attestation** (STAKE-PROC-010, SER-014, SER-015):
+  no SLSA / in-toto / SPDX / checksum manifest for vendored 2.4 MB BMAD bundle
+- **THEME-GGG — Cost upper bounds + kill switches** (STAKE-CRIT-011):
+  `@cost-budget` has no upper bound; author can write tokens=10000000 unflagged
+- **THEME-HHH — Vendor quota awareness** (STAKE-SER-012): Google Apps
+  Script 6-min trigger limit, Drive API daily quotas not mentioned
+- **THEME-III — Vendor lock-in / provider abstraction** (STAKE-SER-013):
+  stochastic tier forbids fixtures = pay Anthropic per CI run forever
+- **THEME-JJJ — Anthropic SDK supply chain asymmetry** (STAKE-PROC-016):
+  BMAD has vendor+pin+smoke discipline; Anthropic SDK has nothing comparable
+
+### From COUNTER- (counter-factual, ~9 new themes)
+
+- **THEME-KKK — One-REQ-per-file alternative** (COUNTER-001): multi-REQ
+  files chosen but never argued for
+- **THEME-LLL — Matrix-on-demand vs committed** (COUNTER-002): `matrix-drift`
+  gate exists *because* file is committed; remove commit and gate disappears
+- **THEME-MMM — Trailer sidecar vs message-embedded** (COUNTER-005):
+  trailers fight git tooling; `Checkpoint:` exemption is evidence of fragility
+- **THEME-NNN — Phase DAG with explicit `requires:`** (COUNTER-006):
+  numerical order ≠ dependency order; DAG more enforceable not less
+- **THEME-OOO — Inverted `gate-coverage`** (COUNTER-008): gates declare
+  what they enforce; ADR-0008 §1 becomes derived
+- **THEME-PPP — Per-task event store** (COUNTER-011): dominant query is
+  `audit TASK-NNNN`; session-scoped journals hit storage sub-optimally
+- **THEME-QQQ — Anthropic-client transport/contract split** (COUNTER-013):
+  mixes singleton (transport) with per-feature (sandwich layers)
+- **THEME-RRR — Epic-vs-REQ reconciliation layer** (COUNTER-014):
+  per-REQ surfaces drift commit-by-commit; Epic-level introduces fact-in-two-places
+- **THEME-SSS — Trailer schema as machine-validated** (COUNTER-015):
+  each ADR adds trailer keys without updating ADR-0005 §3 enumeration
+
+### From RETRO2- (~3 new themes)
+
+- **THEME-TTT — Agent identity attribution** (RETRO2-CRIT-007): no
+  verified agent identity on commits; CI service account scope not specified
+- **THEME-UUU — Hook-failure taxonomy** (RETRO2-CRIT-008): ADR-0005 §8
+  catalogues container failures, not hook failures (hooks themselves can
+  fail/timeout/produce partial output)
+- **THEME-VVV — Model version transition protocol** (RETRO2-SER-009):
+  Sonnet 4.6→4.7 cadence is recurring; no protocol for re-baseline
+
+### From PREM2- (~2 new themes)
+
+- **THEME-WWW — CLAUDE.md as contested authority surface** (PREM2-PROC-012):
+  developer amends CLAUDE.md to override principles; agents treat in-scope
+  CLAUDE.md as authoritative; no gate checks CLAUDE.md content for principle
+  compliance
+- **THEME-XXX — Checkpoint walker off-by-one** (PREM2-PROC-010): exempts
+  red-state commits adjacent to checkpoints
+
+### Confirmations + tactical additions (Wave 4)
+
+The remaining ~5 Wave-4 themes are sharpenings of existing themes
+(VALID2 on shallow-clone CI defeating history walk; EDGE2 on cosmetic-edit
+exemption being undefined; RED2 sub-threshold green-start evasion).
+
+## COMPOSITE-V2 status after Wave 4
+
+| Gate | Status |
+|------|--------|
+| 1. Method coverage | ✓ MET (~15+ methods used) |
+| 2. Model coverage | ✓ MET (opus + sonnet + haiku) |
+| 3. Theme confirmation ≥90% | ✓ MET (~98%) |
+| 4. Strong theme ≥75% (≥3 streams) | ✓ MET (~88% post-Wave-4) |
+| 5. Critical-theme ≥5 streams | ✓ MET |
+| 6. **Marginal novelty <10%** | **✗ NOT MET (~46% Wave 4 average)** |
+| 7. Coherence floor ≥15% | ≈ within tolerance |
+
+## Methodology insight for the codification ADR
+
+Marginal novelty is empirically NOT a function of model diversity or
+stream count. It is a function of methodology variance:
+
+- **Tight-method permutations** (INHER2, EDGE2): converge to ~15-30%
+- **Loose-method permutations** (RETRO2, VALID2, PREM2, RED2): plateau ~40-50%
+- **Genuinely new methods** (STAKE, COUNTER): spike to ~60-70%
+
+This means COMPOSITE-V2 Gate 6 set at "<10% marginal novelty" is only
+achievable by exhausting the *methodology space*, not the model space.
+Once all methodologies have been tried, marginal novelty drops, because
+new model-permutations within tried methods converge.
+
+**Practical implication for the methodology ADR:** the convergence
+threshold must be defined relative to a specific methodology corpus.
+"<10% marginal novelty using methods M1...M_n" is meaningful;
+"<10% marginal novelty in absolute terms" is unachievable because
+new methods can always be invented.
+
+Recommended ADR formulation:
+- Define a fixed methodology catalog (e.g., 15 named methods).
+- Convergence = "<10% marginal novelty across model permutations
+  within the catalog."
+- Catalog extensions are explicit ADR amendments.
