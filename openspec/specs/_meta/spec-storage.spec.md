@@ -459,3 +459,45 @@ history), Python 3.11 setup, dev-dependency install, `validate`,
 - Tier `integration` because the test exercises a YAML configuration
   file in conjunction with the CLI commands it invokes; the actual
   end-to-end behavior is observable only via a live CI run.
+
+## REQ-SPEC-0015
+---
+id: REQ-SPEC-0015
+revision: 1
+status: tests-green
+introduced: CHG-0014
+supersedes: null
+phase: PHASE-1
+tier: unit
+references:
+  epic: null
+  story: null
+  adrs: [ADR-0004, ADR-0008]
+---
+
+### Description
+`openspec/specs/INDEX.yaml` is the deterministic, auto-generated index
+of every REQ defined in `openspec/specs/*.spec.md`. Per ADR-0004 §6 it
+is the sole retrieval surface for tooling. The `python -m tools.spec_lint
+index` subcommand regenerates it; `--check` verifies it matches the
+current spec corpus (ignoring the `generated_at` timestamp).
+
+### Acceptance
+- Given the current source tree, when `python -m tools.spec_lint
+  index --check` is invoked from the repository root, then it exits
+  with status `0`.
+
+### Non-acceptance
+- REQ-ARCH-0001..0008 live in `ARCHITECTURE.md` §10 as bullet points,
+  not `*.spec.md` blocks; they are not indexed until CHG-0015 migrates
+  them.
+- The `--check` comparison ignores `generated_at` — a hand-edited
+  timestamp is invisible to this gate. Hand-editing INDEX.yaml after
+  PHASE-1 is forbidden separately by CLAUDE.md's "Forbidden" list.
+
+### Notes
+- Implementation: [`tools/spec_lint/index.py`](../../../tools/spec_lint/index.py).
+- CLI: `python -m tools.spec_lint index` regenerates;
+  `python -m tools.spec_lint index --check` verifies.
+- The CI `index-up-to-date` gate per ADR-0008 §1 is a separate CHG
+  (queued); when wired, CI will fail on stale INDEX in any PR.
