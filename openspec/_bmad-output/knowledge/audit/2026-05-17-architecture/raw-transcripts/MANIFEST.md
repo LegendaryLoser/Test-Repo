@@ -4,9 +4,9 @@ Mechanically generated from the sub-agent task transcripts. Each row maps a stre
 
 **Note:** the `ARCH-` stream is not in this manifest. It was the in-context pass run by the main session (not a sub-agent), so it has no separate transcript — its findings live in the main-session transcript which is not part of this corpus.
 
-**Total streams:** 39 sub-agent streams across waves 1, 2, 3, 4, 5 (+ the in-context `ARCH-` stream).
+**Total streams:** 43 sub-agent streams across waves 1, 2, 3, 4, 5, 6 (+ the in-context `ARCH-` stream).
 
-**Total raw transcript size:** 6,896,517 bytes (~6.6 MB).
+**Total raw transcript size:** 7,501,752 bytes (~7.2 MB).
 
 ## Stream → transcript mapping
 
@@ -51,6 +51,10 @@ Mechanically generated from the sub-agent task transcripts. Each row maps a stre
 | 5 | `GOVDEV` | advanced-elicitation-devils-advocate-governance-focused | opus | `a359e11aa2d88c000` | [`raw-transcripts/GOVDEV-agent-a359e11aa2d88c000.jsonl`](raw-transcripts/GOVDEV-agent-a359e11aa2d88c000.jsonl) | [`findings/GOVDEV-findings.md`](findings/GOVDEV-findings.md) | 161 |
 | 5 | `META` | reasoning-tree-meta-audit | opus | `a092d80da9871922c` | [`raw-transcripts/META-agent-a092d80da9871922c.jsonl`](raw-transcripts/META-agent-a092d80da9871922c.jsonl) | [`findings/META-findings.md`](findings/META-findings.md) | 426 |
 | 5 | `SEC` | persona-security-engineer-holistic | opus | `a594ed19164462bb9` | [`raw-transcripts/SEC-agent-a594ed19164462bb9.jsonl`](raw-transcripts/SEC-agent-a594ed19164462bb9.jsonl) | [`findings/SEC-findings.md`](findings/SEC-findings.md) | 152 |
+| 6 | `PERSRETRO` | persona-winston-retrospective-from-future | opus | `a2707d2bf03b2fb71` | [`raw-transcripts/PERSRETRO-agent-a2707d2bf03b2fb71.jsonl`](raw-transcripts/PERSRETRO-agent-a2707d2bf03b2fb71.jsonl) | [`findings/PERSRETRO-findings.md`](findings/PERSRETRO-findings.md) | 150 |
+| 6 | `SCENNOW` | scenario-unfold-current-state | opus | `a07f43fdddd08cb06` | [`raw-transcripts/SCENNOW-agent-a07f43fdddd08cb06.jsonl`](raw-transcripts/SCENNOW-agent-a07f43fdddd08cb06.jsonl) | [`findings/SCENNOW-findings.md`](findings/SCENNOW-findings.md) | 146 |
+| 6 | `SECDISTILL` | distillator-security-focused | opus | `a3dbddc9bf6b4c61b` | [`raw-transcripts/SECDISTILL-agent-a3dbddc9bf6b4c61b.jsonl`](raw-transcripts/SECDISTILL-agent-a3dbddc9bf6b4c61b.jsonl) | [`findings/SECDISTILL-findings.md`](findings/SECDISTILL-findings.md) | 130 |
+| 6 | `STRUCTGOV` | editorial-review-structure-governance-focused | opus | `a93bfc6e74549fbc2` | [`raw-transcripts/STRUCTGOV-agent-a93bfc6e74549fbc2.jsonl`](raw-transcripts/STRUCTGOV-agent-a93bfc6e74549fbc2.jsonl) | [`findings/STRUCTGOV-findings.md`](findings/STRUCTGOV-findings.md) | 163 |
 
 ## How to use this corpus
 

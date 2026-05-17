@@ -42,7 +42,8 @@ start any Tier 1+ resolution CHGs.
 
 ### Architecture audit corpus
 
-Five waves of multi-perspective adversarial review:
+Six waves of multi-perspective adversarial review (and continuing per user
+direction "keep going wave after wave"):
 
 - **Wave 1:** 12 streams across diverse methods (adversarial-general,
   edge-case-hunter, implementation-readiness, editorial-structure,
@@ -62,12 +63,18 @@ Five waves of multi-perspective adversarial review:
   `qd-triage.md` §8: governance-focused validation (`GOV-`),
   security-engineer persona (`SEC-`), governance devil's-advocate
   (`GOVDEV-`), and reasoning-tree meta-auditor (`META-`). First wave
-  admitted under the QD admission rule (cell-fill, not raw novelty);
-  first wave to invoke a candidate 5th axis (meta).
+  admitted under the QD admission rule; first wave to invoke a
+  candidate 5th axis (meta).
+- **Wave 6:** 4 streams finishing Tier-1 high-importance empty cells +
+  2 never-occupied (Lens × Temporal) cells per `qd-triage.md` §4.1:
+  structural-governance (`STRUCTGOV-`), security-focused distillation
+  (`SECDISTILL-`), scenario-unfold-current-state (`SCENNOW-`),
+  Winston-2029 persona-retrospective (`PERSRETRO-`).
 
-Total: 40 streams, ~700 raw findings + Wave 5 supplement (consolidation
-pending), ~70 distinct themes from Waves 1-4 (Wave-5 thematic
-consolidation deferred to a follow-on task).
+Total: 44 streams. Raw findings: ~700 (Waves 1-4) + 84 (Wave 5) + 75
+(Wave 6) ≈ ~860. Themes: ~70 from Waves 1-4 + ~25 new from Wave 5
+(per "Wave 5 supplement" in consolidated.md); Wave-6 thematic
+consolidation deferred to a follow-on task.
 
 ### Consolidation and triage
 
@@ -97,11 +104,12 @@ and §2 for definitions.
 
 ### Corpus persistence
 
-39 sub-agent raw transcripts (35 from Waves 1-4 + 4 from Wave 5) plus
-per-stream extracted findings markdown persisted into `raw-transcripts/`
-and `findings/` subdirectories. Manifest at `raw-transcripts/MANIFEST.md`;
-extraction tool at `raw-transcripts/persist-corpus.py`. The 40th stream
-(`ARCH-`, in-context) has no separate transcript. The extraction tool is
+43 sub-agent raw transcripts (35 from Waves 1-4 + 4 from Wave 5 + 4
+from Wave 6) plus per-stream extracted findings markdown persisted
+into `raw-transcripts/` and `findings/` subdirectories. Manifest at
+`raw-transcripts/MANIFEST.md`; extraction tool at
+`raw-transcripts/persist-corpus.py`. The 44th stream (`ARCH-`,
+in-context) has no separate transcript. The extraction tool is
 incremental: each re-run ingests new cache-resident transcripts whose
 description is in `DESC_TO_STREAM` and preserves rows for transcripts
 already on disk from prior sessions.
@@ -159,7 +167,8 @@ progress, decisions made, and the "Next session: start here" pointer.
 | TASK-0041 | docs | done | Author CHG-0032 envelope retroactively (this proposal + 7 TASK files + REQ-AUDIT-0001) | `5df73fb` |
 | TASK-0042 | docs | done | Architecture audit Wave 5 (4 streams: governance, security, governance-devil's-advocate, meta-auditor) | `13f5401` |
 | TASK-0043 | docs | done | META- audit corrections log + findings-index Wave 4 + Wave 5 catch-up | `067eefc` |
-| TASK-0044 | docs | done | Wave-5 thematic consolidation (~25 new themes) + qd-triage §3.5 + ACGR re-measurement (~91% ± 16%) | (this commit) |
+| TASK-0044 | docs | done | Wave-5 thematic consolidation (~25 new themes) + qd-triage §3.5 + ACGR re-measurement (~91% ± 16%) | `9ae2a6a` |
+| TASK-0045 | docs | done | Architecture audit Wave 6 (4 streams: STRUCTGOV, SECDISTILL, SCENNOW, PERSRETRO; 75 raw findings) | (this commit) |
 
 See `tasks/` for per-task detail.
 

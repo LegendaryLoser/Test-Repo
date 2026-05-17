@@ -87,6 +87,13 @@ DESC_TO_STREAM = {
     "Security engineer holistic persona review": ("SEC", 5, "persona-security-engineer-holistic", "opus"),
     "Devil's advocate governance focus": ("GOVDEV", 5, "advanced-elicitation-devils-advocate-governance-focused", "opus"),
     "Reasoning tree meta-auditor": ("META", 5, "reasoning-tree-meta-audit", "opus"),
+    # Wave 6 — 4 streams per user direction "each cell is important; keep going wave
+    # after wave": 2 finishing Tier-1 Axis-D empty cells (per qd-triage.md §8.1)
+    # + 2 filling never-occupied (Lens × Temporal) cells per qd-triage.md §4.1
+    "Structural governance review": ("STRUCTGOV", 6, "editorial-review-structure-governance-focused", "opus"),
+    "Security distillation compression review": ("SECDISTILL", 6, "distillator-security-focused", "opus"),
+    "Scenario unfold current state": ("SCENNOW", 6, "scenario-unfold-current-state", "opus"),
+    "Persona retrospective from future": ("PERSRETRO", 6, "persona-winston-retrospective-from-future", "opus"),
 }
 
 PREFIX_TO_INFO = {
