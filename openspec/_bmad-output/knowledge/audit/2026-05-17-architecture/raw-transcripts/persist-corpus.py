@@ -100,6 +100,13 @@ DESC_TO_STREAM = {
     "Structural forward transformations": ("STRUCTFUT", 7, "editorial-review-structure-forward-transformations", "opus"),
     "Devil advocate retrospective from future": ("DEVRETRO", 7, "advanced-elicitation-devils-advocate-retrospective", "opus"),
     "Attitudinal forward pre-mortem additions": ("ATTFUT", 7, "attitudinal-review-forward-additions", "opus"),
+    # Wave 8 — 3 streams testing path-dependence per cell-occupancy.md Option C:
+    # add a SECOND method to each cell currently occupied by only one Wave-6/7 method
+    # to test whether the first method's Pareto front was complete or whether
+    # counterfactual methods surface clusters the first method missed
+    "Compliance officer retrospective from future": ("COMPLIRETRO", 8, "persona-compliance-officer-retrospective", "opus"),
+    "Failure-mode scenarios current": ("FAILSCEN", 8, "scenario-unfold-failure-modes-current", "opus"),
+    "Internal team retrospective from future": ("INTRRETRO", 8, "contrarian-internal-team-retrospective", "opus"),
 }
 
 PREFIX_TO_INFO = {
