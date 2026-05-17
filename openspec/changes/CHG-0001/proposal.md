@@ -5,7 +5,7 @@ status: in-progress
 date: 2026-05-16
 phase: PHASE-0
 references:
-  story: null            # PHASE-0 substrate predates the product story chain
+  story: null            # PHASE-0 substrate predates any product STORY-NNNN
   epic: null
   adrs:
     - ADR-0001

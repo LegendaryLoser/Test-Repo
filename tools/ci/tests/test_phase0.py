@@ -18,7 +18,6 @@ from __future__ import annotations
 import json
 import pathlib
 import re
-import subprocess
 
 import pytest
 import yaml
@@ -30,32 +29,9 @@ import yaml
 # this fact lands in PHASE-2 via tools/trace cross-doc consistency).
 # ---------------------------------------------------------------------------
 
-REQUIRED_TOP_LEVEL_DIRS = {
-    ".claude",
-    ".github",
-    "openspec",
-}
-
-# Top-level entries (tracked in git) that are explicitly permitted. Additions
-# to this set require an ADR (per REQ-ARCH-0001 and ADR-0001). Working-tree-
-# only artifacts (.git, .venv, .pytest_cache, *.egg-info, .hypothesis) are
-# excluded by using `git ls-files` rather than `iterdir`.
-ALLOWED_TOP_LEVEL_ENTRIES = {
-    # files
-    "README.md",
-    "CLAUDE.md",
-    ".gitignore",
-    "pyproject.toml",
-    # directories declared in ARCHITECTURE.md §3
-    ".claude",
-    ".github",
-    "openspec",
-    "tools",
-    "_bmad",        # BMAD v6.6.0 vendored install (ADR-0002 amendment 0001)
-    "scripts",      # pinned install/upgrade scripts (ADR-0002 §6)
-    "packages",
-    "projects",
-}
+# Top-level layout constants now live in `tools.spec_lint._top_level_allowlist`
+# and are exercised via the `top-level-allowlist` rule from CHG-0011. This
+# file no longer carries its own copies; the rule is the single source.
 
 EXPECTED_ADRS = [f"ADR-{n:04d}" for n in range(1, 9)]
 EXPECTED_PHASES = [f"PHASE-{n}" for n in range(0, 6)]
@@ -136,22 +112,16 @@ def test_arch_0001_top_level_layout(repo_root: pathlib.Path) -> None:
     """
     @test-id TEST-ARCH-0001
     @covers REQ-ARCH-0001
+
+    Delegates to the runnable lint rule introduced in CHG-0011 so the
+    invariant test and the gate cannot diverge.
     """
-    result = subprocess.run(
-        ["git", "ls-files"],
-        cwd=repo_root,
-        check=True,
-        capture_output=True,
-        text=True,
-    )
-    tracked_top_level = {line.split("/", 1)[0] for line in result.stdout.splitlines() if line}
+    from tools.spec_lint.rules.top_level_allowlist import TopLevelAllowlist
 
-    missing = REQUIRED_TOP_LEVEL_DIRS - tracked_top_level
-    assert not missing, f"Required top-level entries missing from tracked tree: {sorted(missing)}"
-
-    unexpected = tracked_top_level - ALLOWED_TOP_LEVEL_ENTRIES
-    assert not unexpected, (
-        f"Unexpected tracked top-level entries (require ADR amendment): {sorted(unexpected)}"
+    findings = TopLevelAllowlist().check_repo(repo_root)
+    assert findings == [], (
+        "top-level-allowlist findings on real repo: "
+        + "; ".join(f.message for f in findings)
     )
 
 

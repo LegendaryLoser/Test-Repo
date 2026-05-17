@@ -48,6 +48,8 @@ lintable defect.
 /
 ├── README.md
 ├── CLAUDE.md                           # session-level guidance (added in PHASE-0)
+├── .gitignore                          # tracked; enforced by `top-level-allowlist`
+├── pyproject.toml                      # tracked; enforced by `top-level-allowlist`
 ├── .claude/
 │   ├── settings.json                   # permissions, env, hooks
 │   ├── agents/                         # (legacy slot — empty in v6 native-skills model)
@@ -130,9 +132,15 @@ Identifier rules (enforced by `tools/spec_lint`, defined in
 - Identifiers are immutable. Renames are forbidden; supersession is the only
   permitted change.
 - IDs are allocated by monotonic next-free scan against `openspec/specs/INDEX.yaml`.
-- Cross-references use the ID *and* the file path (e.g. `REQ-AUTH-0007 @
-  openspec/specs/auth/login.spec.md`). Prose references like "the auth spec"
-  are a lintable defect.
+- Cross-references use the ID *and* the file path (e.g. `REQ-SPEC-0001 @
+  openspec/specs/_meta/spec-storage.spec.md`). Prose references are a
+  lintable defect; `prose-xref-banned` fires on patterns such as:
+
+  ```text
+  the auth spec
+  the login requirement
+  the original ADR
+  ```
 
 ## 5. Spec sourcing — bidirectional, reconciled at the Epic boundary
 

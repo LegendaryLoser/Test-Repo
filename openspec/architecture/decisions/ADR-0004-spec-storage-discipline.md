@@ -44,9 +44,16 @@ into a CI signal.
 ### 2. Cross-reference discipline
 
 - Every cross-reference uses **ID plus file path**, e.g.
-  `REQ-AUTH-0007 @ openspec/specs/auth/login.spec.md`.
-- Prose references ("the auth spec", "the login requirement") are a lintable
-  defect.
+  `REQ-SPEC-0001 @ openspec/specs/_meta/spec-storage.spec.md`.
+- Illustrative prose references are a lintable defect — anything that names
+  an artifact by description instead of by stable ID + path fails
+  `prose-xref-banned`. Examples that fire the rule:
+
+  ```text
+  the auth spec
+  the login requirement
+  the original ADR
+  ```
 - The set of legal references is enumerable; broken references fail CI.
 
 ### 3. Atomicity

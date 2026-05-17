@@ -50,3 +50,17 @@ class CorpusRule(Protocol):
     description: str
 
     def check_corpus(self, spec_files: list[SpecFile]) -> list[Finding]: ...
+
+
+class RepoRule(Protocol):
+    """A rule that checks repository-level invariants — layout, presence
+    of required files, etc. Introduced in CHG-0011 for ``top-level-allowlist``.
+
+    Reads the working tree (via ``git ls-files`` or direct fs access)
+    rather than parsed spec files. Path passed in is the repo root.
+    """
+
+    id: str
+    description: str
+
+    def check_repo(self, repo_root: pathlib.Path) -> list[Finding]: ...
