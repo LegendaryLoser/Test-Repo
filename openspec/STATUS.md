@@ -11,12 +11,12 @@ then proceed.
 
 ---
 
-**Last updated:** 2026-05-17 (this session)
-**Active phase:** PHASE-1 (spec hygiene + CI enforcement)
-**Last master commit:** `18ecfcc` (CHG-0013 merged)
-**Last branch commit** (`claude/general-session-KXgas`): see latest PR
-**Open PRs:** #15 (CHG-0014 INDEX), this PR (CHG-0031 continuity)
-**Test count:** 184 passing on master; 185 expected after this CHG
+**Last updated:** 2026-05-17 (architecture audit session, branch `claude/bmad-architecture-review-sV42w`)
+**Active phase:** PHASE-1 (paused — BMAD audit track in progress)
+**Last master commit:** `455ba06` (PR #15 merged: CHG-0014 + CHG-0031)
+**Last branch commit** (`claude/bmad-architecture-review-sV42w`): this commit (CHG-0032 architecture audit Wave 1+2 in flight)
+**Open PRs:** none
+**Test count:** 184 passing on master (audit commits do not change test count)
 
 ## CHG status
 
@@ -37,7 +37,8 @@ then proceed.
 | 0013 | CI wiring (spec-lint job real invocations)                     | merged      | #14 |
 | 0014 | INDEX subcommand + populate INDEX.yaml                         | OPEN        | #15 |
 | 0030 | Test annotation discipline + 87-test backfill                  | merged      | #13 (stacked) |
-| 0031 | Session continuity scaffold (this CHG)                         | in-progress | TBD |
+| 0031 | Session continuity scaffold                                    | merged      | (in #15) |
+| 0032 | Architecture audit (BMAD multi-pass, COMPOSITE-V2)             | in-progress | TBD |
 
 ## Audit findings
 
@@ -65,7 +66,8 @@ P = process, NEW = surfaced after the original audit.
 | P6    | PROCESS  | test_mutations.py unannotated                        | CLOSED      | CHG-0030                   |
 | NEW-1 | SERIOUS  | `generated_at` exemption violates determinism        | OPEN        | queued CHG-0014b           |
 | NEW-2 | SERIOUS  | Tests not derived from REQ Acceptance clauses        | OPEN        | queued ADR-0009 (new ADR)  |
-| NEW-3 | PROCESS  | BMAD review skills not in CHG workflow               | OPEN        | next session's first task  |
+| NEW-3 | PROCESS  | BMAD review skills not in CHG workflow               | IN-PROGRESS | CHG-0032 (this audit is the response; methodology ADR queued) |
+| AUDIT-2026-05-17 | INFO | Architecture audit Wave 1 (12 streams) + Wave 2 (8 streams in flight); 270 raw findings → 26 themes; COMPOSITE-V2 metric locked (Gate 6 tightened to <10% marginal novelty); artifact at `openspec/_bmad-output/knowledge/audit/2026-05-17-architecture/` | TRACKING | CHG-0032 |
 
 ## Open architectural questions
 
@@ -152,33 +154,45 @@ Sequenced from current state. `[x]` merged, `[~]` in flight, `[ ]` queued.
 | 2026-05-17 | CHG-0014 ships with `generated_at` exemption (deferred to 0014b)    | Get the substrate in place; defer the determinism fix         |
 | 2026-05-17 | Adopt test-spec-derivation discipline (ADR-0009 queued)             | Audit + user pushback on hot-fix pattern                      |
 | 2026-05-17 | Bring BMAD into the CHG workflow from planning forward              | User request; P5 ("OpenSpec + BMAD + TEA")                    |
+| 2026-05-17 | Run BMAD adversarial architecture audit as 12-stream multi-pass (then 8 more in Wave 2) | User request: max rigor, model + methodology diversity         |
+| 2026-05-17 | Lock COMPOSITE-V2 as convergence metric (7 gates; Gate 6 = marginal novelty <10%) | User decision after explanation of pairwise-agreement trade-off |
+| 2026-05-17 | Codify audit methodology in ADR after BOTH architecture + implementation audits complete | User choice (defer codification until both audits validated)  |
+| 2026-05-17 | Run implementation audit after architecture audit convergence; consolidate jointly | User decision; findings may re-sequence resolution            |
+| 2026-05-17 | Re-sequence: do not start any Tier 1+ resolution CHG until both audits converge   | User direction ("resolve thoroughly before going ahead with anything") |
 
 ## Next session: start here
 
-**First action:** spawn `bmad-review-adversarial-general` against the
-architecture documents (`openspec/architecture/ARCHITECTURE.md`,
-`openspec/architecture/decisions/ADR-*.md`,
-`openspec/architecture/phases/PHASE-*.md`) to validate or refute the
-holistic completeness of the requirements before continuing
-implementation.
+**Status as of this commit:** CHG-0032 architecture audit Wave 1 (12
+streams) complete and consolidated to
+`openspec/_bmad-output/knowledge/audit/2026-05-17-architecture/`. Wave 2
+(8 sub-agents) running in background as of commit time; results will
+land in a follow-up commit. COMPOSITE-V2 convergence metric locked
+(see Recent decisions table); Gate 6 (marginal novelty <10%) is the
+gating check.
 
-The agent's report seeds:
-- ADR amendments for any architectural gap surfaced
-- New REQs for any unspecified invariant
-- Re-ordering of the Tier 1-4 roadmap if priorities shift
+**First action on resume:** check whether Wave 2 completed (sub-agent
+output files in `/tmp/claude-0/-home-user-Test-Repo/.../tasks/`). If yes,
+re-measure marginal novelty against COMPOSITE-V2 Gate 6. If <10%,
+architecture audit converges; proceed to second action. If ≥10%, plan
+Wave 3 with further orthogonal methods.
 
-**Second action:** spawn `bmad-review-adversarial-general` against the
-implementation (`tools/spec_lint/`, `tools/ci/`, `_bmad/`,
-`.github/workflows/`). The report seeds remediation CHGs.
+**Second action:** run BMAD multi-pass implementation audit against
+`tools/spec_lint/`, `tools/ci/`, `_bmad/`, `.github/workflows/` using the
+same COMPOSITE-V2 methodology (Wave 1 = 8-10 streams across diverse
+methods/models, iterate until Gate 6 met).
 
-**Third action:** resume the Tier 1 roadmap (CHG-0014b drop
-`generated_at`, then CHG-0015 REQ-ARCH migration) with BMAD-in-the-loop
-discipline:
-- `bmad-review-adversarial-general` on every CHG proposal before
-  starting work.
-- `bmad-code-review` on every diff before opening the PR.
-- `bmad-checkpoint-preview` before merging.
+**Third action:** consolidate architecture + implementation audit
+findings jointly into a single ledger. Draft the audit-methodology ADR
+(ADR-0009 or higher, allocated post-consolidation) codifying COMPOSITE-V2
+for all future architecture and project-level audits. Per-project audits
+applied dogfood-style.
 
-**If runway is short** (token budget low, session about to end): merge
-PR #15 (CHG-0014) and this PR (CHG-0031), update STATUS.md's
-"Last updated" + "Open PRs" rows, and hand off cleanly.
+**Fourth action:** plan resolution CHG sequence against the joint
+ledger. Per user direction, do NOT start any Tier 1+ resolution CHG
+(CHG-0014b drop `generated_at`, CHG-0015 REQ-ARCH migration, etc.) until
+both audits converge and the joint resolution sequence is approved.
+
+**Persistent audit artifact:**
+- `openspec/_bmad-output/knowledge/audit/2026-05-17-architecture/README.md`
+- `openspec/_bmad-output/knowledge/audit/2026-05-17-architecture/consolidated.md` (26 themes, 270 raw findings, proposed 17-tier resolution sequence)
+- `openspec/_bmad-output/knowledge/audit/2026-05-17-architecture/findings-index.md` (per-stream provenance)
