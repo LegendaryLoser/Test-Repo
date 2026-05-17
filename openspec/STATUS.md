@@ -14,7 +14,7 @@ then proceed.
 **Last updated:** 2026-05-17 (architecture audit session, branch `claude/bmad-architecture-review-sV42w-bPd8l`)
 **Active phase:** PHASE-1 (paused — BMAD audit track in progress)
 **Last master commit:** `455ba06` (PR #15 merged: CHG-0014 + CHG-0031)
-**Last branch commit** (`claude/bmad-architecture-review-sV42w-bPd8l`): see `git log -1` — most recent work is CHG-0032 TASK-0047 (Wave 7 architecture audit: 4 streams; 72 raw findings; thematic consolidation deferred). Prior session commits: TASK-0042 `13f5401` (Wave 5 audit); TASK-0043 `067eefc` (META corrections); TASK-0044 `9ae2a6a` (Wave-5 consolidation); TASK-0045 `cd45777` (Wave 6 audit); TASK-0046 `bd702ea` (Wave-6 consolidation).
+**Last branch commit** (`claude/bmad-architecture-review-sV42w-bPd8l`): see `git log -1` — most recent work is CHG-0032 TASK-0048 (Wave-7 thematic consolidation, qd-triage §3.7, ACGR re-measurement). Prior commits this session: TASK-0042 `13f5401` (Wave 5 audit), TASK-0043 `067eefc` (META corrections), TASK-0044 `9ae2a6a` (Wave-5 consolidation), TASK-0045 `cd45777` (Wave 6 audit), TASK-0046 `bd702ea` (Wave-6 consolidation), TASK-0047 `48097c3` (Wave 7 audit).
 **Open PRs:** none
 **Test count:** 184 passing on master (audit + STATUS.md commits do not change test count)
 
@@ -178,6 +178,7 @@ Sequenced from current state. `[x]` merged, `[~]` in flight, `[ ]` queued.
 | 2026-05-17 | Wave 6 complete: 4 streams (STRUCTGOV, SECDISTILL, SCENNOW, PERSRETRO); 75 raw findings (21 CRIT / 34 SER / 20 PROC); thematic consolidation deferred | 2 BMAD-skill streams (STRUCTGOV via bmad-editorial-review-structure; SECDISTILL via bmad-distillator) + 2 general-purpose-custom-prompt streams (SCENNOW: 6-actor scenario unfold from current state; PERSRETRO: Winston-2029 retrospective from 3 years out). Key empirical surfaces: STRUCTGOV identified amendment-overlay-without-separable-addressing as dominant structural-governance pattern + concrete drift (`skill-removal-acknowledged` missing from ADR-0008 §1); SECDISTILL identified credentials-management as the security topic most damaged by compression (NULL canonical claim); SCENNOW identified Agent-session-start scenario as most blocking (SessionStart hook doesn't exist + STATUS.md not required to exist + agent told to read both); PERSRETRO's most-wished-retraction is ADR-0006 §2's unqualified no-mock rule (18%/project velocity tax × 3 years). |
 | 2026-05-17 | Wave-6 thematic consolidation: ~29 new themes (THEMES XXXX-ZZZZZ, including transition from quadruple- to quintuple-letter IDs); ~46 reinforcements of Waves-1-5 themes; qd-triage §3.6 authored (all 4 Wave-6 streams Tier-A); ACGR re-measured at **~105% ± 21%** | Two consecutive waves (5 + 6) at >90% ACGR decisively falsify the original convergence-projection model. Per user direction "keep going wave after wave; don't consider the QD matrix as final," signal-exhaustion observation is the operational terminal condition — Wave 6's 29 new themes / 4 streams = ~7 themes/stream, *more* productive per stream than Wave 5 (~6/stream excluding META). Compression-lens Tier-A gap from `qd-triage.md` §7.4 conditionally resolved via SECDISTILL. Wave 7 candidates surfaced in `qd-triage.md` §8.2: `(scenario × forward-looking)`, `(structural × forward-looking)`, `(contrarian × post-hoc)`, `(attitudinal × forward-looking)`. |
 | 2026-05-17 | Wave 7 complete: 4 streams (SCENFUT, STRUCTFUT, DEVRETRO, ATTFUT); 72 raw findings (22 CRIT / 26 SER / 24 PROC); all 4 streams produced exactly 18 findings — Wave 7's most balanced output to date; thematic consolidation deferred to TASK-0048 | All 4 used opus + general-purpose subagent with custom prompts. Empirical highlights: SCENFUT scenario-6 (matrix performance at scale) most blocking 18-month-forward gap; STRUCTFUT's ADR-and-amendment surface area is most-pressured structural dimension (current 10-ADR layout breaks at 50+); DEVRETRO's 2029-canonical-mistake nomination is "deferring all product content until PHASE-5"; ATTFUT's single most-needed addition is ADR-0009 on credentials/service-account lifecycle. DEVRETRO surfaced "meta-gate fallacy" as canonical formulation of META-/GOVDEV's earlier gate-coverage-tautology findings. Methodology codification ADR is now structurally urgent: audit shows no convergence under any reasonable signal-exhaustion interpretation. |
+| 2026-05-17 | Wave-7 thematic consolidation: ~24 new themes (THEMES AAAAAA-XXXXXX, transition from quintuple- to sextuple-letter IDs); ~48 reinforcements; qd-triage §3.7 authored (all 4 Wave-7 streams Tier-A); ACGR re-measured at **~87% ± 17%** | Three consecutive waves (5, 6, 7) at >85% ACGR — convergence threshold from original projection (ACGR < 5% for two consecutive waves) is structurally unachievable at current per-wave new-theme rate. First 3-way co-surface in corpus: project-overlay-semantics rediscovered by SCENFUT + STRUCTFUT + ATTFUT independently. ATTFUT's structurally novel as audit's resolution proposer (nominates ADR-0009..0017). DEVRETRO's "meta-gate fallacy" terminology is canonical-shape; methodology ADR should adopt. Cumulative themes after Wave 7: ~149 (Waves 1-7 cumulative). Wave 8 candidates: `(attitudinal × post-hoc)`, `(structural × post-hoc)`, `(compression × post-hoc)`, recursive META-META-. |
 
 ## Next session: start here
 
@@ -198,26 +199,33 @@ Sequenced from current state. `[x]` merged, `[~]` in flight, `[ ]` queued.
 3. `openspec/_bmad-output/knowledge/audit/2026-05-17-architecture/qd-triage.md` — the full QD triage. Required reading: §2 (framework definitions), §5 (Tier A/B/C/D catalog), §7 (ACGR convergence diagnostic), §8 (Wave 5 admission targets), §9 (draft clauses for methodology ADR).
 4. `openspec/_bmad-output/knowledge/audit/2026-05-17-architecture/consolidated.md` — the ~70 themes, organised by tier of confirmation; required if planning resolution CHGs, otherwise reference-only.
 
-**First action on resume:** TASK-0048 — Wave-7 thematic consolidation. Then per user direction "keep going wave after wave", spawn Wave 8 (cells: `(attitudinal × post-hoc)`, `(structural × post-hoc)`, `(compression × post-hoc)`, recursive META-META-).
+**First action on resume:** TASK-0049 — Wave 8 spawn per user direction "keep going wave after wave; each cell is important." Wave 8 candidate cells per `consolidated.md` Wave-7 supplement and `qd-triage.md` §8.2:
 
-Per user direction, the audit terminates on signal-exhaustion (no genuinely new themes/findings emerging), NOT on pre-defined ACGR threshold. Wave 7 produced 72 raw findings (18/stream balanced) — signal has NOT exhausted; continuation is the default.
+1. `(attitudinal × post-hoc)` — "what would 2026-architects have done differently looking at the original design through 2026 eyes?" Distinct from PERSRETRO (persona-retrospective from 2029) and DEVRETRO (external-critic retrospective from 2029).
+2. `(structural × post-hoc)` — "restructure-from-archaeology" — re-organise the artifact set as if discovering it fresh; what natural structure emerges that the current layout obscures?
+3. `(compression × post-hoc)` — "compress prior decisions into a minimal coherent narrative; what survives compression?" The compression-of-history complement to SECDISTILL's compression-of-current-state.
+4. **Recursive META-META-** — audit META-'s 19 corrections from `corrections.md` themselves. Per user direction "don't consider the QD matrix as final," META should not exempt itself from audit.
+
+Per user direction, the audit terminates on signal-exhaustion (no genuinely new themes/findings emerging), NOT on pre-defined ACGR threshold. Three consecutive waves at >85% ACGR (5: ~91%, 6: ~105%, 7: ~87%) means signal continues. Wave 7 produced 72 raw findings (18/stream balanced) — continuation is the default.
 
 Steps that were DONE in this session (this branch):
-- TASK-0042 (commit `13f5401`): Wave 5 architecture audit (4 streams, 84 raw findings).
-- TASK-0043 (commit `067eefc`): META- corrections log + findings-index Wave 4 + 5 catch-up.
-- TASK-0044 (commit `9ae2a6a`): Wave-5 thematic consolidation (~25 new themes), qd-triage §3.5, ACGR ~91% ± 16%.
-- TASK-0045 (commit `cd45777`): Wave 6 architecture audit (4 streams, 75 raw findings).
-- TASK-0046 (commit `bd702ea`): Wave-6 thematic consolidation (~29 new themes), qd-triage §3.6, ACGR ~105% ± 21%.
-- TASK-0047 (latest commit): Wave 7 architecture audit (4 streams, 72 raw findings).
+- TASK-0042 (`13f5401`): Wave 5 architecture audit (4 streams, 84 raw findings).
+- TASK-0043 (`067eefc`): META- corrections log + findings-index Wave 4 + 5 catch-up.
+- TASK-0044 (`9ae2a6a`): Wave-5 thematic consolidation (~25 new themes), ACGR ~91% ± 16%.
+- TASK-0045 (`cd45777`): Wave 6 architecture audit (4 streams, 75 raw findings).
+- TASK-0046 (`bd702ea`): Wave-6 thematic consolidation (~29 new themes), ACGR ~105% ± 21%.
+- TASK-0047 (`48097c3`): Wave 7 architecture audit (4 streams, 72 raw findings).
+- TASK-0048 (latest commit): Wave-7 thematic consolidation (~24 new themes), ACGR ~87% ± 17%.
 
 Pending work (NOT done in this session):
-- TASK-0048: Wave-7 thematic consolidation in `consolidated.md`; qd-triage.md §3.7 per-method σ × κ for SCENFUT/STRUCTFUT/DEVRETRO/ATTFUT; ACGR re-measurement after Wave 7.
-- TASK-0049+: Wave 8 spawn (cells per Wave-8+ candidates above) per "keep going."
-- Per-theme constituent-finding listing for Waves 4-7 in `findings-index.md` (currently per-stream-tally-only; stale by ~125 themes).
-- Full greedy-ablation σ × κ measurement (current approximations use sole-source per §2.3).
-- `|meaningful_cells|` formal enumeration (currently ~55 ± 10; almost certainly under-estimated given empirical theme density — the cell map needs to grow).
-- Severity recalibration of STAKE-CRIT-001 → STAKE-SER-001 per `corrections.md` META-SER-012 in `findings/STAKE-findings.md`.
-- **Methodology codification ADR drafting** (now structurally urgent — convergence-threshold and signal-exhaustion-operationalisation questions are blocking the "joint consolidation" decision; should be drafted in parallel with continued waves, not after).
+- TASK-0049: Wave 8 spawn + persistence.
+- TASK-0050+: Wave 8 consolidation; Wave 9 spawn; etc., per "keep going."
+- Per-theme constituent-finding listing for Waves 4-7 in `findings-index.md` (stale by ~149 themes).
+- Project-overlay-semantics theme ID assignment (3-way co-surface from Wave 7: SCENFUT-CRIT-007 + STRUCTFUT-PROC-018 + ATTFUT-PROC-016).
+- Full greedy-ablation σ × κ measurement.
+- `|meaningful_cells|` formal enumeration (currently ~55 ± 10; almost certainly under-estimated — empirical theme density implies cell denominator should grow).
+- Severity recalibration of STAKE-CRIT-001 → STAKE-SER-001 per `corrections.md` META-SER-012.
+- **Methodology codification ADR drafting** — STRUCTURALLY URGENT. Three consecutive waves at >85% ACGR make the convergence-threshold question a hard blocker. The methodology ADR's §6 (Measurement discipline) should adopt DEVRETRO-CRIT-010's "meta-gate fallacy" terminology + define operational signal-exhaustion criterion + revise the convergence threshold given the empirical cell-theme-density data.
 
 **Second action (whichever audit runs next):** apply the QD framework. Score each new stream on σ × κ; place into the cell map (qd-triage.md §4); update ACGR. **Do NOT re-run COURSE, CHECK, EDIT, or VALID2** unless the user explicitly overrides — they are Tier-D candidates pending implementation-audit confirmation of their κ ≈ 0 status.
 

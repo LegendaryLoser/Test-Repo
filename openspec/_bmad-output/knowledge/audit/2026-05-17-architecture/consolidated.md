@@ -1430,6 +1430,86 @@ Methods added per user direction ("keep going wave after wave; each cell is impo
 - **Signal-exhaustion check (per user-direction terminal condition):** has signal exhausted? NO. Wave 6 produced 29 new themes from 4 streams (~7 new themes/stream). Compared to Wave 5's ~25 / 4 = ~6 new themes/stream (excluding META-), Wave 6 was *more* productive per stream, not less. Continuation is the default action.
 - **Cell-targeting recommendation for Wave 7+:** the remaining (Lens × Temporal) empty cells per `qd-triage.md` §4.1 (after Waves 5-6 fills): `(attitudinal × post-hoc)`, `(attitudinal × forward-looking)`, `(structural × post-hoc)`, `(structural × forward-looking)`, `(scenario × forward-looking)`, `(contrarian × post-hoc)`, `(compression × post-hoc)`. Plus the candidate 5th axis (meta) where META- demonstrated value — a recursive META-META- stream auditing META-'s own corrections is a defensible target. Plus potential 6th-axis methods that may emerge (per "don't consider the QD matrix as final").
 
+## Wave 7 supplement (4 streams, complete)
+
+Methods added per user direction (continuing "keep going wave after wave"): 18-month-forward scenario unfold (`SCENFUT-`, opus, general-purpose with custom prompt), forward structural-growth-pressure review (`STRUCTFUT-`, opus, general-purpose), 2029-external-critic contrarian retrospective (`DEVRETRO-`, opus, general-purpose), attitudinal-forward discipline-additions review (`ATTFUT-`, opus, general-purpose). All 4 use general-purpose subagents with custom prompts (no BMAD skill maps to these specific cells).
+
+**Wave 7 raw findings: 72 total** (SCENFUT 18, STRUCTFUT 18, DEVRETRO 18, ATTFUT 18). Most balanced wave to date — exactly 18 per stream. **All 4 architecture-defect; no corpus-audit stream.**
+
+**New themes from Wave 7 (~24 added).** ID scheme continues into sextuple-letters after THEME-ZZZZZ (next: AAAAAA, BBBBBB, ...).
+
+### From SCENFUT- (forward scenario unfold, ~7 new themes)
+
+- **THEME-AAAAAA — ADR-introduction procedure** (SCENFUT-CRIT-001): no rule for how ADR-N+1 gets allocated, accepted, or integrated; REQ-ARCH-0002 hard-codes ADR-0001..0008.
+- **THEME-BBBBBB — Lint threshold policy direction (ratchet vs recalibration)** (SCENFUT-PROC-006): no policy for whether the anti-aliasing threshold tightens or loosens under realistic drift; choice will be ad-hoc precedent.
+- **THEME-CCCCCC — Shared adapter / package ownership scoping** (SCENFUT-PROC-009): `packages/shared-ts/adapters/` has no rule for project-local adapter additions; fork-shared-vs-shoehorn-into-shared dilemma forced.
+- **THEME-DDDDDD — Cross-provider test tier semantics** (SCENFUT-PROC-012): existing 4-tier table has no slot for cross-provider comparison tests; ADR-0007 §3 assertion forms don't cover comparative cross-system assertions.
+- **THEME-EEEEEE — Matrix incremental-rebuild path** (SCENFUT-CRIT-016): ADR-0005 §2 mandates deterministic full-source rebuild; scales linearly with history; no "matrix epoch" or journal compaction; pre-commit hook degrades unbounded.
+- **THEME-FFFFFF — Cache-term disambiguation** (SCENFUT-SER-017): "cache" overloaded across prompt-cache (ADR-0007 §5) and matrix-as-cache (ADR-0005 §2); no shared telemetry surface; no glossary.
+- **THEME-GGGGGG — Journal retention / compaction policy** (SCENFUT-PROC-018, ATTFUT-PROC-017 confirms): gitignored append-only-source-of-truth grows unbounded; ADR-0005 §8 worst-case assumes matrix has absorbed but no compaction blessed.
+
+### From STRUCTFUT- (forward structural-growth, ~10 new themes)
+
+- **THEME-HHHHHH — ADR directory partitioning** (STRUCTFUT-CRIT-001): flat `decisions/` at 50+ ADRs collapses; needs thematic sub-partition + `decisions/INDEX.yaml`.
+- **THEME-IIIIII — Amendment-log structured format** (STRUCTFUT-CRIT-002): markdown-table-as-log breaks past ~6 amendments; needs `amendments/<AMD-NNNN>.md` sibling files or YAML frontmatter array.
+- **THEME-JJJJJJ — Gate inventory scaling format** (STRUCTFUT-SER-005): ADR-0008 §1 flat-table breaks past ~60 entries; needs `gates/INDEX.yaml` + per-gate stubs.
+- **THEME-KKKKKK — CHG directory sharding** (STRUCTFUT-SER-006): flat `openspec/changes/<CHG>/` past 500 entries becomes unusable; needs year-prefixed or 500-bucket sharding.
+- **THEME-LLLLLL — Cross-reference graph artifact** (STRUCTFUT-SER-007): no `xref-graph.yaml` derived artifact; navigation cost O(grep) over whole corpus at scale.
+- **THEME-MMMMMM — Parallel vendored-substrate slot** (STRUCTFUT-SER-008): `_bmad/` single-version pinning prevents v7-alongside-v6 testing; needs `_bmad/<version>/` or `_bmad-staging/` slot.
+- **THEME-NNNNNN — Methodology codification structural home** (STRUCTFUT-SER-009): queued methodology ADR will exceed single-file scale; needs `methodology/` directory with `rules/`, `calibration/`, `tests/`.
+- **THEME-OOOOOO — Phase-stream flexibility (numbering / branching)** (STRUCTFUT-SER-010, PROC-017): `PHASE-N` sequence-numbered with no parallel/branching slot; needs `PHASE-<MAJOR>.<MINOR>` or `PHASE-<N>-<STREAM>`.
+- **THEME-PPPPPP — ADR clustering artifact** (STRUCTFUT-PROC-012): dependency graph among ADRs is implicit; needs `CLUSTERS.yaml` or frontmatter `cluster:` keys.
+- **THEME-QQQQQQ — ID-padding scale (4-digit breaks at 10K)** (STRUCTFUT-PROC-013): CHG/TASK/EPIC/STORY use 4-digit padding; will silently break past 9999.
+
+### From DEVRETRO- (2029-external-critic retrospective, ~5 new themes)
+
+- **THEME-RRRRRR — Hybrid-fixture tier (recorded + probe)** (DEVRETRO-CRIT-003): ADR-0007 §2 ban on fixtures conflated system property with test property; hybrid tier (regression-locking fixtures + smaller real probe) was rejected without consideration.
+- **THEME-SSSSSS — Checkpoint refs namespace** (DEVRETRO-SER-009): `Stop`/`SessionEnd` checkpoint commits in main polluted git history (4:1 ratio); should live in `refs/checkpoints/` separate refs namespace, not main.
+- **THEME-TTTTTT — Substrate-first vs vertical-slice project structure** (DEVRETRO-SER-014): "no product content until PHASE-5" = scoping cowardice; 14 months of substrate with zero product workload to falsify it; canonical 2029-mistake nomination.
+- **THEME-UUUUUU — Defect-frequency-vs-design-attention misalignment** (DEVRETRO-CRIT-017): container-reclaim resilience (single-digit incidents/year) got 4 ADR-0005 §8 table rows; spec rot + test fidelity (daily problems) got ergonomics designed for crash recovery.
+- **THEME-VVVVVV — Substrate decommissioning provision** (DEVRETRO-PROC-018): no ADR on how to retire a phase, deprecate a tool, migrate off OpenSpec; append-only forever + monotonic phase ordering means substrate cannot be torn down.
+
+### From ATTFUT- (forward attitudinal additions needed, ~2 new themes; ATTFUT mostly reinforces by nature of "what additions are required")
+
+- **THEME-WWWWWW — Gate lifecycle (deprecate / archive / supersede)** (ATTFUT-SER-013): no rule for gate removal; REQ-CI-* covering deprecated gates orphan in matrix.
+- **THEME-XXXXXX — TEA integration surface** (ATTFUT-PROC-018): `tools/tea/` named 3 places but never spec'd; PHASE-1 §5 "skeleton" will become de-facto specification.
+
+### Reinforcements (the remaining ~48 Wave-7 architecture-defect findings)
+
+Mapping (compact; full detail in per-stream findings files):
+
+- **THEME-A..K (Waves 1-2 cluster)** reinforced by: SCENFUT-CRIT-004/SER-005 (quarterly threshold, THEME-Q), DEVRETRO-SER-006 (phase ordering, THEME-K), ATTFUT-CRIT-003 (Phase-0 re-gate, THEME-K), STRUCTFUT-PROC-011 (P1 violation in duplicate amendment-discipline prose, THEME-L), ATTFUT-CRIT-004 (verbatim equality lint, THEME-L + THEME-N).
+- **THEME-X (append-only spec calcification)** reinforced by DEVRETRO-CRIT-004 (institutionalised spec rot framing).
+- **THEME-AAA-JJJ (Wave-4 STAKE security cluster)** reinforced by ATTFUT-CRIT-001 (credentials ADR), ATTFUT-SER-009 (cost-budget kill-switch).
+- **THEME-CCC (SRE/ops, Wave-4)** reinforced by SCENFUT-SER-014/PROC-015 (incident response), ATTFUT-SER-008 (observability ADR), ATTFUT-SER-012 (general rollback), DEVRETRO-PROC-016 (cost/throughput/operability).
+- **THEME-III (vendor lock-in, Wave-4)** reinforced by SCENFUT-CRIT-010/SER-011/PROC-012 (multi-provider blocked), DEVRETRO-CRIT-005 (chokepoint vs capability registry).
+- **THEME-FFFF (hook sandboxing, Wave-5)** reinforced by DEVRETRO-CRIT-007 (zero security primitives + meta-gate vacuously satisfied).
+- **THEME-IIII (threat model, Wave-5)** reinforced by DEVRETRO-CRIT-007.
+- **THEME-DDDD/GGGGG (CHG lifecycle/schema, Wave-5/6)** reinforced by SCENFUT-SER-002 (ADR acceptance ceremony) + ATTFUT-SER-010.
+- **THEME-IIIII (domain registry, Wave-6)** reinforced by STRUCTFUT-SER-004.
+- **THEME-JJJJJ (CHG audit invocation, Wave-6)** reinforced by SCENFUT-PROC-003 (audit ADR-NNNN missing).
+- **THEME-QQQQ (trailer semantic vs syntactic, Wave-6)** reinforced by SCENFUT-CRIT-013.
+- **THEME-NNNNN (developer-onboarding credentials, Wave-6)** reinforced by ATTFUT-CRIT-001.
+- **THEME-OOOO (checkpoint exemption registry, Wave-5)** reinforced by ATTFUT-CRIT-005 (gate severity classification) + ATTFUT-PROC-015.
+- **THEME-OOOOO (principle absolutism cost, Wave-6 PERSRETRO)** reinforced by DEVRETRO-CRIT-002 (no-mock = test theatre, sharper external framing) + DEVRETRO-PROC-015 (principles as loyalty test).
+- **THEME-PPPP (matrix rebuilder silent overwrite, Wave-6)** related to THEME-EEEEEE (Wave-7 SCENFUT incremental-rebuild) at the algorithmic level.
+- **THEME-QQQQQ (red-first granularity, Wave-6 PERSRETRO)** reinforced by DEVRETRO-CRIT-008 (red-first as theatre, external framing).
+- **THEME-SSSS (promotion-direction symmetry, Wave-6)** reinforced by DEVRETRO-SER-012 (`_bmad-output/` as parallel SoT), ATTFUT-SER-006 (promotion procedure spec), STRUCTFUT-PROC-014 (staging sharding).
+- **THEME-UUUU (amendment-vs-supersession ambiguity, Wave-5)** reinforced by STRUCTFUT-CRIT-003 (threshold) + DEVRETRO-PROC-011 (8-amendment ADR unread) + ATTFUT-CRIT-002 (meta-methodology ADR) + ATTFUT-SER-014 (amendment-authoring procedure) + STRUCTFUT-PROC-015 (frontmatter amendment_count).
+- **THEME-XXXX (amendment overlay structural pattern, Wave-6 STRUCTGOV)** reinforced by STRUCTFUT-CRIT-002 (markdown-table-as-log) + DEVRETRO-PROC-011.
+- **THEME-ZZZZZ (parallel-convention detector, Wave-6 PERSRETRO)** reinforced by ATTFUT-SER-011 (implementation) + DEVRETRO-CRIT-013 (P5 blocks adaptation).
+- **THEME-C (gate-coverage syntactic, Wave-1)** reinforced by DEVRETRO-CRIT-010 (canonical "meta-gate fallacy" formulation — extends META-CRIT/SER attribution from corrections.md).
+- **STRUCTFUT-PROC-018 + SCENFUT-CRIT-007 + ATTFUT-PROC-016 — project overlay semantics** form a 3-way co-surface on a likely new theme not previously consolidated; ID assignment deferred.
+
+**Wave 7 ACGR (preliminary, sole-source approximation):**
+
+- New (cell, theme) pairs added by Wave 7: ~24 new themes × ~2 cells avg = ~48 new (cell, theme) pairs.
+- Cumulative archive after Wave 7: ~200 (Wave 6) + ~48 (Wave 7) ≈ **~248**.
+- ACGR = 48 / (55 ± 10) = **~87% ± 17%** (preliminary, sole-source approximation).
+- **Interpretation:** Wave 7's ACGR is slightly *lower* than Wave 6's (~105%) but still well above the 5% terminal threshold. The drop is partly because ATTFUT and DEVRETRO have higher reinforcement rates than Wave 6 streams (they're complementing existing themes with sharper framings rather than opening fully new ones), and partly because SCENFUT/STRUCTFUT opened themes in adjacent cells to Wave 5/6 fills (some overlap). Cells continue to be theme-dense; methods admitted by cell-fill continue to produce sole-source themes. Signal has NOT exhausted.
+- **Three consecutive waves at >85% ACGR** (Wave 5: ~91%, Wave 6: ~105%, Wave 7: ~87%) — the convergence threshold from the original projection (ACGR < 5% for two consecutive waves) is structurally unachievable at the current per-wave new-theme rate. Either the `|meaningful_cells|` denominator is severely under-estimated, OR the terminal threshold itself must be revised, OR the audit accepts higher-residual-κ termination on cell-occupancy + signal-exhaustion criteria.
+- **Wave 8 cell candidates** (per `qd-triage.md` §4.1 remaining empty cells + user direction "each cell is important"): `(attitudinal × post-hoc)` "what would past-architects in 2026 have done differently looking at the original design through 2026 eyes"; `(structural × post-hoc)` "restructure-from-archaeology" — re-organise the artifact set as if discovering it fresh; `(compression × post-hoc)` "compress prior decisions into a minimal coherent narrative; what survives compression?"; recursive **META-META-** stream auditing META-'s 19 corrections from corrections.md (per user direction "don't consider the QD matrix as final" — META should not exempt itself from audit).
+
 ## COMPOSITE-V2 status after Wave 4
 
 | Gate | Status |

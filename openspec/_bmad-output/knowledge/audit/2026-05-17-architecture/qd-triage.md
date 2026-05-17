@@ -237,6 +237,24 @@ Wave 6 continued the QD admission rule, with cell-selection mixing the 2 remaini
 
 **Wave 6 tier summary:** **4 Tier A, 0 Tier B, 0 Tier C, 0 Tier D.** Same pattern as Wave 5 — cell-targeted admission produces Tier-A streams by construction. Total Wave-6 new sole themes: 29 (across 4 streams). Compression-lens Tier-A gap from §7.4 is conditionally resolved by SECDISTILL's high σ in cell `(compression × current × derivative × security/ops)` — DISTILL still occupies `(compression × current × derivative × narrative)` at Tier B, but the cell-row now has at least one Tier-A occupant for the highest-importance Axis-D dimension.
 
+### 3.7 Wave 7 — 4 streams (remaining forward + post-hoc Lens × Temporal cells)
+
+Wave 7 continued cell-targeted admission per user direction. Targets: the 4 remaining forward-or-post-hoc (Lens × Temporal) cells from §4.1 not yet filled.
+
+| # | Stream | Model | Method | QD signature (Lens, Temporal, Decomp, Severity) | Raw findings | σ (est.) | Themes contributed | κ (sole / co) | Tier |
+|---|---|---|---|---|---|---|---|---|---|
+| 45 | `SCENFUT-` | opus | scenario-unfold forward 18-month | (scenario, forward, holistic, blocking + governance + security/ops) | 18 | 0.80 | sole on AAAAAA-GGGGGG (7 new); reinforced THEME-Q/K/CCC/III/QQQQ/JJJJJ + project-overlay co-surface with STRUCTFUT/ATTFUT | **7 sole + co** | **A** (only scenario-forward method; first forward-scenario admission) |
+| 46 | `STRUCTFUT-` | opus | editorial-review-structure forward-growth-pressure | (structural, forward, holistic, governance + cost/value) | 18 | 0.85 | sole on HHHHHH-QQQQQQ (10 new structural-forward themes); reinforced THEME-L/M/N/X/XXXX/UUUU/IIIII/SSSS | **10 sole** | **A** (only structural-forward method) |
+| 47 | `DEVRETRO-` | opus | advanced-elicitation-devils-advocate retrospective-from-2029 | (contrarian, post-hoc, holistic, axis-spanning) | 18 | 0.85 | sole on RRRRRR-VVVVVV (5 new); reinforced THEME-C/X/K/AAA/III/CCC/IIII/FFFF + DEVRETRO-CRIT-010 reformulates META's gate-coverage-tautology as canonical "meta-gate fallacy" | **5 sole + 13 reinforce** | **A** (only contrarian-post-hoc method; external-critic complement to PERSRETRO's ego-honest internal retrospective) |
+| 48 | `ATTFUT-` | opus | attitudinal-review forward-additions-needed | (attitudinal, forward, holistic, governance + security/ops + cost/value) | 18 | 0.80 | sole on WWWWWW-XXXXXX (2 new); 16 of 18 findings explicitly propose new ADRs/REQs/gates by nominal ID (e.g., "ADR-0009 credentials lifecycle"); ATTFUT functions as the audit's *resolution proposer*, not pure defect-discoverer | **2 sole + 16 nominate** | **A** (only attitudinal-forward method; structurally complementary to ATT/IND current-state attitudinal) |
+
+**Wave 7 tier summary:** **4 Tier A, 0 Tier B, 0 Tier C, 0 Tier D.** Same pattern as Waves 5 + 6. Total Wave-7 new sole themes: ~24 (across 4 streams; some co-surface across SCENFUT/STRUCTFUT/ATTFUT on project-overlay semantics).
+
+**Notes:**
+- ATTFUT's method shape — propose-additions-needed rather than discover-defects — is structurally novel. Its 16 nomination-findings (ADR-0009..0017 + supporting REQs and gates) overlap heavily with prior themes' Recommended-CHG sections but consolidate them into a single forward-looking ADR-shopping-list. The methodology codification ADR should decide whether "proposes-additions" is a 4th attitudinal sub-type or its own Axis F dimension.
+- DEVRETRO's "meta-gate fallacy" formulation (DEVRETRO-CRIT-010) is canonical-shape — it makes META-/GOVDEV's earlier gate-coverage-tautology findings the textbook instance of a broader pattern. The methodology codification ADR should adopt this terminology.
+- Three streams (SCENFUT, STRUCTFUT, ATTFUT) co-surfaced project-overlay semantics as an issue. This is a single theme being independently rediscovered by three lens-temporal combinations — a strong κ signal (under greedy ablation, removing any of the three still leaves the theme; the cross-cell triangulation makes it robust).
+
 **Notes:**
 - All σ estimates use the sole-theme-membership approximation per §2.3; greedy ablation deferred to methodology ADR. PERSRETRO's σ (0.85) is high because its findings are reflectively-anchored (each cites a specific 2026 decision + a 2029 consequence) — the actionability filter is satisfied with margin.
 - PERSRETRO is the first stream where some findings (e.g., PERSRETRO-SER-006 "hooks outside transactions" hindsight) require 3 years of operational data that the 2026 architecture cannot reasonably have. These are PROC-class regrets, not architectural defects; severity recalibration deferred to a future pass.
@@ -471,6 +489,7 @@ Computing `archive(W)` for each wave, where archive elements are distinct (cell,
 | 4 | +8 | 17 themes × ~5 cells = ~25 pairs (STAKE+COUNTER opened (persona, forward) and (contrarian, axis-spanning) cells) | ~92 | 25/55 = **~45%** |
 | 5 | +4 | ~25 themes × ~2 cells avg = ~50 pairs (GOV/GOVDEV opened (attitudinal/contrarian × governance-focused); SEC opened (persona × security/ops × holistic) with theme-density 10 — high; META invokes 5th axis) | ~142 | 50/55 = **~91% ± 16%** (preliminary, sole-source approximation; see Wave-5 supplement in `consolidated.md`) |
 | 6 | +4 | ~29 themes × ~2 cells avg = ~58 pairs (STRUCTGOV opened (structural × governance) with theme-density 6; SECDISTILL opened (compression × security/ops) sparsely with 1 sole + 15 reinforce; SCENNOW opened (scenario × current × holistic) with theme-density 10; PERSRETRO opened (persona × post-hoc × holistic) with theme-density 12) | ~200 | 58/55 = **~105% ± 21%** (preliminary, sole-source approximation; see Wave-6 supplement in `consolidated.md`) |
+| 7 | +4 | ~24 themes × ~2 cells avg = ~48 pairs (SCENFUT opened (scenario × forward) with theme-density 7; STRUCTFUT opened (structural × forward) with theme-density 10; DEVRETRO opened (contrarian × post-hoc) sparsely with 5 sole + 13 reinforce; ATTFUT opened (attitudinal × forward) sparsely with 2 sole + 16 nominate) | ~248 | 48/55 = **~87% ± 17%** (preliminary, sole-source approximation; see Wave-7 supplement in `consolidated.md`) |
 
 **Interpretation under ACGR:**
 - Wave 4's 45% ACGR is identical magnitude to Wave 2's, but the *cause is structurally different*. Wave 2 opened new (lens × temporal) cells via new methods (RED forward/security, RETRO post-hoc/governance). Wave 4 opened (persona × forward, exhaustive × security/ops + cost/value) via STAKE, and (contrarian × derivative × axis-spanning) via COUNTER.
@@ -482,10 +501,10 @@ Computing `archive(W)` for each wave, where archive elements are distinct (cell,
 
 ### 7.2 Comparison to COMPOSITE-V2 Gate 6
 
-| Metric | Wave 2 | Wave 3 | Wave 4 | Wave 5 | Wave 6 |
-|---|---|---|---|---|---|
-| COMPOSITE-V2 Gate 6 (marginal novelty) | ~50% | ~30-37% | ~46% (regression) | not re-measured (replaced by ACGR) | not re-measured |
-| ACGR | ~45% | ~22% | ~45% | ~91% ± 16% (preliminary) | ~105% ± 21% (preliminary) |
+| Metric | Wave 2 | Wave 3 | Wave 4 | Wave 5 | Wave 6 | Wave 7 |
+|---|---|---|---|---|---|---|
+| COMPOSITE-V2 Gate 6 (marginal novelty) | ~50% | ~30-37% | ~46% (regression) | not re-measured (replaced by ACGR) | not re-measured | not re-measured |
+| ACGR | ~45% | ~22% | ~45% | ~91% ± 16% (preliminary) | ~105% ± 21% (preliminary) | ~87% ± 17% (preliminary) |
 
 The two metrics are roughly correlated but ACGR has a defensible terminal state (the archive is finite-bounded by `|meaningful_cells|`), while marginal novelty does not. **Recommendation: replace COMPOSITE-V2 Gate 6 with ACGR in the methodology ADR.** Wave-5's high ACGR is consistent with the QD admission principle (cell-targeted methods should produce high ACGR) — it indicates the audit is still discovering, not converging.
 
