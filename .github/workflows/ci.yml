@@ -1,6 +1,7 @@
 # CI — PR gate.
-# Job declarations only in PHASE-0; steps are TODO placeholders. Real steps
-# land in PHASE-1 (spec-lint) and PHASE-2 (trace gates).
+# spec-lint job: real PHASE-1 invocations (CHG-0013).
+# trace-gates, unit-integration, phase-exit: still PHASE-0 placeholders;
+#   become real in PHASE-2 / PHASE-3+.
 # See: openspec/architecture/decisions/ADR-0008-ci-gates-and-phase-exits.md
 
 name: ci
@@ -15,8 +16,31 @@ jobs:
     name: spec-lint (PHASE-1)
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v4
-      - run: 'echo "TODO PHASE-1: install + run tools/spec_lint; gates: openspec-validate, top-level-allowlist, bmad-direct-reference, gas-global-outside-adapter, req-id-format, req-id-immutable, prose-xref-banned, xref-resolves, compound-requirement-detector, anti-aliasing, spec-frontmatter-valid, index-up-to-date, req-append-only, mock-in-repo-banned, direct-anthropic-import-banned, stochastic-tier-bans"; exit 0'
+      - name: Checkout
+        uses: actions/checkout@v4
+        with:
+          # Full history required by history-based rules (req-id-immutable,
+          # req-append-only) and by git log probes in test_phase0.
+          fetch-depth: 0
+
+      - name: Setup Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+          cache: pip
+          cache-dependency-path: pyproject.toml
+
+      - name: Install dev dependencies
+        run: pip install -e ".[dev]"
+
+      - name: openspec-validate (every spec_lint markdown + code rule)
+        run: python -m tools.spec_lint validate openspec
+
+      - name: top-level-allowlist (REQ-ARCH-0001)
+        run: python -m tools.spec_lint check-layout
+
+      - name: pytest (unit + property + mutation + architecture invariants + annotation discipline)
+        run: pytest tools/ -v
 
   trace-gates:
     name: trace-gates (PHASE-2)
