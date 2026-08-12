@@ -1,0 +1,928 @@
+<!doctype html>
+<meta charset="utf-8">
+<style>html,body{margin:0;background:#000}canvas{display:block}</style>
+<canvas id="c" width="1920" height="1080"></canvas>
+<script>
+'use strict';
+// ============================================================
+// "Blue Sphere Shot" — a fully deterministic cinematic render.
+// One shot: charge -> pregnant pause -> launch -> parallax chase
+// -> time dilation -> slo-mo impact -> snap-back shatter -> settle.
+// Everything is a function of frame index; renderFrame(i) steps a
+// fixed-timestep simulation, so re-renders are pixel-identical.
+// ============================================================
+
+const W = 1920, H = 1080, FPS = 60, DT = 1 / FPS;
+const cv = document.getElementById('c'), ctx = cv.getContext('2d');
+
+window.TOTAL_FRAMES = 830;
+window.MARKERS = {};
+
+// ---------- deterministic rng / noise ----------
+function mulberry32(a) {
+  return function () {
+    a |= 0; a = a + 0x6D2B79F5 | 0;
+    let t = Math.imul(a ^ a >>> 15, 1 | a);
+    t = t + Math.imul(t ^ t >>> 7, 61 | t) ^ t;
+    return ((t ^ t >>> 14) >>> 0) / 4294967296;
+  };
+}
+const R = mulberry32(1337);
+const NOISE_N = 4096;
+const noiseTab = new Float32Array(NOISE_N);
+for (let i = 0; i < NOISE_N; i++) noiseTab[i] = R() * 2 - 1;
+function noise1(t, chan) {           // smooth value noise, channel-offset
+  const x = t + chan * 517.31;
+  const i0 = Math.floor(x), f = x - i0;
+  const a = noiseTab[((i0 % NOISE_N) + NOISE_N) % NOISE_N];
+  const b = noiseTab[(((i0 + 1) % NOISE_N) + NOISE_N) % NOISE_N];
+  const u = f * f * (3 - 2 * f);
+  return a + (b - a) * u;
+}
+const clamp = (v, a, b) => v < a ? a : v > b ? b : v;
+const lerp = (a, b, t) => a + (b - a) * t;
+const sstep = (t) => { t = clamp(t, 0, 1); return t * t * (3 - 2 * t); };
+const easeInQ = (t) => t * t;
+
+// ---------- world constants ----------
+const ATT = { x: 0, y: 6, z: 0 };          // attacker
+const MUZ = { x: 0, y: 6, z: 3.2 };        // muzzle / orb spawn
+const ENE = { x: 0, y: 6, z: 220 };        // enemy center
+const ENE_R = 5;
+const SPH_R = 1.05;                        // sphere radius in flight
+const CONTACT_Z = ENE.z - (ENE_R + SPH_R); // 213.95
+
+// timeline (real seconds)
+const T_CHARGE0 = 2.0;
+const T_PAUSE0 = 5.2;
+const T_LAUNCH = 5.95;
+const LAUNCH_RAMP = 0.4;                   // s to reach full speed
+const FULL_SPEED = 92;                     // u/s
+const DIL_TRIG_Z = 189;                    // start time dilation here
+const DIL_RAMP = 0.5;                      // s (real) to reach min timescale
+const TS_MIN = 0.045;
+const SLOMO_WORLD = 0.075;                 // world-s of contact held in slo-mo
+const SNAP_RAMP = 0.14;                    // s (real) back to full speed
+
+// ---------- mutable state ----------
+let frame = -1;
+let t = 0;                 // real time
+let wt = 0;                // world (simulation) time
+let ts = 1;                // current timescale
+let sphere = { x: MUZ.x, y: MUZ.y, z: MUZ.z, speed: 0, alive: false, contacted: false };
+let tDil = -1, tContact = -1, wContact = -1, tSnap = -1, wSnap = -1;
+let contactPt = null;
+let pulsePhase = 0;
+let shakeAmp = 0;
+let flash = 0;             // full-screen flash 0..1
+let trail = [];
+let fragments = null;
+let sparks = [];
+let camP = { x: 30, y: 15, z: -34 };  // smoothed camera pos (used in chase)
+let camSmoothing = false;
+
+// ---------- charge particles (precomputed schedules) ----------
+const CHG_N = 300;
+const chg = [];
+{
+  const r = mulberry32(777);
+  for (let i = 0; i < CHG_N; i++) {
+    const th = r() * Math.PI * 2, ph = Math.acos(2 * r() - 1);
+    chg.push({
+      th, ph,
+      rad: 10 + r() * 9,
+      t0: T_CHARGE0 + r() * (T_PAUSE0 - T_CHARGE0 - 0.8),
+      dur: 0.55 + r() * 0.45,
+      spin: (r() - 0.5) * 5,
+    });
+  }
+}
+
+// ---------- ambient dust motes ----------
+const MOTES = [];
+{
+  const r = mulberry32(4242);
+  for (let i = 0; i < 90; i++) {
+    MOTES.push({
+      x: (r() - 0.5) * 44, y: 1 + r() * 20, z: -22 + r() * 70,
+      vx: (r() - 0.5) * 0.4, vy: (r() - 0.5) * 0.25, vz: (r() - 0.5) * 0.4,
+    });
+  }
+}
+
+// ---------- speed dust (chase streaks) ----------
+const SDUST = [];
+{
+  const r = mulberry32(999);
+  for (let i = 0; i < 90; i++) {
+    SDUST.push({ lx: (r() - 0.5) * 34, ly: 1.5 + r() * 19, base: r() * 160 });
+  }
+}
+
+// ---------- enemy geometry ----------
+const octVerts = [
+  [ENE_R, 0, 0], [-ENE_R, 0, 0], [0, ENE_R, 0], [0, -ENE_R, 0], [0, 0, ENE_R], [0, 0, -ENE_R]
+];
+const octEdges = [[0,2],[0,3],[0,4],[0,5],[1,2],[1,3],[1,4],[1,5],[2,4],[2,5],[3,4],[3,5]];
+const octFaces = [[0,2,4],[0,4,3],[0,3,5],[0,5,2],[1,4,2],[1,3,4],[1,5,3],[1,2,5]];
+
+// cracks: seeded random walks over the enemy surface, from the contact pole
+const CRACKS = [];
+{
+  const r = mulberry32(31415);
+  for (let c = 0; c < 8; c++) {
+    let d = [0.12 * (r() - 0.5), 0.12 * (r() - 0.5), -1];
+    let L = Math.hypot(...d); d = d.map(v => v / L);
+    const pts = [d.slice()];
+    for (let k = 0; k < 14; k++) {
+      d = [d[0] + (r() - 0.5) * 0.42, d[1] + (r() - 0.5) * 0.42, Math.min(0.25, d[2] + (r() - 0.5) * 0.30 - 0.03)];
+      L = Math.hypot(...d); d = d.map(v => v / L);
+      pts.push(d.slice());
+    }
+    CRACKS.push(pts);
+  }
+}
+const sparkRng = mulberry32(2718);
+
+// ============================================================
+// simulation step (fixed real dt, variable world dt via timescale)
+// ============================================================
+function step() {
+  frame++;
+  t = frame * DT;
+
+  // --- timescale state machine ---
+  if (tDil >= 0 && tSnap < 0) {
+    ts = lerp(1, TS_MIN, sstep((t - tDil) / DIL_RAMP));
+  } else if (tSnap >= 0) {
+    ts = lerp(TS_MIN, 1, sstep((t - tSnap) / SNAP_RAMP));
+  } else ts = 1;
+  const wdt = DT * ts;
+  wt += wdt;
+
+  // --- sphere flight ---
+  if (t >= T_LAUNCH && !sphere.contacted) {
+    sphere.alive = true;
+    const a = clamp((t - T_LAUNCH) / LAUNCH_RAMP, 0, 1);
+    sphere.speed = FULL_SPEED * easeInQ(a) + 2;
+    sphere.z += sphere.speed * wdt;
+    if (sphere.z >= DIL_TRIG_Z && tDil < 0) { tDil = t; MARKERS.tDil = t; }
+    if (sphere.z >= CONTACT_Z) {
+      sphere.z = CONTACT_Z;
+      sphere.contacted = true;
+      tContact = t; wContact = wt; MARKERS.tContact = t;
+      contactPt = { x: ENE.x, y: enemyY(), z: CONTACT_Z + SPH_R * 0.4 };
+      spawnSparks(130, 6, 28);
+    }
+  }
+  if (sphere.alive && !sphere.contacted) {
+    trail.push({ x: sphere.x, y: sphere.y, z: sphere.z });
+    if (trail.length > 26) trail.shift();
+  }
+
+  // --- snap back / shatter trigger ---
+  if (wContact >= 0 && tSnap < 0 && (wt - wContact) >= SLOMO_WORLD) {
+    tSnap = t; wSnap = wt; MARKERS.tSnap = t;
+    flash = 1.0;
+    shakeAmp = 1.6;
+    spawnFragments();
+    spawnSparks(190, 14, 46);
+  }
+
+  // --- launch moment ---
+  if (frame === Math.round(T_LAUNCH * FPS)) { flash = 0.75; shakeAmp = 0.6; MARKERS.tLaunch = t; }
+
+  // --- fragments / sparks physics (world time) ---
+  if (fragments) for (const f of fragments) {
+    f.px += f.vx * wdt; f.py += f.vy * wdt; f.pz += f.vz * wdt;
+    f.vy -= 3.2 * wdt;
+    const dr = Math.pow(0.985, wdt * 60);
+    f.vx *= dr; f.vy *= dr; f.vz *= dr;
+    f.rot += f.w * wdt;
+  }
+  for (const s of sparks) {
+    s.x += s.vx * wdt; s.y += s.vy * wdt; s.z += s.vz * wdt;
+    s.vy -= 2.0 * wdt;
+    s.life -= wdt;
+  }
+  sparks = sparks.filter(s => s.life > 0);
+
+  // --- motes drift ---
+  for (const m of MOTES) { m.x += m.vx * wdt; m.y += m.vy * wdt; m.z += m.vz * wdt; }
+
+  // --- orb pulse phase (accelerating heartbeat) ---
+  if (t >= T_CHARGE0 && t < T_LAUNCH) {
+    const p = clamp((t - T_CHARGE0) / (T_PAUSE0 - T_CHARGE0), 0, 1);
+    const f0 = 1.4 + 5.2 * p * p;
+    pulsePhase += Math.PI * 2 * f0 * DT;
+  }
+
+  // --- shake targets ---
+  let shakeTarget = 0;
+  if (t < T_CHARGE0) shakeTarget = 0.015;
+  else if (t < T_PAUSE0) shakeTarget = 0.02 + 0.09 * ((t - T_CHARGE0) / (T_PAUSE0 - T_CHARGE0));
+  else if (t < T_LAUNCH) shakeTarget = 0.004;                       // dead still
+  else if (tDil < 0) shakeTarget = 0.11;                            // chase rumble
+  else if (tSnap < 0) shakeTarget = 0.008;                          // slo-mo near still
+  else shakeTarget = 0.03;
+  shakeAmp += (shakeTarget - shakeAmp) * (1 - Math.exp(-2.8 * DT));
+  flash *= Math.exp(-14 * DT);
+}
+
+function enemyY() { return ENE.y + 0.15 * Math.sin(0.8 * wt); }
+
+function spawnSparks(n, v0, v1) {
+  for (let i = 0; i < n; i++) {
+    const th = sparkRng() * Math.PI * 2, ph = Math.acos(2 * sparkRng() - 1);
+    const v = v0 + sparkRng() * (v1 - v0);
+    const bias = -0.5 - sparkRng() * 0.9;   // spray back toward camera
+    let dx = Math.sin(ph) * Math.cos(th), dy = Math.sin(ph) * Math.sin(th), dz = Math.cos(ph) + bias;
+    const L = Math.hypot(dx, dy, dz); dx /= L; dy /= L; dz /= L;
+    sparks.push({
+      x: contactPt.x, y: contactPt.y, z: contactPt.z,
+      vx: dx * v, vy: dy * v, vz: dz * v,
+      life: 0.5 + sparkRng() * 1.3, life0: 0,
+      hue: sparkRng(),
+    });
+    sparks[sparks.length - 1].life0 = sparks[sparks.length - 1].life;
+  }
+}
+
+function spawnFragments() {
+  fragments = [];
+  const r = mulberry32(5555);
+  const rot = enemyRotM();
+  const ey = enemyY();
+  for (const face of octFaces) {
+    const vs = face.map(i => mulV(rot, octVerts[i]));
+    const M = [(vs[0][0]+vs[1][0]+vs[2][0])/3, (vs[0][1]+vs[1][1]+vs[2][1])/3, (vs[0][2]+vs[1][2]+vs[2][2])/3];
+    for (let k = 0; k < 3; k++) {
+      const A = vs[k], B = vs[(k+1)%3];
+      const cx = (A[0]+B[0]+M[0])/3, cy2 = (A[1]+B[1]+M[1])/3, cz = (A[2]+B[2]+M[2])/3;
+      const L = Math.hypot(cx, cy2, cz) || 1;
+      const sp = 9 + r() * 7;
+      const shrink = 0.72;
+      fragments.push({
+        px: ENE.x + cx, py: ey + cy2, pz: ENE.z + cz,
+        vx: cx / L * sp + (r()-0.5)*4, vy: cy2 / L * sp + 2.5*(r()-0.3), vz: cz / L * sp + 6 + r()*5,
+        a: [(A[0]-cx)*shrink, (A[1]-cy2)*shrink, (A[2]-cz)*shrink], b: [(B[0]-cx)*shrink, (B[1]-cy2)*shrink, (B[2]-cz)*shrink], m: [(M[0]-cx)*shrink, (M[1]-cy2)*shrink, (M[2]-cz)*shrink],
+        ax: r()*2-1, ay: r()*2-1, az: r()*2-1, w: 3 + r()*6, rot: 0,
+      });
+    }
+  }
+}
+
+// ---------- small vector helpers ----------
+function rotY(a){const c=Math.cos(a),s=Math.sin(a);return [c,0,s, 0,1,0, -s,0,c];}
+function rotX(a){const c=Math.cos(a),s=Math.sin(a);return [1,0,0, 0,c,-s, 0,s,c];}
+function mmul(A,B){const r=new Array(9);for(let i=0;i<3;i++)for(let j=0;j<3;j++){let s=0;for(let k=0;k<3;k++)s+=A[i*3+k]*B[k*3+j];r[i*3+j]=s;}return r;}
+function mulV(M,v){return [M[0]*v[0]+M[1]*v[1]+M[2]*v[2], M[3]*v[0]+M[4]*v[1]+M[5]*v[2], M[6]*v[0]+M[7]*v[1]+M[8]*v[2]];}
+function enemyRotM(){ return mmul(rotY(0.45 * wt), rotX(0.3 * wt + 0.5)); }
+function axisRot(p, ax, ay, az, ang) {  // Rodrigues
+  const L = Math.hypot(ax, ay, az) || 1; ax/=L; ay/=L; az/=L;
+  const c = Math.cos(ang), s = Math.sin(ang);
+  const dot = ax*p[0]+ay*p[1]+az*p[2];
+  return [
+    p[0]*c + (ay*p[2]-az*p[1])*s + ax*dot*(1-c),
+    p[1]*c + (az*p[0]-ax*p[2])*s + ay*dot*(1-c),
+    p[2]*c + (ax*p[1]-ay*p[0])*s + az*dot*(1-c),
+  ];
+}
+
+// ============================================================
+// camera
+// ============================================================
+function cameraRig() {
+  let P, T, F, roll = 0;
+  const cpt = contactPt || { x: 0, y: 6, z: CONTACT_Z };
+
+  if (t < T_CHARGE0) {
+    const e = sstep(t / T_CHARGE0);
+    P = { x: lerp(26, 11, e), y: lerp(12.5, 8.6, e), z: lerp(-30, -9, e) };
+    T = { x: 0, y: lerp(6.8, 6.2, e), z: lerp(60, 4, e) };
+    F = 1.25;
+  } else if (t < T_PAUSE0) {
+    const e = sstep((t - T_CHARGE0) / (T_PAUSE0 - T_CHARGE0));
+    P = { x: lerp(11, 5.2, e), y: lerp(8.6, 7.2, e), z: lerp(-9, -3.2, e) };
+    T = { x: 0, y: 6.1, z: MUZ.z };
+    F = lerp(1.25, 1.42, e);
+  } else if (t < T_LAUNCH) {
+    const e = (t - T_PAUSE0) / (T_LAUNCH - T_PAUSE0);
+    P = { x: 5.2, y: 7.2, z: -3.2 + 0.28 * e };   // barely-perceptible creep
+    T = { x: 0, y: 6.1, z: MUZ.z };
+    F = lerp(1.42, 1.5, e);
+  } else {
+    // chase rig (desired)
+    const wob = Math.sin((t - T_LAUNCH) * 1.9);
+    const chaseP = { x: sphere.x + 2.7 + 0.6 * wob, y: sphere.y + 1.7, z: sphere.z - 9.5 };
+    const chaseT = { x: sphere.x, y: sphere.y + 0.6, z: sphere.z + 6 };
+
+    if (tDil < 0) {
+      // blend from pause cam into chase over 0.38s, then lag-follow
+      const e = sstep((t - T_LAUNCH) / 0.38);
+      const des = { x: lerp(5.2, chaseP.x, e), y: lerp(7.2, chaseP.y, e), z: lerp(-2.92, chaseP.z, e) };
+      if (!camSmoothing) { camP = { x: 5.2, y: 7.2, z: -2.92 }; camSmoothing = true; }
+      const k = 1 - Math.exp(-7.5 * DT);
+      camP.x += (des.x - camP.x) * k; camP.y += (des.y - camP.y) * k; camP.z += (des.z - camP.z) * k;
+      P = { x: camP.x, y: camP.y, z: camP.z };
+      T = { x: lerp(0, chaseT.x, e), y: lerp(6.1, chaseT.y, e), z: lerp(MUZ.z, chaseT.z, e) };
+      F = lerp(1.5, 1.02, sstep((t - T_LAUNCH) / 0.55));
+      roll = 0.03 * Math.sin((t - T_LAUNCH) * 2.6) * sstep((t - T_LAUNCH) / 0.4);
+    } else {
+      // swing to side profile for the slo-mo, then dolly/orbit/pull-back
+      const sideBase = { x: cpt.x + 13.5, y: cpt.y + 2.0, z: cpt.z - 5.5 };
+      const e = sstep((t - tDil) / 0.75);
+      const chaseNow = { x: sphere.x + 2.7, y: sphere.y + 1.7, z: sphere.z - 9.5 };
+      let px = lerp(chaseNow.x, sideBase.x, e);
+      let py = lerp(chaseNow.y, sideBase.y, e);
+      let pz = lerp(chaseNow.z, sideBase.z, e);
+      // slow orbit + dolly during slo-mo (camera alive while time is frozen)
+      const td = Math.max(0, t - (tDil + 0.75));
+      const ang = -0.09 * td;
+      const off = axisRot([px - cpt.x, py - cpt.y, pz - cpt.z], 0, 1, 0, ang);
+      let scale = 1 - 0.045 * Math.min(td, 2.2);          // creep in
+      let rise = 0;
+      if (tSnap >= 0) {                                    // pull back after snap
+        const eb = sstep((t - tSnap) / 2.3);
+        scale = scale * (1 + 0.62 * eb);
+        rise = 3.6 * eb;
+      }
+      px = cpt.x + off[0] * scale; py = cpt.y + off[1] * scale + rise; pz = cpt.z + off[2] * scale;
+      P = { x: px, y: py, z: pz };
+      T = { x: cpt.x, y: cpt.y + rise * 0.12, z: cpt.z + 0.5 };
+      F = tSnap < 0 ? lerp(1.02, 1.5, e) : lerp(1.5, 1.26, sstep((t - tSnap) / 2.3));
+      roll = 0.02 * e;
+    }
+  }
+
+  // hand-held shake
+  const sh = shakeAmp;
+  P.x += sh * 0.55 * noise1(t * 11, 1);
+  P.y += sh * 0.45 * noise1(t * 13, 2);
+  P.z += sh * 0.3 * noise1(t * 9, 3);
+  T.x += sh * 0.35 * noise1(t * 12, 4);
+  T.y += sh * 0.3 * noise1(t * 10, 5);
+  roll += sh * 0.012 * noise1(t * 8, 6);
+
+  // basis
+  let fx = T.x - P.x, fy = T.y - P.y, fz = T.z - P.z;
+  let L = Math.hypot(fx, fy, fz); fx /= L; fy /= L; fz /= L;
+  let rx = fz, ry = 0, rz = -fx;                     // cross(f, up=(0,1,0)) -> right (left-handed fix below)
+  L = Math.hypot(rx, ry, rz) || 1; rx /= L; ry /= L; rz /= L;
+  let ux = fy * rz - fz * ry, uy = fz * rx - fx * rz, uz = fx * ry - fy * rx;
+  // roll
+  const cr = Math.cos(roll), sr = Math.sin(roll);
+  const r2x = rx * cr + ux * sr, r2y = ry * cr + uy * sr, r2z = rz * cr + uz * sr;
+  const u2x = -rx * sr + ux * cr, u2y = -ry * sr + uy * cr, u2z = -rz * sr + uz * cr;
+  return { P, rx: r2x, ry: r2y, rz: r2z, ux: u2x, uy: u2y, uz: u2z, fx, fy, fz, F: F * H };
+}
+
+function proj(c, x, y, z) {
+  const dx = x - c.P.x, dy = y - c.P.y, dz = z - c.P.z;
+  const cz = dx * c.fx + dy * c.fy + dz * c.fz;
+  if (cz < 0.14) return null;
+  const cx = dx * c.rx + dy * c.ry + dz * c.rz;
+  const cy = dx * c.ux + dy * c.uy + dz * c.uz;
+  const s = c.F / cz;
+  return { x: W / 2 + cx * s, y: H / 2 - cy * s, z: cz, s };
+}
+
+// ============================================================
+// drawing
+// ============================================================
+function orbState() {
+  // returns {r, bright, visible} for the blue sphere pre/post launch
+  if (t < T_CHARGE0) return { r: 0, bright: 0, visible: false };
+  if (t < T_PAUSE0) {
+    const p = sstep((t - T_CHARGE0) / (T_PAUSE0 - T_CHARGE0));
+    const pulse = 1 + 0.075 * Math.sin(pulsePhase);
+    return { r: 1.65 * p * pulse + 0.02, bright: 0.25 + 1.05 * p, visible: true };
+  }
+  if (t < T_LAUNCH) {
+    const p = sstep((t - T_PAUSE0) / (T_LAUNCH - T_PAUSE0));
+    let b = 1.3 - 0.45 * p;
+    // pre-launch flicker: two one-frame glints
+    const fl = Math.round((T_LAUNCH - t) * FPS);
+    if (fl === 4 || fl === 9) b = 2.6;
+    return { r: lerp(1.65, 1.02, p), bright: b, visible: true };
+  }
+  if (!sphere.contacted) return { r: SPH_R, bright: 1.9, visible: true };
+  const ws = wt - wContact;
+  if (ws > SLOMO_WORLD + 0.02) return { r: 0, bright: 0, visible: false };
+  return { r: SPH_R, bright: 2.4, visible: true, squash: clamp(ws / 0.05, 0, 1), dissolve: clamp((ws - 0.055) / 0.03, 0, 1) };
+}
+
+function lightState() {
+  // point light that tints the grid: follows orb, spikes on impact
+  const o = orbState();
+  let lx = sphere.x, ly = sphere.y, lz = sphere.z, li = o.bright * 1.4;
+  if (!o.visible && wContact >= 0) { lx = contactPt.x; ly = contactPt.y; lz = contactPt.z; li = 0; }
+  let imp = 0;
+  if (tSnap >= 0) imp = 2.0 * Math.exp(-2.6 * (t - tSnap));
+  else if (wContact >= 0) imp = 0.9;
+  return { lx, ly, lz, li, imp };
+}
+
+function drawGridSurface(c, verts, cols, nx, nz) {
+  // verts/cols are flat arrays laid out [ix*nz + iz]
+  for (let ix = 0; ix < nx; ix++) {
+    for (let iz = 0; iz < nz - 1; iz++) {
+      const a = verts[ix * nz + iz], b = verts[ix * nz + iz + 1];
+      if (!a || !b) continue;
+      const al = (cols[ix * nz + iz].a + cols[ix * nz + iz + 1].a) / 2;
+      if (al < 0.006) continue;
+      const cc = cols[ix * nz + iz];
+      ctx.strokeStyle = `rgba(${cc.r},${cc.g},${cc.b},${al.toFixed(3)})`;
+      ctx.lineWidth = clamp(0.022 * (a.s + b.s) / 2, 0.35, 3.2);
+      ctx.beginPath(); ctx.moveTo(a.x, a.y); ctx.lineTo(b.x, b.y); ctx.stroke();
+    }
+  }
+  for (let iz = 0; iz < nz; iz++) {
+    for (let ix = 0; ix < nx - 1; ix++) {
+      const a = verts[ix * nz + iz], b = verts[(ix + 1) * nz + iz];
+      if (!a || !b) continue;
+      const al = (cols[ix * nz + iz].a + cols[(ix + 1) * nz + iz].a) / 2;
+      if (al < 0.006) continue;
+      const cc = cols[ix * nz + iz];
+      ctx.strokeStyle = `rgba(${cc.r},${cc.g},${cc.b},${al.toFixed(3)})`;
+      ctx.lineWidth = clamp(0.022 * (a.s + b.s) / 2, 0.35, 3.2);
+      ctx.beginPath(); ctx.moveTo(a.x, a.y); ctx.lineTo(b.x, b.y); ctx.stroke();
+    }
+  }
+}
+
+function gridVertexColor(x, y, z, base, L, lf) {
+  // returns {r,g,b,a-multiplier pieces} for one grid vertex; lf scales dynamic light
+  const dsx = x - L.lx, dsy = y - L.ly, dsz = z - L.lz;
+  const d2s = dsx * dsx + dsy * dsy + dsz * dsz;
+  const sphL = lf * L.li / (1 + 0.09 * d2s);
+  const dex = x - ENE.x, dey = y - ENE.y, dez = z - ENE.z;
+  const d2e = dex * dex + dey * dey + dez * dez;
+  const eneL = (fragments ? 0 : 0.5) / (1 + 0.09 * d2e);
+  const dcx = x - (contactPt ? contactPt.x : 0), dcy = y - (contactPt ? contactPt.y : 6), dcz = z - (contactPt ? contactPt.z : CONTACT_Z);
+  const d2c = dcx * dcx + dcy * dcy + dcz * dcz;
+  const impL = lf * L.imp / (1 + 0.009 * d2c);
+  const b = base + sphL + eneL + impL;
+  // color mix
+  const wBase = base + sphL, wRed = eneL, wWhite = impL;
+  const wSum = wBase + wRed + wWhite + 1e-6;
+  const r = (wBase * 120 + wRed * 255 + wWhite * 255) / wSum;
+  const g = (wBase * 175 + wRed * 85 + wWhite * 245) / wSum;
+  const bl = (wBase * 255 + wRed * 60 + wWhite * 235) / wSum;
+  return { b, r: r | 0, g: g | 0, bl: bl | 0 };
+}
+
+function rippleDisp(x, z) {
+  if (wSnap < 0 || !contactPt) return 0;
+  const tw = wt - wSnap;
+  const r = Math.hypot(x - contactPt.x, z - contactPt.z);
+  const Rf = 3 + 58 * tw;
+  const env = Math.exp(-((r - Rf) * (r - Rf)) / 26) * Math.exp(-1.05 * tw);
+  return 2.7 * env * Math.sin((r - Rf) * 0.85);
+}
+
+function buildAndDrawGrids(c, L) {
+  const fog = (cz) => clamp(1.6 - cz / 135, 0, 1) * clamp((cz - 0.6) / 1.4, 0, 1);
+  const surf = (pts, nx, nz, base, lf) => {
+    const verts = new Array(nx * nz), cols = new Array(nx * nz);
+    for (let i = 0; i < nx * nz; i++) {
+      const p = pts(i);
+      const pr = proj(c, p[0], p[1], p[2]);
+      if (!pr) { verts[i] = null; cols[i] = { a: 0, r: 0, g: 0, b: 0 }; continue; }
+      verts[i] = pr;
+      const gc = gridVertexColor(p[0], p[1], p[2], base, L, lf);
+      cols[i] = { a: clamp(gc.b * fog(pr.z), 0, 0.9), r: gc.r, g: gc.g, b: gc.bl };
+    }
+    drawGridSurface(c, verts, cols, nx, nz);
+  };
+  const X0 = -34, X1 = 34, XS = 4, Z0 = -40, Z1 = 264, ZS = 4, YT = 26, YS2 = 3.6;
+  const NX = ((X1 - X0) / XS | 0) + 1, NZ = ((Z1 - Z0) / ZS | 0) + 1, NY = (YT / YS2 | 0) + 1;
+  // ground (with impact ripple) — main stage, full light
+  surf(i => { const ix = (i / NZ) | 0, iz = i % NZ; const x = X0 + ix * XS, z = Z0 + iz * ZS; return [x, rippleDisp(x, z), z]; }, NX, NZ, 0.16, 1.0);
+  // ceiling
+  surf(i => { const ix = (i / NZ) | 0, iz = i % NZ; return [X0 + ix * XS, YT, Z0 + iz * ZS]; }, NX, NZ, 0.03, 0.35);
+  // walls
+  surf(i => { const iy = (i / NZ) | 0, iz = i % NZ; return [X0, iy * YS2, Z0 + iz * ZS]; }, NY, NZ, 0.03, 0.4);
+  surf(i => { const iy = (i / NZ) | 0, iz = i % NZ; return [X1, iy * YS2, Z0 + iz * ZS]; }, NY, NZ, 0.03, 0.4);
+  // back wall
+  surf(i => { const ix = (i / NY) | 0, iy = i % NY; return [X0 + ix * XS, iy * YS2, Z1]; }, NX, NY, 0.035, 0.5);
+}
+
+function drawAttacker(c, L) {
+  let rz = 0;
+  if (t > T_LAUNCH) rz = -1.5 * Math.exp(-6 * (t - T_LAUNCH)) * (1 - Math.exp(-40 * (t - T_LAUNCH)));
+  const jit = (t > T_CHARGE0 && t < T_PAUSE0) ? 0.03 * ((t - T_CHARGE0) / 3.2) : 0;
+  const J = () => jit * noise1(t * 30, 7);
+  const pts = {
+    tt: [0, 6.95, -2.6 + rz], bb: [0, 5.05, -2.6 + rz],
+    lw: [-3.0, 6, -2.6 + rz], rw: [3.0, 6, -2.6 + rz],
+    tip: [0, 6, 2.95 + rz],
+    m1: [0.55, 6, 2.6 + rz], m2: [-0.55, 6, 2.6 + rz], m3: [0, 6.55, 2.6 + rz], m4: [0, 5.45, 2.6 + rz],
+  };
+  const edges = [
+    ['lw','tip'],['rw','tip'],['tt','tip'],['bb','tip'],
+    ['lw','tt'],['tt','rw'],['rw','bb'],['bb','lw'],
+    ['m1','m3'],['m3','m2'],['m2','m4'],['m4','m1'],
+  ];
+  const o = orbState();
+  const lit = clamp(0.55 + o.bright * 0.5, 0, 1.6);
+  ctx.lineWidth = 1.4;
+  for (const [a, b] of edges) {
+    const A = pts[a], B = pts[b];
+    const pa = proj(c, A[0] + J(), A[1] + J(), A[2]), pb = proj(c, B[0] + J(), B[1] + J(), B[2]);
+    if (!pa || !pb) continue;
+    ctx.strokeStyle = `rgba(205,225,255,${clamp(0.28 * lit, 0, 0.95)})`;
+    ctx.beginPath(); ctx.moveTo(pa.x, pa.y); ctx.lineTo(pb.x, pb.y); ctx.stroke();
+  }
+}
+
+function drawEnemy(c) {
+  if (fragments) { drawFragments(c); return; }
+  const ey = enemyY();
+  const rot = enemyRotM();
+  const crackP = wContact >= 0 ? clamp((wt - wContact) / SLOMO_WORLD, 0, 1) : 0;
+
+  // deformation: push the near pole in on contact
+  const vs = octVerts.map(v => {
+    let p = mulV(rot, v);
+    if (crackP > 0) {
+      const toward = -p[2] / ENE_R;   // 1 for the vertex facing the shot
+      if (toward > 0.3) p = [p[0], p[1], p[2] + toward * 1.2 * clamp(crackP * 1.6, 0, 1)];
+      p = [p[0] + 0.22 * crackP * noise1(wt * 40, 20 + v[0]), p[1] + 0.22 * crackP * noise1(wt * 40, 23 + v[1]), p[2]];
+    }
+    return [ENE.x + p[0], ey + p[1], ENE.z + p[2]];
+  });
+
+  // core beacon (visible from far away)
+  const pc = proj(c, ENE.x, ey, ENE.z);
+  if (pc) {
+    const beat = 0.7 + 0.25 * Math.sin(wt * 2.4);
+    const rad = clamp(ENE_R * 0.34 * pc.s, 3.5, 60) * (1 + crackP * 2.2);
+    const g = ctx.createRadialGradient(pc.x, pc.y, 0, pc.x, pc.y, rad);
+    const coreCol = crackP > 0 ? `rgba(255,240,225,${0.75 + 0.25 * crackP})` : `rgba(255,80,45,${beat})`;
+    g.addColorStop(0, coreCol);
+    g.addColorStop(0.35, `rgba(255,60,30,${0.35 * beat + 0.4 * crackP})`);
+    g.addColorStop(1, 'rgba(255,40,20,0)');
+    ctx.save(); ctx.globalCompositeOperation = 'lighter';
+    ctx.fillStyle = g; ctx.beginPath(); ctx.arc(pc.x, pc.y, rad, 0, 7); ctx.fill();
+    ctx.restore();
+  }
+
+  // edges
+  ctx.save();
+  ctx.shadowColor = 'rgba(255,70,40,0.9)';
+  for (const [a, b] of octEdges) {
+    const pa = proj(c, ...vs[a]), pb = proj(c, ...vs[b]);
+    if (!pa || !pb) continue;
+    ctx.shadowBlur = clamp(pa.s * 0.08, 2, 16);
+    ctx.strokeStyle = `rgba(255,${90 + 120 * crackP | 0},${55 + 140 * crackP | 0},0.85)`;
+    ctx.lineWidth = clamp(0.06 * pa.s, 0.6, 4);
+    ctx.beginPath(); ctx.moveTo(pa.x, pa.y); ctx.lineTo(pb.x, pb.y); ctx.stroke();
+  }
+  ctx.restore();
+
+  // cracks reveal during slo-mo
+  if (crackP > 0.02) {
+    ctx.save(); ctx.globalCompositeOperation = 'lighter';
+    ctx.shadowColor = 'rgba(255,230,200,0.9)';
+    for (let ci = 0; ci < CRACKS.length; ci++) {
+      const pts = CRACKS[ci];
+      const n = clamp(Math.floor(pts.length * crackP * 1.25), 0, pts.length);
+      if (n < 2) continue;
+      ctx.beginPath();
+      let started = false;
+      for (let k = 0; k < n; k++) {
+        const d = pts[k];
+        const p = proj(c, ENE.x + d[0] * ENE_R * 1.01, ey + d[1] * ENE_R * 1.01, ENE.z + d[2] * ENE_R * 1.01);
+        if (!p) { started = false; continue; }
+        if (!started) { ctx.moveTo(p.x, p.y); started = true; } else ctx.lineTo(p.x, p.y);
+      }
+      ctx.shadowBlur = 10;
+      ctx.strokeStyle = `rgba(255,235,215,${0.55 * crackP + 0.3})`;
+      ctx.lineWidth = 1.6;
+      ctx.stroke();
+    }
+    ctx.restore();
+  }
+}
+
+function drawFragments(c) {
+  if (!fragments) return;
+  const age = wt - wSnap;
+  const fade = clamp(1 - age / 1.9, 0, 1);
+  if (fade <= 0) return;
+  ctx.save();
+  for (const f of fragments) {
+    const tri = [f.a, f.b, f.m].map(v => {
+      const r = axisRot(v, f.ax, f.ay, f.az, f.rot);
+      return proj(c, f.px + r[0], f.py + r[1], f.pz + r[2]);
+    });
+    if (tri.some(p => !p)) continue;
+    ctx.strokeStyle = `rgba(255,${120 + 80 * fade | 0},70,${0.92 * fade})`;
+    ctx.lineWidth = clamp(0.035 * tri[0].s, 0.5, 2.4);
+    ctx.beginPath();
+    ctx.moveTo(tri[0].x, tri[0].y); ctx.lineTo(tri[1].x, tri[1].y); ctx.lineTo(tri[2].x, tri[2].y); ctx.closePath();
+    ctx.stroke();
+    // ember glow at centroid
+    const cx = (tri[0].x + tri[1].x + tri[2].x) / 3, cy = (tri[0].y + tri[1].y + tri[2].y) / 3;
+    ctx.globalCompositeOperation = 'lighter';
+    const rad = clamp(0.35 * tri[0].s, 1.5, 10);
+    const g = ctx.createRadialGradient(cx, cy, 0, cx, cy, rad);
+    g.addColorStop(0, `rgba(255,160,90,${0.4 * fade})`);
+    g.addColorStop(1, 'rgba(255,120,60,0)');
+    ctx.fillStyle = g; ctx.beginPath(); ctx.arc(cx, cy, rad, 0, 7); ctx.fill();
+    ctx.globalCompositeOperation = 'source-over';
+  }
+  ctx.restore();
+}
+
+function drawChargeParticles(c) {
+  if (t < T_CHARGE0 || t > T_PAUSE0 + 0.2) return;
+  ctx.save(); ctx.globalCompositeOperation = 'lighter';
+  for (const p of chg) {
+    if (t < p.t0 || t > p.t0 + p.dur) continue;
+    const u = (t - p.t0) / p.dur;
+    const posAt = (uu) => {
+      const rad = p.rad * (1 - Math.pow(uu, 2.2)) + 0.35;
+      const th = p.th + p.spin * uu;
+      return [
+        MUZ.x + rad * Math.sin(p.ph) * Math.cos(th),
+        MUZ.y + rad * Math.cos(p.ph),
+        MUZ.z + rad * Math.sin(p.ph) * Math.sin(th) * 0.8,
+      ];
+    };
+    const A = posAt(Math.max(0, u - 0.10)), B = posAt(u);
+    const pa = proj(c, ...A), pb = proj(c, ...B);
+    if (!pa || !pb) continue;
+    const al = 0.85 * Math.sin(Math.PI * u);
+    ctx.strokeStyle = `rgba(160,210,255,${al.toFixed(3)})`;
+    ctx.lineWidth = clamp(0.035 * pb.s, 0.6, 3.2);
+    ctx.beginPath(); ctx.moveTo(pa.x, pa.y); ctx.lineTo(pb.x, pb.y); ctx.stroke();
+  }
+  ctx.restore();
+}
+
+function drawSphere(c) {
+  const o = orbState();
+  if (!o.visible || o.r <= 0.01) return;
+
+  // trail + ghosts while flying
+  ctx.save(); ctx.globalCompositeOperation = 'lighter';
+  if (sphere.alive && trail.length > 2) {
+    let prev = null;
+    for (let i = 0; i < trail.length; i++) {
+      const q = trail[i];
+      const p = proj(c, q.x, q.y, q.z);
+      if (!p) { prev = null; continue; }
+      const u = i / trail.length;
+      // comet-tail glow blobs
+      const rad = clamp(o.r * p.s * (0.3 + 0.85 * u), 0.5, 110);
+      const g = ctx.createRadialGradient(p.x, p.y, 0, p.x, p.y, rad);
+      g.addColorStop(0, `rgba(100,170,255,${(0.38 * u * u).toFixed(3)})`);
+      g.addColorStop(1, 'rgba(40,110,255,0)');
+      ctx.fillStyle = g; ctx.beginPath(); ctx.arc(p.x, p.y, rad, 0, 7); ctx.fill();
+      // bright core streak
+      if (prev) {
+        ctx.strokeStyle = `rgba(170,215,255,${(0.5 * u * u * u).toFixed(3)})`;
+        ctx.lineWidth = clamp(o.r * p.s * 0.5 * u, 1, 24);
+        ctx.lineCap = 'round';
+        ctx.beginPath(); ctx.moveTo(prev.x, prev.y); ctx.lineTo(p.x, p.y); ctx.stroke();
+      }
+      prev = p;
+    }
+  }
+
+  // press slightly into the enemy while squashing so contact reads
+  const zDisp = sphere.z + (o.squash !== undefined ? 0.9 * o.squash : 0);
+  const p = proj(c, sphere.x, sphere.y, zDisp);
+  if (!p) { ctx.restore(); return; }
+
+  // screen-space squash orientation (along velocity)
+  let ang = 0, sq = 1, bulge = 1, alpha = 1;
+  if (o.squash !== undefined) {
+    const p2 = proj(c, sphere.x, sphere.y, sphere.z + 1);
+    if (p2) ang = Math.atan2(p2.y - p.y, p2.x - p.x);
+    sq = 1 - 0.62 * o.squash;      // along motion
+    bulge = 1 + 0.5 * o.squash;    // perpendicular
+    alpha = 1 - (o.dissolve || 0);
+  } else if (sphere.alive && !sphere.contacted && sphere.speed > 30) {
+    const p2 = proj(c, sphere.x, sphere.y, sphere.z + 1);
+    if (p2) ang = Math.atan2(p2.y - p.y, p2.x - p.x);
+    sq = 1.35; bulge = 0.95;       // slight motion stretch
+  }
+
+  const br = o.bright * alpha;
+  const baseR = clamp(o.r * p.s, 1.5, 260);
+  ctx.translate(p.x, p.y); ctx.rotate(ang); ctx.scale(sq, bulge);
+
+  const layers = [
+    [5.0, `rgba(30,90,230,${(0.08 * br).toFixed(3)})`],
+    [2.4, `rgba(70,140,255,${(0.22 * br).toFixed(3)})`],
+    [1.45, `rgba(150,205,255,${(0.5 * br).toFixed(3)})`],
+    [0.9, `rgba(255,255,255,${clamp(0.95 * br, 0, 1).toFixed(3)})`],
+  ];
+  for (const [m, col] of layers) {
+    const g = ctx.createRadialGradient(0, 0, 0, 0, 0, baseR * m);
+    g.addColorStop(0, col); g.addColorStop(1, 'rgba(30,90,230,0)');
+    ctx.fillStyle = g; ctx.beginPath(); ctx.arc(0, 0, baseR * m, 0, 7); ctx.fill();
+  }
+  // crisp limb so it reads as a sphere, not just glare
+  ctx.strokeStyle = `rgba(215,238,255,${clamp(0.7 * br, 0, 1).toFixed(3)})`;
+  ctx.lineWidth = clamp(baseR * 0.05, 1.2, 5);
+  ctx.beginPath(); ctx.arc(0, 0, baseR * 1.02, 0, 7); ctx.stroke();
+  ctx.restore();
+}
+
+function drawSpeedDust(c) {
+  if (!sphere.alive || sphere.contacted || sphere.speed < 25) return;
+  ctx.save(); ctx.globalCompositeOperation = 'lighter';
+  const camZ = c.P.z;
+  for (const d of SDUST) {
+    let zj = camZ + (((d.base - camZ) % 160) + 160) % 160;
+    const Lst = sphere.speed * 0.075 + 0.5;
+    const pa = proj(c, d.lx, d.ly, zj), pb = proj(c, d.lx, d.ly, zj - Lst);
+    if (!pa || !pb) continue;
+    const al = clamp(0.05 + sphere.speed * 0.002, 0, 0.3) * clamp((zj - camZ - 1) / 6, 0, 1);
+    ctx.strokeStyle = `rgba(170,200,255,${al.toFixed(3)})`;
+    ctx.lineWidth = clamp(0.014 * pa.s, 0.3, 1.8);
+    ctx.beginPath(); ctx.moveTo(pa.x, pa.y); ctx.lineTo(pb.x, pb.y); ctx.stroke();
+  }
+  ctx.restore();
+}
+
+function drawMotes(c, L) {
+  if (t > T_LAUNCH + 0.6) return;
+  ctx.save(); ctx.globalCompositeOperation = 'lighter';
+  for (const m of MOTES) {
+    const p = proj(c, m.x, m.y, m.z);
+    if (!p) continue;
+    const d2 = (m.x - L.lx) ** 2 + (m.y - L.ly) ** 2 + (m.z - L.lz) ** 2;
+    const al = clamp(0.05 + L.li * 0.35 / (1 + 0.03 * d2), 0, 0.5);
+    ctx.fillStyle = `rgba(180,210,255,${al.toFixed(3)})`;
+    const rad = clamp(0.045 * p.s, 0.4, 2.2);
+    ctx.beginPath(); ctx.arc(p.x, p.y, rad, 0, 7); ctx.fill();
+  }
+  ctx.restore();
+}
+
+function drawSparks(c) {
+  if (!sparks.length) return;
+  ctx.save(); ctx.globalCompositeOperation = 'lighter';
+  for (const s of sparks) {
+    const p = proj(c, s.x, s.y, s.z);
+    if (!p) continue;
+    const u = s.life / s.life0;
+    const pb = proj(c, s.x - s.vx * 0.012, s.y - s.vy * 0.012, s.z - s.vz * 0.012);
+    const warm = s.hue > 0.55;
+    const col = warm ? `255,${170 + 60 * u | 0},120` : `160,210,255`;
+    if (pb) {
+      ctx.strokeStyle = `rgba(${col},${(0.85 * u).toFixed(3)})`;
+      ctx.lineWidth = clamp(0.028 * p.s, 0.5, 2.6);
+      ctx.beginPath(); ctx.moveTo(pb.x, pb.y); ctx.lineTo(p.x, p.y); ctx.stroke();
+    }
+    ctx.fillStyle = `rgba(${col},${(0.9 * u).toFixed(3)})`;
+    ctx.beginPath(); ctx.arc(p.x, p.y, clamp(0.02 * p.s, 0.5, 2.2), 0, 7); ctx.fill();
+  }
+  ctx.restore();
+}
+
+function drawShockRings(c) {
+  if (wContact < 0 || !contactPt) return;
+  ctx.save(); ctx.globalCompositeOperation = 'lighter';
+  const camDist = Math.hypot(c.P.x - contactPt.x, c.P.y - contactPt.y, c.P.z - contactPt.z);
+  const ring = (radius, alpha, col, yflat) => {
+    if (radius <= 0.05 || alpha <= 0.01) return;
+    if (!yflat && radius > camDist * 0.9) return;   // ring has passed the camera
+    ctx.beginPath();
+    let started = false;
+    for (let k = 0; k <= 56; k++) {
+      const a = k / 56 * Math.PI * 2;
+      let x, y, z;
+      if (yflat) { x = contactPt.x + radius * Math.cos(a); y = 0.05; z = contactPt.z + radius * Math.sin(a); }
+      else { x = contactPt.x + radius * Math.cos(a); y = contactPt.y + radius * Math.sin(a); z = contactPt.z; }
+      const p = proj(c, x, y, z);
+      if (!p) { started = false; continue; }
+      if (!started) { ctx.moveTo(p.x, p.y); started = true; } else ctx.lineTo(p.x, p.y);
+    }
+    ctx.strokeStyle = `rgba(${col},${alpha.toFixed(3)})`;
+    ctx.lineWidth = clamp(30 / (radius + 2), 1, 7);
+    ctx.stroke();
+    // chromatic ghost
+    ctx.save(); ctx.translate(2.2, 0);
+    ctx.strokeStyle = `rgba(255,90,90,${(alpha * 0.25).toFixed(3)})`; ctx.stroke();
+    ctx.translate(-4.4, 0);
+    ctx.strokeStyle = `rgba(90,200,255,${(alpha * 0.25).toFixed(3)})`; ctx.stroke();
+    ctx.restore();
+  };
+  const wsC = wt - wContact;
+  ring(1.0 + 26 * Math.pow(wsC, 0.7), clamp(0.9 - wsC * 6, 0, 0.9), '190,220,255', false);
+  if (wsC > 0.02) ring(0.5 + 22 * Math.pow(wsC - 0.02, 0.7), clamp(0.7 - (wsC - 0.02) * 5, 0, 0.7), '150,200,255', false);
+  if (wSnap >= 0) {
+    const wsS = wt - wSnap;
+    ring(2 + 46 * Math.pow(wsS, 0.75), clamp(0.85 - wsS * 0.9, 0, 0.85), '235,245,255', false);
+    ring(2 + 58 * wsS, clamp(0.8 - wsS * 0.75, 0, 0.8), '180,215,255', true);
+  }
+  ctx.restore();
+}
+
+// ---------- post overlays ----------
+let vignette = null, grains = [];
+function initOverlays() {
+  vignette = document.createElement('canvas'); vignette.width = W; vignette.height = H;
+  const vg = vignette.getContext('2d');
+  const g = vg.createRadialGradient(W / 2, H / 2, H * 0.34, W / 2, H / 2, H * 0.86);
+  g.addColorStop(0, 'rgba(0,0,0,0)'); g.addColorStop(1, 'rgba(0,0,0,0.52)');
+  vg.fillStyle = g; vg.fillRect(0, 0, W, H);
+  const r = mulberry32(8080);
+  for (let k = 0; k < 3; k++) {
+    const gc = document.createElement('canvas'); gc.width = 384; gc.height = 384;
+    const gx = gc.getContext('2d');
+    const im = gx.createImageData(384, 384);
+    for (let i = 0; i < im.data.length; i += 4) {
+      const v = 128 + (r() - 0.5) * 255;
+      im.data[i] = im.data[i + 1] = im.data[i + 2] = v; im.data[i + 3] = 255;
+    }
+    gx.putImageData(im, 0, 0);
+    grains.push(gc);
+  }
+}
+
+function draw() {
+  const c = cameraRig();
+  const L = lightState();
+
+  ctx.setTransform(1, 0, 0, 1, 0, 0);
+  ctx.globalCompositeOperation = 'source-over';
+  ctx.globalAlpha = 1;
+  ctx.fillStyle = '#030509';
+  ctx.fillRect(0, 0, W, H);
+
+  buildAndDrawGrids(c, L);
+  drawMotes(c, L);
+  drawAttacker(c, L);
+  drawEnemy(c);
+  drawSpeedDust(c);
+  drawChargeParticles(c);
+  drawShockRings(c);
+  drawSparks(c);
+  drawSphere(c);
+
+  // launch muzzle burst
+  if (t >= T_LAUNCH && t < T_LAUNCH + 0.25) {
+    const e = 1 - (t - T_LAUNCH) / 0.25;
+    const p = proj(c, MUZ.x, MUZ.y, MUZ.z);
+    if (p) {
+      ctx.save(); ctx.globalCompositeOperation = 'lighter';
+      const rad = clamp(3.2 * p.s * (1 - e * 0.5), 10, 500);
+      const g = ctx.createRadialGradient(p.x, p.y, 0, p.x, p.y, rad);
+      g.addColorStop(0, `rgba(220,240,255,${(0.8 * e).toFixed(3)})`);
+      g.addColorStop(1, 'rgba(60,130,255,0)');
+      ctx.fillStyle = g; ctx.beginPath(); ctx.arc(p.x, p.y, rad, 0, 7); ctx.fill();
+      ctx.restore();
+    }
+  }
+
+  // full-screen flash
+  if (flash > 0.01) {
+    ctx.fillStyle = `rgba(235,244,255,${clamp(flash, 0, 1).toFixed(3)})`;
+    ctx.fillRect(0, 0, W, H);
+  }
+
+  // vignette + grain
+  ctx.drawImage(vignette, 0, 0);
+  ctx.save();
+  ctx.globalAlpha = 0.032;
+  ctx.globalCompositeOperation = 'overlay';
+  const gr = grains[frame % 3];
+  const ox = (frame * 97) % 200, oy = (frame * 61) % 200;
+  ctx.drawImage(gr, -ox, -oy, W + 400, H + 400);
+  ctx.restore();
+
+  // fades
+  let black = 0;
+  if (t < 0.9) black = 1 - sstep(t / 0.9);
+  const tEnd = (MARKERS.tSnap !== undefined ? MARKERS.tSnap : 11.0) + 1.8;
+  if (t > tEnd) black = Math.max(black, sstep((t - tEnd) / 0.8));
+  if (black > 0.003) {
+    ctx.fillStyle = `rgba(0,0,0,${black.toFixed(3)})`;
+    ctx.fillRect(0, 0, W, H);
+  }
+
+  // cinematic letterbox
+  ctx.fillStyle = '#000';
+  ctx.fillRect(0, 0, W, 132);
+  ctx.fillRect(0, H - 132, W, 132);
+}
+
+// ============================================================
+// public API
+// ============================================================
+initOverlays();
+window.renderFrame = function (i) {
+  if (i <= frame) throw new Error('frames must advance monotonically (got ' + i + ' after ' + frame + ')');
+  while (frame < i) step();
+  draw();
+  return cv.toDataURL('image/png');
+};
+window.getMarkers = function () { return JSON.stringify(MARKERS); };
+</script>
